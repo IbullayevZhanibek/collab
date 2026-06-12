@@ -136,7 +136,7 @@ export function MembersDialog({
                 className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors"
               >
                 {/* Avatar */}
-                <div className="w-9 h-9 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-semibold text-sm shrink-0 select-none">
+                <div className="w-9 h-9 rounded-full bg-brand-100 flex items-center justify-center text-brand-700 font-semibold text-sm shrink-0 select-none">
                   {initial}
                 </div>
 
@@ -155,7 +155,7 @@ export function MembersDialog({
                 <span
                   className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0 ${
                     member.role === 'owner'
-                      ? 'bg-indigo-100 text-indigo-700'
+                      ? 'bg-brand-100 text-brand-700'
                       : 'bg-gray-100 text-gray-600'
                   }`}
                 >

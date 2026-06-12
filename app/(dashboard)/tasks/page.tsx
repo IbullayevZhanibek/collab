@@ -15,6 +15,14 @@ const PRIORITY_LABELS: Record<string, string> = {
   critical: 'Критический',
 }
 
+function pluralizeTasks(n: number): string {
+  const mod10 = n % 10
+  const mod100 = n % 100
+  if (mod10 === 1 && mod100 !== 11) return 'задача'
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return 'задачи'
+  return 'задач'
+}
+
 type EnrichedCard = Card & {
   column: { id: string; title: string; board_id: string }
   board: Board
@@ -99,7 +107,9 @@ export default async function TasksPage({
           <div>
             <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Мои задачи</h1>
             <p className="text-gray-500 text-sm mt-1">
-              {enrichedCards.length} задач по всем доскам
+              {enrichedCards.length === 0
+                ? 'Все задачи со всех досок — в одном месте'
+                : `${enrichedCards.length} ${pluralizeTasks(enrichedCards.length)} со всех ваших досок`}
             </p>
           </div>
           <Suspense>
@@ -116,21 +126,25 @@ export default async function TasksPage({
 
         {enrichedCards.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="text-5xl mb-4">📋</div>
-            <h2 className="text-lg font-semibold text-gray-900 mb-2">Задач нет</h2>
-            <p className="text-gray-500 text-sm">
-              {priority ? 'Задач с выбранным фильтром не найдено' : 'Создайте задачи на ваших досках'}
+            <div className="text-5xl mb-4">{priority ? '🔍' : '📋'}</div>
+            <h2 className="text-lg font-semibold text-gray-900 mb-2">
+              {priority ? 'Под фильтр ничего не подошло' : 'Здесь будут ваши задачи'}
+            </h2>
+            <p className="text-gray-500 text-sm max-w-xs">
+              {priority
+                ? 'Попробуйте сбросить фильтр или выбрать другой приоритет.'
+                : 'Откройте любую доску и добавьте первую карточку — она тут же появится в этом списке.'}
             </p>
           </div>
         ) : view === 'kanban' ? (
           /* Kanban view */
-          <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-4 snap-x snap-mandatory">
+          <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-thin">
             {Array.from(columnGroups.entries()).map(([columnTitle, columnCards]) => (
               <div key={columnTitle} className="shrink-0 w-[280px] sm:w-72 snap-start">
-                <div className="bg-gray-100 rounded-xl p-3">
+                <div className="bg-gray-100/80 border border-gray-200/70 rounded-2xl p-3">
                   <div className="flex items-center gap-2 mb-3 px-1">
                     <h3 className="font-semibold text-gray-800 text-sm">{columnTitle}</h3>
-                    <span className="bg-gray-300 text-gray-600 rounded-full text-xs px-2 py-0.5 font-medium">
+                    <span className="bg-gray-200 text-gray-600 rounded-full text-xs px-2 py-0.5 font-semibold tabular-nums">
                       {columnCards.length}
                     </span>
                   </div>
@@ -138,7 +152,7 @@ export default async function TasksPage({
                     {columnCards.map((card) => (
                       <div
                         key={card.id}
-                        className="bg-white rounded-lg border border-gray-200 p-3"
+                        className="bg-white rounded-xl border border-gray-200 shadow-soft p-3"
                       >
                         <p className="text-sm font-medium text-gray-900 mb-1">{card.title}</p>
                         <p className="text-xs text-gray-500 mb-2">{card.board.title}</p>
@@ -163,7 +177,7 @@ export default async function TasksPage({
                         </div>
                         <Link
                           href={`/board/${card.board.id}`}
-                          className="mt-2 inline-flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-700"
+                          className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-brand-600 hover:text-brand-700"
                         >
                           <ExternalLink size={11} />
                           Открыть доску
@@ -177,7 +191,7 @@ export default async function TasksPage({
           </div>
         ) : (
           /* List view */
-          <div className="bg-white rounded-xl border border-gray-200 divide-y divide-gray-100">
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-soft divide-y divide-gray-100 overflow-hidden">
             {enrichedCards.map((card) => (
               <div
                 key={card.id}
@@ -217,7 +231,7 @@ export default async function TasksPage({
 
                   <Link
                     href={`/board/${card.board.id}`}
-                    className="text-xs text-indigo-600 hover:text-indigo-700 font-medium whitespace-nowrap inline-flex items-center gap-1"
+                    className="text-xs text-brand-600 hover:text-brand-700 font-medium whitespace-nowrap inline-flex items-center gap-1"
                   >
                     {card.board.title}
                     <ExternalLink size={11} />

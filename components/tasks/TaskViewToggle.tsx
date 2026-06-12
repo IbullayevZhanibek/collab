@@ -27,7 +27,7 @@ export function TaskViewToggle() {
         className={cn(
           'flex items-center gap-1.5 px-3 py-2 text-sm transition-colors',
           view === 'list'
-            ? 'bg-indigo-600 text-white'
+            ? 'bg-brand-600 text-white'
             : 'bg-white text-gray-600 hover:bg-gray-50'
         )}
       >
@@ -39,7 +39,7 @@ export function TaskViewToggle() {
         className={cn(
           'flex items-center gap-1.5 px-3 py-2 text-sm transition-colors',
           view === 'kanban'
-            ? 'bg-indigo-600 text-white'
+            ? 'bg-brand-600 text-white'
             : 'bg-white text-gray-600 hover:bg-gray-50'
         )}
       >

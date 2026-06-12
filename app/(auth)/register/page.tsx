@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { register } from '@/actions/auth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { LayoutDashboard } from 'lucide-react'
+import { Logo } from '@/components/ui/logo'
 
 export default function RegisterPage() {
   const [fullName, setFullName] = useState('')
@@ -31,22 +31,19 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="w-full max-w-md">
-      <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+    <div className="w-full">
+      <div className="bg-white rounded-3xl shadow-pop border border-gray-100 p-8">
         <div className="flex justify-center mb-6">
-          <div className="flex items-center gap-2">
-            <div className="bg-indigo-600 rounded-xl p-2">
-              <LayoutDashboard className="text-white" size={22} />
-            </div>
-            <span className="text-xl font-bold text-gray-900">Collab</span>
-          </div>
+          <Logo size={40} withWordmark wordmarkClassName="text-2xl" />
         </div>
 
-        <h1 className="text-2xl font-bold text-center text-gray-900 mb-2">Создать аккаунт</h1>
-        <p className="text-center text-gray-500 text-sm mb-8">Начните работу бесплатно</p>
+        <h1 className="text-2xl font-bold text-center text-gray-900 mb-2">Создайте аккаунт</h1>
+        <p className="text-center text-gray-500 text-sm mb-8">
+          Бесплатно и навсегда — карта банка не нужна
+        </p>
 
         {error && (
-          <div className="mb-4 rounded-lg bg-red-50 border border-red-200 p-3 text-sm text-red-700">
+          <div className="mb-4 rounded-xl bg-red-50 border border-red-200 p-3 text-sm text-red-700">
             {error}
           </div>
         )}
@@ -89,13 +86,13 @@ export default function RegisterPage() {
             size="lg"
             className="w-full"
           >
-            {isPending ? 'Создание аккаунта...' : 'Зарегистрироваться'}
+            {isPending ? 'Создаём аккаунт…' : 'Начать бесплатно'}
           </Button>
         </div>
 
         <p className="mt-6 text-center text-sm text-gray-500">
-          Уже есть аккаунт?{' '}
-          <Link href="/login" className="text-indigo-600 hover:text-indigo-700 font-medium">
+          Уже с нами?{' '}
+          <Link href="/login" className="text-brand-600 hover:text-brand-700 font-semibold">
             Войти
           </Link>
         </p>

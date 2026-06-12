@@ -37,19 +37,19 @@ export function BoardColumn({ column, cards, boardId, userId }: BoardColumnProps
 
   return (
     <div className="shrink-0 w-[280px] sm:w-72 snap-start">
-      <div className="bg-gray-100 rounded-xl p-3">
+      <div className="bg-gray-100/80 border border-gray-200/70 rounded-2xl p-3 transition-colors hover:border-gray-300">
         {/* Column header */}
         <div className="flex items-center justify-between mb-3 px-1">
           <div className="flex items-center gap-2">
             <h3 className="font-semibold text-gray-800 text-sm">{column.title}</h3>
-            <span className="bg-gray-300 text-gray-600 rounded-full text-xs px-2 py-0.5 font-medium">
+            <span className="bg-gray-200 text-gray-600 rounded-full text-xs px-2 py-0.5 font-semibold tabular-nums">
               {cards.length}
             </span>
           </div>
           <div className="flex items-center gap-1">
             <button
               onClick={() => setShowCreateCard(true)}
-              className="p-1 rounded-lg text-gray-500 hover:text-indigo-600 hover:bg-white transition-colors"
+              className="p-1 rounded-lg text-gray-500 hover:text-brand-600 hover:bg-white transition-colors"
               title="Добавить задачу"
             >
               <Plus size={16} />
@@ -68,8 +68,8 @@ export function BoardColumn({ column, cards, boardId, userId }: BoardColumnProps
         {/* Cards drop zone */}
         <div
           ref={setNodeRef}
-          className={`space-y-2 min-h-[4px] rounded-lg transition-colors ${
-            isOver ? 'bg-indigo-50' : ''
+          className={`space-y-2 min-h-[8px] rounded-xl transition-colors ${
+            isOver ? 'bg-brand-50 ring-2 ring-inset ring-brand-200' : ''
           }`}
         >
           <SortableContext
@@ -85,7 +85,7 @@ export function BoardColumn({ column, cards, boardId, userId }: BoardColumnProps
         {/* Add card button */}
         <button
           onClick={() => setShowCreateCard(true)}
-          className="mt-2 w-full flex items-center gap-2 px-2 py-2 rounded-lg text-sm text-gray-500 hover:text-gray-700 hover:bg-white transition-colors"
+          className="mt-2 w-full flex items-center gap-2 px-2 py-2 rounded-lg text-sm font-medium text-gray-500 hover:text-brand-600 hover:bg-white transition-colors"
         >
           <Plus size={15} />
           Добавить задачу

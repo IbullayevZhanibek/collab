@@ -113,7 +113,7 @@ export function CardAttachments({ cardId, currentUserId }: CardAttachmentsProps)
               onClick={() => handleDownload(attachment)}
               disabled={isPending}
               title="Скачать"
-              className="p-1.5 rounded text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors disabled:opacity-50"
+              className="p-1.5 rounded text-gray-400 hover:text-brand-600 hover:bg-brand-50 transition-colors disabled:opacity-50"
             >
               {downloadingId === attachment.id ? (
                 <Loader2 size={14} className="animate-spin" />

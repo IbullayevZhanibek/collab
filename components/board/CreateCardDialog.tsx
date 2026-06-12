@@ -231,7 +231,7 @@ export function CreateCardDialog({ open, onClose, columnId, boardId }: CreateCar
 
       {/* Upload progress */}
       {isUploading && (
-        <div className="flex items-center gap-2 mb-4 text-sm text-indigo-600">
+        <div className="flex items-center gap-2 mb-4 text-sm text-brand-600">
           <Loader2 size={14} className="animate-spin" />
           {uploadStatus}
         </div>

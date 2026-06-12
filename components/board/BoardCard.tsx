@@ -64,7 +64,7 @@ export function BoardCard({ card, boardId, userId }: BoardCardProps) {
         style={style}
         {...attributes}
         {...listeners}
-        className="group bg-white rounded-lg border border-gray-200 hover:border-indigo-300 hover:shadow-sm transition-all p-3 cursor-grab active:cursor-grabbing"
+        className="group bg-white rounded-xl border border-gray-200 shadow-soft hover:border-brand-300 hover:shadow-card transition-all p-3 cursor-grab active:cursor-grabbing"
       >
         <div className="flex items-start gap-2">
           <div className="flex-1 min-w-0">
@@ -98,8 +98,8 @@ export function BoardCard({ card, boardId, userId }: BoardCardProps) {
             <button
               onClick={(e) => { e.stopPropagation(); setShowDetail(true) }}
               onPointerDown={(e) => e.stopPropagation()}
-              className="p-1 rounded text-gray-300 hover:text-indigo-500 hover:bg-indigo-50 transition-all"
-              title="Вложения"
+              className="p-1 rounded text-gray-300 hover:text-brand-500 hover:bg-brand-50 transition-all"
+              title="Открыть задачу и вложения"
             >
               <Paperclip size={13} />
             </button>

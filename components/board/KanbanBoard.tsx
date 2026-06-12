@@ -186,7 +186,7 @@ export function KanbanBoard({ boardId, userId, initialColumns, initialCards }: K
       onDragOver={onDragOver}
       onDragEnd={onDragEnd}
     >
-      <div className="flex gap-3 sm:gap-4 items-start overflow-x-auto pb-4 snap-x snap-mandatory scroll-smooth">
+      <div className="flex gap-3 sm:gap-4 items-start overflow-x-auto pb-4 snap-x snap-mandatory scroll-smooth scrollbar-thin">
         <SortableContext
           items={columns.map((c) => c.id)}
           strategy={horizontalListSortingStrategy}
@@ -206,7 +206,7 @@ export function KanbanBoard({ boardId, userId, initialColumns, initialCards }: K
         <div className="flex-shrink-0">
           <button
             onClick={() => setShowCreateColumn(true)}
-            className="flex items-center gap-2 bg-white/80 hover:bg-white border-2 border-dashed border-gray-300 hover:border-indigo-400 rounded-xl px-5 py-3 text-sm text-gray-500 hover:text-indigo-600 transition-all w-[280px] sm:w-72 snap-start shrink-0"
+            className="flex items-center gap-2 bg-white/70 hover:bg-white border-2 border-dashed border-gray-300 hover:border-brand-400 rounded-2xl px-5 py-3 text-sm font-medium text-gray-500 hover:text-brand-600 transition-all w-[280px] sm:w-72 snap-start shrink-0"
           >
             <Plus size={16} />
             Добавить колонку

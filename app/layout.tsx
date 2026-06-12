@@ -13,8 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Collab — Управление задачами",
-  description: "Совместная работа над задачами",
+  title: "Collab — совместная работа для студентов",
+  description:
+    "Бесплатное рабочее пространство для студенческих команд: канбан-доски, задачи, файлы и комментарии в одном месте.",
 };
 
 export default function RootLayout({
@@ -24,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="ru"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>

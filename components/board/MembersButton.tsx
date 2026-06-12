@@ -32,7 +32,7 @@ export function MembersButton({ boardId, currentUserId, isOwner, members }: Memb
               <div
                 key={m.user_id}
                 title={name}
-                className="w-6 h-6 rounded-full bg-indigo-100 border-2 border-white flex items-center justify-center text-indigo-700 text-[10px] font-semibold select-none"
+                className="w-6 h-6 rounded-full bg-brand-100 border-2 border-white flex items-center justify-center text-brand-700 text-[10px] font-semibold select-none"
               >
                 {name.charAt(0).toUpperCase()}
               </div>

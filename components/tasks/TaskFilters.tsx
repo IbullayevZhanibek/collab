@@ -41,12 +41,12 @@ export function TaskFilters() {
           variant="outline"
           size="sm"
           onClick={() => setExpanded((v) => !v)}
-          className={cn(hasFilters && 'border-indigo-400 text-indigo-700')}
+          className={cn(hasFilters && 'border-brand-400 text-brand-700')}
         >
           <SlidersHorizontal size={14} className="mr-1.5" />
           Фильтры
           {hasFilters && (
-            <span className="ml-1.5 bg-indigo-100 text-indigo-700 rounded-full text-xs px-1.5 py-0.5 leading-none">
+            <span className="ml-1.5 bg-brand-100 text-brand-700 rounded-full text-xs px-1.5 py-0.5 leading-none">
               1
             </span>
           )}
