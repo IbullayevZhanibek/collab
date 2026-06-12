@@ -35,10 +35,16 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith('/_next') ||
     pathname.startsWith('/favicon') ||
     pathname.includes('.')
+  const isPublicPage = pathname === '/'
 
-  if (isPublicAsset) return supabaseResponse
+  if (isPublicAsset || isPublicPage) return supabaseResponse
 
-  if (!user && !isAuthRoute) {
+  const isProtected =
+    pathname.startsWith('/dashboard') ||
+    pathname.startsWith('/board') ||
+    pathname.startsWith('/tasks')
+
+  if (!user && isProtected) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)
