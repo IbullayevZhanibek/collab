@@ -1,8 +1,10 @@
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Users } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { KanbanBoard } from '@/components/board/KanbanBoard'
+import { MembersButton } from '@/components/board/MembersButton'
+import type { MemberWithProfile } from '@/lib/types'
 
 export default async function BoardPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -12,7 +14,7 @@ export default async function BoardPage({ params }: { params: Promise<{ id: stri
 
   if (!user) redirect('/login')
 
-  const [{ data: board }, { data: columns }, { data: cards }, { data: members }] =
+  const [{ data: board }, { data: columns }, cardsResult, { data: membersRaw }] =
     await Promise.all([
       supabase.from('boards').select('*').eq('id', id).single(),
       supabase
@@ -21,24 +23,23 @@ export default async function BoardPage({ params }: { params: Promise<{ id: stri
         .eq('board_id', id)
         .order('position', { ascending: true }),
       supabase
-        .from('cards')
-        .select('*')
-        .in(
-          'column_id',
-          (
-            await supabase
-              .from('columns')
-              .select('id')
-              .eq('board_id', id)
-          ).data?.map((c) => c.id) ?? []
-        )
-        .order('position', { ascending: true }),
-      supabase.from('board_members').select('count').eq('board_id', id),
+        .from('columns')
+        .select('id')
+        .eq('board_id', id)
+        .then(({ data: cols }) =>
+          supabase
+            .from('cards')
+            .select('*')
+            .in('column_id', cols?.map((c) => c.id) ?? [])
+            .order('position', { ascending: true })
+        ),
+      supabase.rpc('get_board_members_with_info', { bid: id }),
     ])
 
   if (!board) notFound()
 
-  const memberCount = members?.[0]?.count ?? 0
+  const members = (membersRaw ?? []) as MemberWithProfile[]
+  const isOwner = board.owner_id === user.id
 
   return (
     <div className="flex flex-col h-screen">
@@ -55,11 +56,13 @@ export default async function BoardPage({ params }: { params: Promise<{ id: stri
           <div className="h-5 w-px bg-gray-200 shrink-0" />
           <h1 className="font-semibold text-gray-900 text-base sm:text-lg truncate">{board.title}</h1>
         </div>
-        <div className="flex items-center gap-1.5 text-sm text-gray-500 shrink-0">
-          <Users size={16} />
-          <span className="hidden sm:inline">{memberCount} участников</span>
-          <span className="sm:hidden">{memberCount}</span>
-        </div>
+
+        <MembersButton
+          boardId={id}
+          currentUserId={user.id}
+          isOwner={isOwner}
+          members={members}
+        />
       </div>
 
       {/* Board body */}
@@ -69,7 +72,7 @@ export default async function BoardPage({ params }: { params: Promise<{ id: stri
             boardId={id}
             userId={user.id}
             initialColumns={columns ?? []}
-            initialCards={cards ?? []}
+            initialCards={cardsResult.data ?? []}
           />
         </div>
       </div>

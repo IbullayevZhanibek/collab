@@ -53,10 +53,10 @@ export function Sidebar({ displayName, initials, email }: SidebarProps) {
         </button>
       </header>
 
-      {/* ── Mobile backdrop ── */}
+      {/* ── Mobile backdrop — only rendered when drawer is open, hidden on md+ ── */}
       {open && (
         <div
-          className="md:hidden fixed inset-0 z-30 bg-black/40 backdrop-blur-sm"
+          className="fixed inset-0 z-30 bg-black/40 backdrop-blur-sm md:hidden"
           onClick={() => setOpen(false)}
         />
       )}
@@ -114,7 +114,7 @@ export function Sidebar({ displayName, initials, email }: SidebarProps) {
       </aside>
 
       {/* ── Desktop sidebar ── */}
-      <aside className="hidden md:flex w-64 bg-white border-r border-gray-200 flex-col fixed inset-y-0 left-0 z-10">
+      <aside className="hidden md:flex flex-col fixed left-0 top-0 h-full w-64 bg-white border-r border-gray-200 z-10">
         <div className="p-5 border-b border-gray-200">
           <Link href="/dashboard" className="flex items-center gap-2.5">
             <div className="bg-indigo-600 rounded-lg p-1.5">

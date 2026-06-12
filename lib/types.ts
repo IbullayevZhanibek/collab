@@ -61,3 +61,10 @@ export type Attachment = {
 export type ColumnWithCards = Column & { cards: Card[] }
 
 export type BoardWithMembers = Board & { board_members: BoardMember[] }
+
+export type MemberWithProfile = {
+  user_id: string
+  role: 'owner' | 'member'
+  full_name: string | null
+  email: string
+}
