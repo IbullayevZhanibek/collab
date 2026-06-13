@@ -43,14 +43,22 @@ export default async function BoardPage({ params }: { params: Promise<{ id: stri
   const isOwner = board.owner_id === user.id
 
   // Отправленные приглашения видны только владельцу доски.
-  const invitations: BoardInvitation[] = isOwner
-    ? (await getBoardInvitations(id)).data ?? []
-    : []
+  // Загрузка приглашений не должна влиять на отрисовку шапки и кнопки
+  // «Участники» — при любой ошибке просто показываем пустой список.
+  let invitations: BoardInvitation[] = []
+  if (isOwner) {
+    try {
+      const res = await getBoardInvitations(id)
+      invitations = res.data ?? []
+    } catch {
+      invitations = []
+    }
+  }
 
   return (
     <div className="flex flex-col min-h-screen w-full bg-gray-50">
       {/* Board header */}
-      <div className="bg-white border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between flex-shrink-0 gap-3 min-w-0 sticky top-14 md:top-0 z-10">
+      <div className="bg-white border-b border-gray-200 px-4 sm:px-6 h-14 md:h-16 flex items-center justify-between flex-shrink-0 gap-3 min-w-0 sticky top-14 md:top-0 z-10">
         <div className="flex items-center gap-2 sm:gap-4 min-w-0">
           <Link
             href="/dashboard"

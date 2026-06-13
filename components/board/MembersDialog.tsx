@@ -17,7 +17,7 @@ interface MembersDialogProps {
   currentUserId: string
   isOwner: boolean
   members: MemberWithProfile[]
-  invitations: BoardInvitation[]
+  invitations?: BoardInvitation[]
 }
 
 export function MembersDialog({
@@ -27,7 +27,7 @@ export function MembersDialog({
   currentUserId,
   isOwner,
   members,
-  invitations,
+  invitations = [],
 }: MembersDialogProps) {
   const router = useRouter()
   const [email, setEmail] = useState('')

@@ -121,7 +121,7 @@ export function Sidebar({ displayName, initials, email, invitationCount }: Sideb
 
       {/* ── Desktop sidebar ── */}
       <aside className="hidden md:flex flex-col fixed left-0 top-0 h-full w-64 bg-white border-r border-gray-200 z-10">
-        <div className="p-5 border-b border-gray-200">
+        <div className="h-16 px-5 flex items-center border-b border-gray-200 shrink-0">
           <Link href="/dashboard">
             <Logo size={30} withWordmark />
           </Link>

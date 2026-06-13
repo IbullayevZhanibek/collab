@@ -10,10 +10,10 @@ interface MembersButtonProps {
   currentUserId: string
   isOwner: boolean
   members: MemberWithProfile[]
-  invitations: BoardInvitation[]
+  invitations?: BoardInvitation[]
 }
 
-export function MembersButton({ boardId, currentUserId, isOwner, members, invitations }: MembersButtonProps) {
+export function MembersButton({ boardId, currentUserId, isOwner, members, invitations = [] }: MembersButtonProps) {
   const [open, setOpen] = useState(false)
 
   const visibleAvatars = members.slice(0, 3)
