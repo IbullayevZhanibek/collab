@@ -90,10 +90,10 @@ export default function RegisterPage() {
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Полное имя</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Имя</label>
             <Input
               type="text"
-              placeholder="Иван Иванов"
+              placeholder="Жанибек"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
             />

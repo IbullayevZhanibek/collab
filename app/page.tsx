@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Kanban, CheckSquare, Paperclip, ArrowRight } from 'lucide-react'
+import { Kanban, CheckSquare, Smartphone, ArrowRight } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { Logo } from '@/components/ui/logo'
@@ -43,17 +43,17 @@ export default async function RootPage() {
 
           <div className="relative inline-flex items-center gap-2 bg-brand-50 text-brand-700 text-xs font-semibold px-3 py-1.5 rounded-full mb-6 ring-1 ring-inset ring-brand-600/10">
             <span>✦</span>
-            <span>Бесплатно для студенческих команд</span>
+            <span>Бесплатно для всех</span>
           </div>
 
           <h1 className="relative text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-[1.1] tracking-tight max-w-3xl">
             Сдавайте проекты вовремя —
-            <span className="text-brand-600"> вместе и без хаоса</span>
+            <span className="text-brand-600"> вместе</span>
           </h1>
 
           <p className="relative mt-5 text-lg sm:text-xl text-gray-500 max-w-xl leading-relaxed">
-            Collab собирает задачи, файлы и обсуждения команды в одном месте. Никаких потерянных
-            сообщений в чатах и «а кто это должен был сделать?».
+            Collab собирает задачи и обсуждения команды в одном месте. Никаких потерянных
+            сообщений в чатах.
           </p>
 
           <div className="relative mt-8 flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
@@ -131,9 +131,9 @@ export default async function RootPage() {
                   accent: 'bg-violet-50 text-violet-600',
                 },
                 {
-                  Icon: Paperclip,
-                  title: 'Материалы под рукой',
-                  desc: 'Прикрепляйте файлы и оставляйте комментарии прямо в задаче. Конец вечному поиску ссылок в переписке.',
+                  Icon: Smartphone,
+                  title: 'Доступ с любого устройства',
+                  desc: 'Работайте с телефона, планшета или компьютера — доска всегда под рукой и синхронизируется мгновенно.',
                   accent: 'bg-blue-50 text-blue-600',
                 },
               ].map(({ Icon, title, desc, accent }) => (
@@ -170,7 +170,7 @@ export default async function RootPage() {
               {[
                 'Сколько угодно досок и задач',
                 'Вся команда работает вместе',
-                'Загрузка файлов и вложений',
+                'Совместная работа в реальном времени',
               ].map((item) => (
                 <li key={item} className="flex items-center gap-3 text-gray-700">
                   <span className="flex-shrink-0 w-5 h-5 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center text-xs font-bold">✓</span>
