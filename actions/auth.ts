@@ -43,7 +43,7 @@ export async function register(email: string, password: string, fullName: string
   // иначе код обмена сессии попадает на лендинг и не обрабатывается.
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
 
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -56,6 +56,13 @@ export async function register(email: string, password: string, fullName: string
     return { error: humanizeAuthError(error.message) }
   }
 
+  // При включённом подтверждении email сессии ещё нет — нельзя редиректить на
+  // /dashboard, иначе пользователя отбросит на /login. Просим проверить почту.
+  if (!data.session) {
+    return { needsConfirmation: true }
+  }
+
+  // Подтверждение выключено — сессия уже есть, ведём сразу в приложение.
   revalidatePath('/', 'layout')
   redirect('/dashboard')
 }
