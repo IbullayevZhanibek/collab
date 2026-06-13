@@ -88,6 +88,25 @@ export type ActivityAction =
   | 'member_joined'
   | 'member_left'
 
+// Сводка по задачам пользователя для блока статистики на /dashboard.
+export type DashboardStats = {
+  today: number   // дедлайн сегодня (не выполнено)
+  overdue: number // просрочено (не выполнено)
+  done: number    // в колонках «Готово»/«Done»
+  active: number  // все не выполненные
+}
+
+// Срочная/просроченная задача для блока уведомлений.
+export type NotificationItem = {
+  id: string
+  title: string
+  due_date: string
+  priority: 'low' | 'medium' | 'high' | 'critical' | null
+  board_id: string
+  board_title: string
+  days_until: number // <0 просрочено, 0 сегодня, >0 осталось дней
+}
+
 // Задача для календарного вида: карточка с дедлайном + контекст доски/колонки.
 export type CalendarTask = {
   id: string
