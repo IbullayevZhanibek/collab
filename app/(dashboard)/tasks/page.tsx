@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { TaskFilters } from '@/components/tasks/TaskFilters'
 import { TaskViewToggle } from '@/components/tasks/TaskViewToggle'
 import { Suspense } from 'react'
-import type { Card, Column, Board } from '@/lib/types'
+import type { Card, Board } from '@/lib/types'
 
 const PRIORITY_LABELS: Record<string, string> = {
   low: 'Низкий',
@@ -150,12 +150,16 @@ export default async function TasksPage({
                   </div>
                   <div className="space-y-2">
                     {columnCards.map((card) => (
-                      <div
+                      <Link
                         key={card.id}
-                        className="bg-white rounded-xl border border-gray-200 shadow-soft p-3"
+                        href={`/board/${card.board.id}`}
+                        className="block bg-white rounded-xl border border-gray-200 shadow-soft p-3 cursor-pointer hover:border-brand-300 hover:shadow-card transition-all"
                       >
                         <p className="text-sm font-medium text-gray-900 mb-1">{card.title}</p>
-                        <p className="text-xs text-gray-500 mb-2">{card.board.title}</p>
+                        <p className="text-xs text-gray-500 mb-2 inline-flex items-center gap-1">
+                          {card.board.title}
+                          <ExternalLink size={10} className="text-gray-400" />
+                        </p>
                         <div className="flex items-center gap-1.5 flex-wrap">
                           {card.priority && (
                             <Badge
@@ -175,14 +179,7 @@ export default async function TasksPage({
                             </span>
                           )}
                         </div>
-                        <Link
-                          href={`/board/${card.board.id}`}
-                          className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-brand-600 hover:text-brand-700"
-                        >
-                          <ExternalLink size={11} />
-                          Открыть доску
-                        </Link>
-                      </div>
+                      </Link>
                     ))}
                   </div>
                 </div>
@@ -193,9 +190,10 @@ export default async function TasksPage({
           /* List view */
           <div className="bg-white rounded-2xl border border-gray-200 shadow-soft divide-y divide-gray-100 overflow-hidden">
             {enrichedCards.map((card) => (
-              <div
+              <Link
                 key={card.id}
-                className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 px-4 sm:px-5 py-3 sm:py-4 hover:bg-gray-50 transition-colors"
+                href={`/board/${card.board.id}`}
+                className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 px-4 sm:px-5 py-3 sm:py-4 hover:bg-gray-50 cursor-pointer transition-colors"
               >
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-gray-900">{card.title}</p>
@@ -229,15 +227,12 @@ export default async function TasksPage({
                     </span>
                   )}
 
-                  <Link
-                    href={`/board/${card.board.id}`}
-                    className="text-xs text-brand-600 hover:text-brand-700 font-medium whitespace-nowrap inline-flex items-center gap-1"
-                  >
+                  <span className="text-xs text-gray-500 font-medium whitespace-nowrap inline-flex items-center gap-1">
                     {card.board.title}
                     <ExternalLink size={11} />
-                  </Link>
+                  </span>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}
