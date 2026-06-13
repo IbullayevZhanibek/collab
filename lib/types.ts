@@ -47,17 +47,6 @@ export type Comment = {
   created_at: string
 }
 
-export type Attachment = {
-  id: string
-  card_id: string
-  user_id: string
-  file_name: string
-  file_size: number | null
-  file_type: string | null
-  storage_path: string
-  created_at: string
-}
-
 export type ColumnWithCards = Column & { cards: Card[] }
 
 export type BoardWithMembers = Board & { board_members: BoardMember[] }
