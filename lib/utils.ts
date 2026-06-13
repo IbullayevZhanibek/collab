@@ -5,6 +5,33 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+// Палитра для иконок досок: мягкие пастельные плашки + контрастная иконка.
+// Классы заданы литералами целиком — иначе Tailwind вырежет их при сборке.
+export type BoardColor = { bg: string; icon: string; hoverBg: string }
+
+const BOARD_COLORS: BoardColor[] = [
+  { bg: 'bg-violet-100', icon: 'text-violet-600', hoverBg: 'group-hover:bg-violet-600' },
+  { bg: 'bg-blue-100', icon: 'text-blue-600', hoverBg: 'group-hover:bg-blue-600' },
+  { bg: 'bg-emerald-100', icon: 'text-emerald-600', hoverBg: 'group-hover:bg-emerald-600' },
+  { bg: 'bg-orange-100', icon: 'text-orange-600', hoverBg: 'group-hover:bg-orange-600' },
+  { bg: 'bg-pink-100', icon: 'text-pink-600', hoverBg: 'group-hover:bg-pink-600' },
+  { bg: 'bg-teal-100', icon: 'text-teal-600', hoverBg: 'group-hover:bg-teal-600' },
+  { bg: 'bg-indigo-100', icon: 'text-indigo-600', hoverBg: 'group-hover:bg-indigo-600' },
+  { bg: 'bg-red-100', icon: 'text-red-600', hoverBg: 'group-hover:bg-red-600' },
+]
+
+/**
+ * Детерминированный цвет доски по строке-сидy (id или названию):
+ * одинаковый сид → всегда один и тот же цвет из палитры.
+ */
+export function getBoardColor(seed: string): BoardColor {
+  let hash = 0
+  for (let i = 0; i < seed.length; i++) {
+    hash = (hash * 31 + seed.charCodeAt(i)) >>> 0
+  }
+  return BOARD_COLORS[hash % BOARD_COLORS.length]
+}
+
 const relativeTime = new Intl.RelativeTimeFormat('ru', { numeric: 'auto' })
 
 /** Относительное время по-русски: «только что», «5 минут назад», «2 часа назад». */

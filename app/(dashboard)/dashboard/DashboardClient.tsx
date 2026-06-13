@@ -8,6 +8,7 @@ import { deleteBoard } from '@/actions/boards'
 import { leaveBoard } from '@/actions/members'
 import { CreateBoardDialog } from '@/components/dashboard/CreateBoardDialog'
 import { Button } from '@/components/ui/button'
+import { cn, getBoardColor } from '@/lib/utils'
 
 interface Board {
   id: string
@@ -110,15 +111,18 @@ export function DashboardClient({ boards: initialBoards, currentUserId }: Dashbo
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {initialBoards.map((board) => (
+          {initialBoards.map((board) => {
+            // Цвет иконки детерминирован по id — у доски он всегда одинаковый.
+            const color = getBoardColor(board.id)
+            return (
             <div
               key={board.id}
               className="group relative bg-white rounded-2xl border border-gray-200 shadow-soft hover:border-brand-300 hover:shadow-card transition-all"
             >
               <Link href={`/board/${board.id}`} className="block p-6">
                 <div className="flex items-start justify-between mb-4">
-                  <div className="bg-brand-100 rounded-xl p-2.5 group-hover:bg-brand-600 transition-colors">
-                    <LayoutDashboard className="text-brand-600 group-hover:text-white transition-colors" size={20} />
+                  <div className={cn('rounded-xl p-2.5 transition-colors', color.bg, color.hoverBg)}>
+                    <LayoutDashboard className={cn('group-hover:text-white transition-colors', color.icon)} size={20} />
                   </div>
                 </div>
                 <h3 className="font-semibold text-gray-900 text-base mb-1 line-clamp-2 group-hover:text-brand-700 transition-colors">
@@ -153,7 +157,8 @@ export function DashboardClient({ boards: initialBoards, currentUserId }: Dashbo
                 </button>
               )}
             </div>
-          ))}
+            )
+          })}
 
           <button
             onClick={() => setShowCreate(true)}
