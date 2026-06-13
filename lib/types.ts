@@ -78,3 +78,22 @@ export type BoardInvitation = {
   status: InvitationStatus
   created_at: string
 }
+
+export type ActivityAction =
+  | 'card_created'
+  | 'card_moved'
+  | 'card_deleted'
+  | 'column_created'
+  | 'column_deleted'
+  | 'member_joined'
+
+// Запись лога активности доски (с именем автора из get_activity_log).
+export type ActivityLogEntry = {
+  id: string
+  user_id: string | null
+  full_name: string | null
+  email: string | null
+  action: ActivityAction
+  details: Record<string, unknown> | null
+  created_at: string
+}

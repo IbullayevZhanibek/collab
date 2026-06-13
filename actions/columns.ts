@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { logActivity } from '@/actions/activity'
 
 export async function createColumn(boardId: string, title: string) {
   const supabase = await createClient()
@@ -27,6 +28,8 @@ export async function createColumn(boardId: string, title: string) {
 
   if (error) return { error: error.message }
 
+  await logActivity(boardId, 'column_created', { columnTitle: data.title })
+
   revalidatePath(`/board/${boardId}`)
   return { data }
 }
@@ -34,12 +37,21 @@ export async function createColumn(boardId: string, title: string) {
 export async function deleteColumn(columnId: string, boardId: string) {
   const supabase = await createClient()
 
+  // Название читаем до удаления — для записи в лог.
+  const { data: column } = await supabase
+    .from('columns')
+    .select('title')
+    .eq('id', columnId)
+    .single()
+
   const { error } = await supabase
     .from('columns')
     .delete()
     .eq('id', columnId)
 
   if (error) return { error: error.message }
+
+  await logActivity(boardId, 'column_deleted', { columnTitle: column?.title ?? '' })
 
   revalidatePath(`/board/${boardId}`)
   return { success: true }

@@ -4,6 +4,7 @@ import { ArrowLeft } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { KanbanBoard } from '@/components/board/KanbanBoard'
 import { MembersButton } from '@/components/board/MembersButton'
+import { ActivityLog } from '@/components/board/ActivityLog'
 import { getBoardInvitations } from '@/actions/invitations'
 import type { MemberWithProfile, BoardInvitation } from '@/lib/types'
 
@@ -71,13 +72,16 @@ export default async function BoardPage({ params }: { params: Promise<{ id: stri
           <h1 className="font-semibold text-gray-900 text-base sm:text-lg truncate">{board.title}</h1>
         </div>
 
-        <MembersButton
-          boardId={id}
-          currentUserId={user.id}
-          isOwner={isOwner}
-          members={members}
-          invitations={invitations}
-        />
+        <div className="flex items-center gap-2 shrink-0">
+          <ActivityLog boardId={id} />
+          <MembersButton
+            boardId={id}
+            currentUserId={user.id}
+            isOwner={isOwner}
+            members={members}
+            invitations={invitations}
+          />
+        </div>
       </div>
 
       {/* Board body */}
