@@ -159,18 +159,18 @@ export default async function RootPage() {
               <span className="text-2xl">🎓</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">
-              Никаких платежей. Никогда.
+              Всё для командной работы — в одном месте
             </h2>
             <p className="text-gray-500 mb-10 max-w-md mx-auto">
-              Мы сами студенты и знаем, каков бюджет. Поэтому Collab остаётся полностью бесплатным —
-              со всеми возможностями.
+              Доски, задачи и участники собраны вместе, чтобы команда всегда видела общую картину
+              и понимала, кто над чем работает.
             </p>
 
             <ul className="space-y-3 mb-10 text-left inline-block">
               {[
-                'Сколько угодно досок и задач',
-                'Вся команда работает вместе',
-                'Совместная работа в реальном времени',
+                'Видно, кто чем занят',
+                'Задачи не теряются',
+                'Изменения видны сразу всем',
               ].map((item) => (
                 <li key={item} className="flex items-center gap-3 text-gray-700">
                   <span className="flex-shrink-0 w-5 h-5 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center text-xs font-bold">✓</span>
@@ -184,7 +184,7 @@ export default async function RootPage() {
                 href="/register"
                 className="inline-flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-700 hover:shadow-glow text-white font-semibold px-8 py-3.5 rounded-xl text-base transition-all active:scale-[0.98]"
               >
-                Завести команду в Collab
+                Начать работу
                 <ArrowRight size={18} />
               </Link>
             </div>
