@@ -38,10 +38,18 @@ export async function login(email: string, password: string) {
 export async function register(email: string, password: string, fullName: string) {
   const supabase = await createClient()
 
+  // На прод-домене берём NEXT_PUBLIC_SITE_URL, локально — http://localhost:3000.
+  // Ссылка подтверждения должна вести на /auth/callback, а не на корень сайта,
+  // иначе код обмена сессии попадает на лендинг и не обрабатывается.
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
+
   const { error } = await supabase.auth.signUp({
     email,
     password,
-    options: { data: { full_name: fullName } },
+    options: {
+      data: { full_name: fullName },
+      emailRedirectTo: `${siteUrl}/auth/callback`,
+    },
   })
 
   if (error) {

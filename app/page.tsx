@@ -3,6 +3,7 @@ import { Kanban, CheckSquare, Paperclip, ArrowRight } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { Logo } from '@/components/ui/logo'
+import { AuthRedirectHandler } from '@/components/auth/AuthRedirectHandler'
 
 export default async function RootPage() {
   const supabase = await createClient()
@@ -12,6 +13,9 @@ export default async function RootPage() {
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
+      {/* Подхват ?code / #access_token, если письмо привело на корень сайта */}
+      <AuthRedirectHandler />
+
       {/* ── Nav ── */}
       <nav className="border-b border-gray-100 px-4 sm:px-8 py-4 flex items-center justify-between">
         <Logo size={32} withWordmark />

@@ -42,9 +42,9 @@ export default async function BoardPage({ params }: { params: Promise<{ id: stri
   const isOwner = board.owner_id === user.id
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col min-h-screen w-full bg-gray-50">
       {/* Board header */}
-      <div className="bg-white border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between flex-shrink-0 gap-3 min-w-0">
+      <div className="bg-white border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between flex-shrink-0 gap-3 min-w-0 sticky top-14 md:top-0 z-10">
         <div className="flex items-center gap-2 sm:gap-4 min-w-0">
           <Link
             href="/dashboard"
@@ -66,8 +66,8 @@ export default async function BoardPage({ params }: { params: Promise<{ id: stri
       </div>
 
       {/* Board body */}
-      <div className="flex-1 overflow-hidden">
-        <div className="h-full overflow-x-auto p-6">
+      <div className="flex-1 bg-gray-50">
+        <div className="h-full overflow-x-auto p-4 sm:p-6">
           <KanbanBoard
             boardId={id}
             userId={user.id}
