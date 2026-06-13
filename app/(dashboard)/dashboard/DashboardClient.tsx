@@ -1,9 +1,11 @@
 'use client'
 
 import { useState, useTransition } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Plus, Trash2, Users, LayoutDashboard } from 'lucide-react'
+import { Plus, Trash2, LogOut, Users, LayoutDashboard } from 'lucide-react'
 import { deleteBoard } from '@/actions/boards'
+import { leaveBoard } from '@/actions/members'
 import { CreateBoardDialog } from '@/components/dashboard/CreateBoardDialog'
 import { Button } from '@/components/ui/button'
 
@@ -17,6 +19,7 @@ interface Board {
 
 interface DashboardClientProps {
   boards: Board[]
+  currentUserId: string
 }
 
 function pluralizeBoards(n: number): string {
@@ -35,17 +38,29 @@ function pluralizeMembers(n: number): string {
   return 'участников'
 }
 
-export function DashboardClient({ boards: initialBoards }: DashboardClientProps) {
+export function DashboardClient({ boards: initialBoards, currentUserId }: DashboardClientProps) {
+  const router = useRouter()
   const [showCreate, setShowCreate] = useState(false)
-  const [deleting, setDeleting] = useState<string | null>(null)
+  const [busyId, setBusyId] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
 
   function handleDelete(boardId: string) {
     if (!confirm('Удалить доску? Это действие нельзя отменить.')) return
-    setDeleting(boardId)
+    setBusyId(boardId)
     startTransition(async () => {
       await deleteBoard(boardId)
-      setDeleting(null)
+      setBusyId(null)
+      router.refresh()
+    })
+  }
+
+  function handleLeave(boardId: string) {
+    if (!confirm('Вы уверены, что хотите покинуть доску?')) return
+    setBusyId(boardId)
+    startTransition(async () => {
+      await leaveBoard(boardId)
+      setBusyId(null)
+      router.refresh()
     })
   }
 
@@ -118,14 +133,25 @@ export function DashboardClient({ boards: initialBoards }: DashboardClientProps)
                 </div>
               </Link>
 
-              <button
-                onClick={() => handleDelete(board.id)}
-                disabled={deleting === board.id || isPending}
-                title="Удалить доску"
-                className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all"
-              >
-                <Trash2 size={15} />
-              </button>
+              {board.owner_id === currentUserId ? (
+                <button
+                  onClick={() => handleDelete(board.id)}
+                  disabled={busyId === board.id || isPending}
+                  title="Удалить доску"
+                  className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all disabled:opacity-50"
+                >
+                  <Trash2 size={15} />
+                </button>
+              ) : (
+                <button
+                  onClick={() => handleLeave(board.id)}
+                  disabled={busyId === board.id || isPending}
+                  title="Покинуть доску"
+                  className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all disabled:opacity-50"
+                >
+                  <LogOut size={15} />
+                </button>
+              )}
             </div>
           ))}
 

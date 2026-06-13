@@ -86,6 +86,18 @@ export type ActivityAction =
   | 'column_created'
   | 'column_deleted'
   | 'member_joined'
+  | 'member_left'
+
+// Задача для календарного вида: карточка с дедлайном + контекст доски/колонки.
+export type CalendarTask = {
+  id: string
+  title: string
+  due_date: string
+  priority: 'low' | 'medium' | 'high' | 'critical' | null
+  board_id: string
+  board_title: string
+  column_title: string
+}
 
 // Запись лога активности доски (с именем автора из get_activity_log).
 export type ActivityLogEntry = {

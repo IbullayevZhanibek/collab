@@ -33,6 +33,8 @@ function describe(entry: ActivityLogEntry): string {
       return `${who} удалил(а) колонку «${detail(entry, 'columnTitle')}»`
     case 'member_joined':
       return `${who} присоединился(ась) к доске`
+    case 'member_left':
+      return `${who} покинул(а) доску`
     default:
       return who
   }

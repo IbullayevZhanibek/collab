@@ -2,11 +2,11 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { UserMinus, Loader2 } from 'lucide-react'
+import { UserMinus, Loader2, LogOut } from 'lucide-react'
 import { Dialog } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { removeMember } from '@/actions/members'
+import { removeMember, leaveBoard } from '@/actions/members'
 import { sendInvitation } from '@/actions/invitations'
 import type { MemberWithProfile, BoardInvitation } from '@/lib/types'
 
@@ -71,10 +71,29 @@ export function MembersDialog({
     })
   }
 
+  const [isLeaving, startLeaveTransition] = useTransition()
+  const [leaveError, setLeaveError] = useState<string | null>(null)
+
+  function handleLeave() {
+    if (!confirm('Вы уверены, что хотите покинуть доску?')) return
+    setLeaveError(null)
+    startLeaveTransition(async () => {
+      const result = await leaveBoard(boardId)
+      if (result?.error) {
+        setLeaveError(result.error)
+      } else {
+        // Доступа к доске больше нет — уходим в список досок.
+        router.push('/dashboard')
+        router.refresh()
+      }
+    })
+  }
+
   function handleClose() {
     setEmail('')
     setInviteError(null)
     setInviteSuccess(null)
+    setLeaveError(null)
     onClose()
   }
 
@@ -224,6 +243,27 @@ export function MembersDialog({
               )
             })}
           </div>
+        </div>
+      )}
+
+      {/* Leave board — only for non-owner members */}
+      {!isOwner && (
+        <div className="mt-6 pt-4 border-t border-gray-100">
+          <button
+            onClick={handleLeave}
+            disabled={isLeaving}
+            className="flex w-full items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
+          >
+            {isLeaving ? (
+              <Loader2 size={15} className="animate-spin" />
+            ) : (
+              <LogOut size={15} />
+            )}
+            Покинуть доску
+          </button>
+          {leaveError && (
+            <p className="mt-2 text-sm text-red-600 text-center">{leaveError}</p>
+          )}
         </div>
       )}
     </Dialog>
