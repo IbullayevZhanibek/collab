@@ -3,16 +3,17 @@
 import { useState } from 'react'
 import { Users } from 'lucide-react'
 import { MembersDialog } from './MembersDialog'
-import type { MemberWithProfile } from '@/lib/types'
+import type { MemberWithProfile, BoardInvitation } from '@/lib/types'
 
 interface MembersButtonProps {
   boardId: string
   currentUserId: string
   isOwner: boolean
   members: MemberWithProfile[]
+  invitations: BoardInvitation[]
 }
 
-export function MembersButton({ boardId, currentUserId, isOwner, members }: MembersButtonProps) {
+export function MembersButton({ boardId, currentUserId, isOwner, members, invitations }: MembersButtonProps) {
   const [open, setOpen] = useState(false)
 
   const visibleAvatars = members.slice(0, 3)
@@ -56,6 +57,7 @@ export function MembersButton({ boardId, currentUserId, isOwner, members }: Memb
         currentUserId={currentUserId}
         isOwner={isOwner}
         members={members}
+        invitations={invitations}
       />
     </>
   )

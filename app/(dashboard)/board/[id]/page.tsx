@@ -4,7 +4,8 @@ import { ArrowLeft } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { KanbanBoard } from '@/components/board/KanbanBoard'
 import { MembersButton } from '@/components/board/MembersButton'
-import type { MemberWithProfile } from '@/lib/types'
+import { getBoardInvitations } from '@/actions/invitations'
+import type { MemberWithProfile, BoardInvitation } from '@/lib/types'
 
 export default async function BoardPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -41,6 +42,11 @@ export default async function BoardPage({ params }: { params: Promise<{ id: stri
   const members = (membersRaw ?? []) as MemberWithProfile[]
   const isOwner = board.owner_id === user.id
 
+  // Отправленные приглашения видны только владельцу доски.
+  const invitations: BoardInvitation[] = isOwner
+    ? (await getBoardInvitations(id)).data ?? []
+    : []
+
   return (
     <div className="flex flex-col min-h-screen w-full bg-gray-50">
       {/* Board header */}
@@ -62,6 +68,7 @@ export default async function BoardPage({ params }: { params: Promise<{ id: stri
           currentUserId={user.id}
           isOwner={isOwner}
           members={members}
+          invitations={invitations}
         />
       </div>
 

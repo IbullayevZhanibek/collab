@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { Sidebar } from '@/components/dashboard/Sidebar'
+import { getMyInvitations } from '@/actions/invitations'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
@@ -14,6 +15,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
     .eq('user_id', user.id)
     .single()
 
+  const { data: invitations } = await getMyInvitations()
+  const invitationCount = invitations?.length ?? 0
+
   const displayName = profile?.full_name || user.email?.split('@')[0] || 'Пользователь'
   const initials = displayName
     .split(' ')
@@ -24,7 +28,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      <Sidebar displayName={displayName} initials={initials} email={user.email ?? ''} />
+      <Sidebar displayName={displayName} initials={initials} email={user.email ?? ''} invitationCount={invitationCount} />
 
       {/* Main — offset for desktop sidebar, offset for mobile top bar */}
       <main className="flex-1 md:ml-64 min-h-screen pt-14 md:pt-0">

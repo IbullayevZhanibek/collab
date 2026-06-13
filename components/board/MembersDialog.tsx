@@ -6,8 +6,9 @@ import { UserMinus, Loader2 } from 'lucide-react'
 import { Dialog } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { inviteMember, removeMember } from '@/actions/members'
-import type { MemberWithProfile } from '@/lib/types'
+import { removeMember } from '@/actions/members'
+import { sendInvitation } from '@/actions/invitations'
+import type { MemberWithProfile, BoardInvitation } from '@/lib/types'
 
 interface MembersDialogProps {
   open: boolean
@@ -16,6 +17,7 @@ interface MembersDialogProps {
   currentUserId: string
   isOwner: boolean
   members: MemberWithProfile[]
+  invitations: BoardInvitation[]
 }
 
 export function MembersDialog({
@@ -25,6 +27,7 @@ export function MembersDialog({
   currentUserId,
   isOwner,
   members,
+  invitations,
 }: MembersDialogProps) {
   const router = useRouter()
   const [email, setEmail] = useState('')
@@ -35,6 +38,8 @@ export function MembersDialog({
   const [isPendingRemove, startRemoveTransition] = useTransition()
   const [, startRefresh] = useTransition()
 
+  const pendingInvitations = invitations.filter((inv) => inv.status === 'pending')
+
   function handleInvite() {
     const trimmed = email.trim()
     if (!trimmed) {
@@ -44,12 +49,12 @@ export function MembersDialog({
     setInviteError(null)
     setInviteSuccess(null)
     startInviteTransition(async () => {
-      const result = await inviteMember(boardId, trimmed)
+      const result = await sendInvitation(boardId, trimmed)
       if (result?.error) {
         setInviteError(result.error)
       } else {
         setEmail('')
-        setInviteSuccess('Участник успешно добавлен')
+        setInviteSuccess('Приглашение отправлено')
         startRefresh(() => router.refresh())
       }
     })
@@ -182,6 +187,45 @@ export function MembersDialog({
           })}
         </div>
       </div>
+
+      {/* Pending invitations — only visible to the owner */}
+      {isOwner && pendingInvitations.length > 0 && (
+        <div className="mt-6">
+          <div className="border-t border-gray-100 mb-4" />
+          <p className="text-sm font-medium text-gray-500 mb-3">
+            Приглашения · {pendingInvitations.length}
+          </p>
+          <div className="space-y-1">
+            {pendingInvitations.map((inv) => {
+              const displayName = inv.full_name || inv.email
+              const initial = displayName.charAt(0).toUpperCase()
+
+              return (
+                <div
+                  key={inv.id}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors"
+                >
+                  {/* Avatar */}
+                  <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 font-semibold text-sm shrink-0 select-none">
+                    {initial}
+                  </div>
+
+                  {/* Name + email */}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 truncate">{displayName}</p>
+                    <p className="text-xs text-gray-500 truncate">{inv.email}</p>
+                  </div>
+
+                  {/* Status badge */}
+                  <span className="text-xs px-2 py-0.5 rounded-full font-medium shrink-0 bg-amber-50 text-amber-700">
+                    Ожидает
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
     </Dialog>
   )
 }

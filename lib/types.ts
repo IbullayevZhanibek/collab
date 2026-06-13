@@ -57,3 +57,24 @@ export type MemberWithProfile = {
   full_name: string | null
   email: string
 }
+
+export type InvitationStatus = 'pending' | 'accepted' | 'declined'
+
+// Входящее приглашение текущего пользователя (для страницы «Приглашения»).
+export type MyInvitation = {
+  id: string
+  board_id: string
+  board_title: string
+  inviter_name: string
+  created_at: string
+}
+
+// Приглашение в контексте доски (для владельца, диалог участников).
+export type BoardInvitation = {
+  id: string
+  invitee_id: string
+  full_name: string | null
+  email: string
+  status: InvitationStatus
+  created_at: string
+}

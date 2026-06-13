@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { LayoutDashboard, ListTodo, LogOut, Menu, X } from 'lucide-react'
+import { LayoutDashboard, ListTodo, Mail, LogOut, Menu, X } from 'lucide-react'
 import { logout } from '@/actions/auth'
 import { Logo } from '@/components/ui/logo'
 
@@ -12,11 +12,13 @@ interface SidebarProps {
   displayName: string
   initials: string
   email: string
+  invitationCount: number
 }
 
 const NAV = [
   { href: '/dashboard', label: 'Доски', Icon: LayoutDashboard },
   { href: '/tasks', label: 'Мои задачи', Icon: ListTodo },
+  { href: '/invitations', label: 'Приглашения', Icon: Mail },
 ] as const
 
 function navClass(active: boolean) {
@@ -28,12 +30,16 @@ function navClass(active: boolean) {
   )
 }
 
-export function Sidebar({ displayName, initials, email }: SidebarProps) {
+export function Sidebar({ displayName, initials, email, invitationCount }: SidebarProps) {
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
 
   const isActive = (href: string) =>
     href === '/dashboard' ? pathname === href : pathname.startsWith(href)
+
+  // Бейдж-счётчик pending-приглашений рядом с пунктом «Приглашения».
+  const badgeFor = (href: string) =>
+    href === '/invitations' && invitationCount > 0 ? invitationCount : null
 
   return (
     <>
@@ -84,7 +90,12 @@ export function Sidebar({ displayName, initials, email }: SidebarProps) {
           {NAV.map(({ href, label, Icon }) => (
             <Link key={href} href={href} onClick={() => setOpen(false)} className={navClass(isActive(href))}>
               <Icon size={18} />
-              {label}
+              <span className="flex-1">{label}</span>
+              {badgeFor(href) && (
+                <span className="inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full bg-brand-600 text-white text-xs font-semibold tabular-nums">
+                  {badgeFor(href)}
+                </span>
+              )}
             </Link>
           ))}
         </nav>
@@ -120,7 +131,12 @@ export function Sidebar({ displayName, initials, email }: SidebarProps) {
           {NAV.map(({ href, label, Icon }) => (
             <Link key={href} href={href} className={navClass(isActive(href))}>
               <Icon size={18} />
-              {label}
+              <span className="flex-1">{label}</span>
+              {badgeFor(href) && (
+                <span className="inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full bg-brand-600 text-white text-xs font-semibold tabular-nums">
+                  {badgeFor(href)}
+                </span>
+              )}
             </Link>
           ))}
         </nav>
