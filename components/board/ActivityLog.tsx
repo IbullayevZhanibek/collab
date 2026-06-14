@@ -32,6 +32,8 @@ export function ActivityLog({ boardId }: { boardId: string }) {
     switch (entry.action) {
       case 'card_created':
         return t('actions.cardCreated', { who, cardTitle: detail(entry, 'cardTitle'), columnTitle: detail(entry, 'columnTitle') })
+      case 'card_updated':
+        return t('actions.cardUpdated', { who, cardTitle: detail(entry, 'cardTitle') })
       case 'card_moved':
         return t('actions.cardMoved', { who, cardTitle: detail(entry, 'cardTitle'), fromColumn: detail(entry, 'fromColumn'), toColumn: detail(entry, 'toColumn') })
       case 'card_deleted':

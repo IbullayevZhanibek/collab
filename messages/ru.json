@@ -14,7 +14,9 @@
     "create": "Создать",
     "creating": "Создание...",
     "add": "Добавить",
-    "close": "Закрыть"
+    "close": "Закрыть",
+    "save": "Сохранить",
+    "saving": "Сохранение…"
   },
   "language": {
     "label": "Язык"
@@ -114,7 +116,10 @@
     "confirmDeleteColumn": "Удалить колонку со всеми задачами?",
     "deleteCard": "Удалить",
     "confirmDeleteCard": "Удалить задачу?",
-    "moveTo": "Переместить в колонку"
+    "moveTo": "Переместить в колонку",
+    "cardDetails": "Детали задачи",
+    "columnLabel": "Колонка",
+    "createdAt": "Создана {date}"
   },
   "activity": {
     "title": "История",
@@ -124,6 +129,7 @@
     "actorFallback": "Участник",
     "actions": {
       "cardCreated": "{who} создал(а) задачу «{cardTitle}» в колонке «{columnTitle}»",
+      "cardUpdated": "{who} обновил(а) задачу «{cardTitle}»",
       "cardMoved": "{who} переместил(а) «{cardTitle}» из «{fromColumn}» в «{toColumn}»",
       "cardDeleted": "{who} удалил(а) задачу «{cardTitle}»",
       "columnCreated": "{who} создал(а) колонку «{columnTitle}»",

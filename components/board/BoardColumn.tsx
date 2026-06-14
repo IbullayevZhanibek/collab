@@ -19,9 +19,10 @@ interface BoardColumnProps {
   /** Все колонки доски — для меню «Переместить в колонку» на карточках. */
   columns: Column[]
   onMoveCard: (cardId: string, targetColumnId: string) => void
+  onUpdateCard: (cardId: string, updates: Partial<Card>) => Promise<{ error?: string } | void>
 }
 
-export function BoardColumn({ column, cards, boardId, userId, columns, onMoveCard }: BoardColumnProps) {
+export function BoardColumn({ column, cards, boardId, userId, columns, onMoveCard, onUpdateCard }: BoardColumnProps) {
   const t = useTranslations('board')
   const [showCreateCard, setShowCreateCard] = useState(false)
   const [isPending, startTransition] = useTransition()
@@ -89,6 +90,7 @@ export function BoardColumn({ column, cards, boardId, userId, columns, onMoveCar
                 userId={userId}
                 columns={columns}
                 onMoveCard={onMoveCard}
+                onUpdateCard={onUpdateCard}
               />
             ))}
           </SortableContext>

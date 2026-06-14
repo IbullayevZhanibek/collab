@@ -81,6 +81,7 @@ export type BoardInvitation = {
 
 export type ActivityAction =
   | 'card_created'
+  | 'card_updated'
   | 'card_moved'
   | 'card_deleted'
   | 'column_created'

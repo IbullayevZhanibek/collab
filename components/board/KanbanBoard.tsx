@@ -18,7 +18,7 @@ import { Plus } from 'lucide-react'
 import { BoardColumn } from './BoardColumn'
 import { BoardCard } from './BoardCard'
 import { CreateColumnDialog } from './CreateColumnDialog'
-import { reorderCards, moveCard } from '@/actions/cards'
+import { reorderCards, moveCard, updateCard } from '@/actions/cards'
 import { createClient } from '@/lib/supabase/client'
 import type { Column, Card } from '@/lib/types'
 
@@ -136,6 +136,16 @@ export function KanbanBoard({ boardId, userId, initialColumns, initialCards }: K
     })
   }
 
+  // Сохранение правок из диалога деталей: оптимистично применяем изменения,
+  // затем пишем на сервер. При ошибке откатываем к снимку «до».
+  async function handleUpdateCard(cardId: string, updates: Partial<Card>) {
+    const snapshot = cards
+    setCards((prev) => prev.map((c) => (c.id === cardId ? { ...c, ...updates } : c)))
+    const result = await updateCard(cardId, boardId, updates)
+    if (result?.error) setCards(snapshot)
+    return result
+  }
+
   function onDragStart(event: DragStartEvent) {
     const { active } = event
     if (active.data.current?.type === 'card') {
@@ -227,6 +237,7 @@ export function KanbanBoard({ boardId, userId, initialColumns, initialCards }: K
               userId={userId}
               columns={columns}
               onMoveCard={handleMoveCard}
+              onUpdateCard={handleUpdateCard}
             />
           ))}
         </SortableContext>

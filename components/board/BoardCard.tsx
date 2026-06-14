@@ -1,12 +1,13 @@
 'use client'
 
-import { useTransition } from 'react'
+import { useState, useTransition } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CalendarDays, Trash2 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { MoveCardMenu } from './MoveCardMenu'
+import { CardDetailDialog } from './CardDetailDialog'
 import { deleteCard } from '@/actions/cards'
 import type { Card, Column } from '@/lib/types'
 
@@ -14,17 +15,20 @@ interface BoardCardProps {
   card: Card
   boardId: string
   userId: string
-  /** Все колонки доски — для меню «Переместить в колонку». */
+  /** Все колонки доски — для меню «Переместить в колонку» и диалога деталей. */
   columns?: Column[]
   /** Перемещение карточки в другую колонку (оптимистично + Server Action). */
   onMoveCard?: (cardId: string, targetColumnId: string) => void
+  /** Сохранение правок из диалога деталей (оптимистично + Server Action). */
+  onUpdateCard?: (cardId: string, updates: Partial<Card>) => Promise<{ error?: string } | void>
 }
 
-export function BoardCard({ card, boardId, columns, onMoveCard }: BoardCardProps) {
+export function BoardCard({ card, boardId, columns, onMoveCard, onUpdateCard }: BoardCardProps) {
   const t = useTranslations('board')
   const tp = useTranslations('priority')
   const locale = useLocale()
   const [isPending, startTransition] = useTransition()
+  const [showDetail, setShowDetail] = useState(false)
 
   const {
     attributes,
@@ -58,6 +62,7 @@ export function BoardCard({ card, boardId, columns, onMoveCard }: BoardCardProps
   const isOverdue = card.due_date && new Date(card.due_date) < new Date()
 
   return (
+    <>
     <div
       ref={setNodeRef}
       style={style}
@@ -66,7 +71,12 @@ export function BoardCard({ card, boardId, columns, onMoveCard }: BoardCardProps
       className="group bg-white rounded-xl border border-gray-200 shadow-soft hover:border-brand-300 hover:shadow-card transition-all p-3 cursor-grab active:cursor-grabbing"
     >
       <div className="flex items-start gap-2">
-        <div className="flex-1 min-w-0">
+        {/* Клик по телу карточки открывает детальный просмотр. Клики по кнопкам
+            действий справа гасят всплытие и сюда не доходят. */}
+        <div
+          className="flex-1 min-w-0 cursor-pointer"
+          onClick={() => setShowDetail(true)}
+        >
           <p className="text-sm font-medium text-gray-900 leading-snug">{card.title}</p>
 
           {card.description && (
@@ -112,5 +122,18 @@ export function BoardCard({ card, boardId, columns, onMoveCard }: BoardCardProps
         </div>
       </div>
     </div>
+
+    {columns && onUpdateCard && (
+      <CardDetailDialog
+        open={showDetail}
+        onClose={() => setShowDetail(false)}
+        card={card}
+        boardId={boardId}
+        columns={columns}
+        onMove={(targetColumnId) => onMoveCard?.(card.id, targetColumnId)}
+        onUpdate={(updates) => onUpdateCard(card.id, updates)}
+      />
+    )}
+    </>
   )
 }

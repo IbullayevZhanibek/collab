@@ -67,7 +67,7 @@ export async function updateCard(
   boardId: string,
   updates: {
     title?: string
-    description?: string
+    description?: string | null
     priority?: string | null
     due_date?: string | null
     assignee_id?: string | null
@@ -77,12 +77,25 @@ export async function updateCard(
 ) {
   const supabase = await createClient()
 
-  const { error } = await supabase
+  const { data: updated, error } = await supabase
     .from('cards')
     .update(updates)
     .eq('id', cardId)
+    .select('title')
+    .single()
 
   if (error) return { error: error.message }
+
+  // Логируем только содержательное редактирование (название/описание/приоритет/
+  // дедлайн), а не служебные обновления позиции/колонки — для тех есть card_moved.
+  const isContentEdit =
+    'title' in updates ||
+    'description' in updates ||
+    'priority' in updates ||
+    'due_date' in updates
+  if (isContentEdit) {
+    await logActivity(boardId, 'card_updated', { cardTitle: updated?.title ?? '' })
+  }
 
   revalidatePath(`/board/${boardId}`)
   revalidatePath('/tasks')

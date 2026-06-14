@@ -14,7 +14,9 @@
     "create": "Құру",
     "creating": "Құрылуда...",
     "add": "Қосу",
-    "close": "Жабу"
+    "close": "Жабу",
+    "save": "Сақтау",
+    "saving": "Сақталуда…"
   },
   "language": {
     "label": "Тіл"
@@ -114,7 +116,10 @@
     "confirmDeleteColumn": "Бағанды барлық тапсырмаларымен бірге жою керек пе?",
     "deleteCard": "Жою",
     "confirmDeleteCard": "Тапсырманы жою керек пе?",
-    "moveTo": "Бағанға жылжыту"
+    "moveTo": "Бағанға жылжыту",
+    "cardDetails": "Тапсырма мәліметтері",
+    "columnLabel": "Баған",
+    "createdAt": "Жасалған: {date}"
   },
   "activity": {
     "title": "Тарих",
@@ -124,6 +129,7 @@
     "actorFallback": "Қатысушы",
     "actions": {
       "cardCreated": "{who} «{columnTitle}» бағанында «{cardTitle}» тапсырмасын құрды",
+      "cardUpdated": "{who} «{cardTitle}» тапсырмасын жаңартты",
       "cardMoved": "{who} «{cardTitle}» тапсырмасын «{fromColumn}» бағанынан «{toColumn}» бағанына жылжытты",
       "cardDeleted": "{who} «{cardTitle}» тапсырмасын жойды",
       "columnCreated": "{who} «{columnTitle}» бағанын құрды",

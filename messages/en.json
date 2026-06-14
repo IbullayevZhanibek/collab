@@ -14,7 +14,9 @@
     "create": "Create",
     "creating": "Creating...",
     "add": "Add",
-    "close": "Close"
+    "close": "Close",
+    "save": "Save",
+    "saving": "Saving…"
   },
   "language": {
     "label": "Language"
@@ -114,7 +116,10 @@
     "confirmDeleteColumn": "Delete this column with all its tasks?",
     "deleteCard": "Delete",
     "confirmDeleteCard": "Delete this task?",
-    "moveTo": "Move to column"
+    "moveTo": "Move to column",
+    "cardDetails": "Task details",
+    "columnLabel": "Column",
+    "createdAt": "Created {date}"
   },
   "activity": {
     "title": "History",
@@ -124,6 +129,7 @@
     "actorFallback": "A member",
     "actions": {
       "cardCreated": "{who} created task “{cardTitle}” in column “{columnTitle}”",
+      "cardUpdated": "{who} updated task “{cardTitle}”",
       "cardMoved": "{who} moved “{cardTitle}” from “{fromColumn}” to “{toColumn}”",
       "cardDeleted": "{who} deleted task “{cardTitle}”",
       "columnCreated": "{who} created column “{columnTitle}”",
