@@ -6,7 +6,20 @@ import { KanbanBoard } from '@/components/board/KanbanBoard'
 import { MembersButton } from '@/components/board/MembersButton'
 import { ActivityLog } from '@/components/board/ActivityLog'
 import { getBoardInvitations } from '@/actions/invitations'
+import type { Metadata } from 'next'
 import type { MemberWithProfile, BoardInvitation, Card } from '@/lib/types'
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params
+  const supabase = await createClient()
+  const { data: board } = await supabase
+    .from('boards')
+    .select('title')
+    .eq('id', id)
+    .single()
+
+  return { title: board?.title ?? 'Доска' }
+}
 
 export default async function BoardPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params

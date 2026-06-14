@@ -15,9 +15,22 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Collab — совместная работа для студентов",
+  metadataBase: new URL("https://collab-lime-sigma.vercel.app"),
+  title: {
+    default: "Collab — совместная работа для команд",
+    template: "%s · Collab",
+  },
   description:
-    "Бесплатное рабочее пространство для студенческих команд: канбан-доски, задачи, файлы и комментарии в одном месте.",
+    "Бесплатный сервис для командной работы: канбан-доски, задачи, дедлайны и участники в одном месте. Видно кто над чем работает — и ничего не теряется.",
+  openGraph: {
+    title: "Collab — совместная работа для команд",
+    description:
+      "Бесплатный сервис для командной работы: канбан-доски, задачи, дедлайны и участники в одном месте. Видно кто над чем работает — и ничего не теряется.",
+    type: "website",
+    locale: "ru_RU",
+    siteName: "Collab",
+    url: "/",
+  },
 };
 
 export default function RootLayout({

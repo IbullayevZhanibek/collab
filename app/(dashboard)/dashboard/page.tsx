@@ -1,5 +1,8 @@
+import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+
+export const metadata: Metadata = { title: 'Главная' }
 import { getDashboardData } from '@/actions/dashboard'
 import { StatsCards } from '@/components/dashboard/StatsCards'
 import { Notifications } from '@/components/dashboard/Notifications'

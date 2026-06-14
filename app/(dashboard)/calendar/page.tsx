@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { ChevronLeft, ChevronRight, CalendarDays } from 'lucide-react'
@@ -5,6 +6,8 @@ import { createClient } from '@/lib/supabase/server'
 import { getCalendarTasks } from '@/actions/calendar'
 import { cn } from '@/lib/utils'
 import type { CalendarTask } from '@/lib/types'
+
+export const metadata: Metadata = { title: 'Календарь' }
 
 const MONTHS = [
   'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',

@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { CalendarDays, ExternalLink } from 'lucide-react'
@@ -7,6 +8,8 @@ import { TaskFilters } from '@/components/tasks/TaskFilters'
 import { TaskViewToggle } from '@/components/tasks/TaskViewToggle'
 import { Suspense } from 'react'
 import type { Card, Board } from '@/lib/types'
+
+export const metadata: Metadata = { title: 'Мои задачи' }
 
 const PRIORITY_LABELS: Record<string, string> = {
   low: 'Низкий',
