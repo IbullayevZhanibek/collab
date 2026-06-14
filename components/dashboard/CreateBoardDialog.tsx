@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
+import { usePostHog } from 'posthog-js/react'
 import { createBoard } from '@/actions/boards'
 import { Dialog } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
@@ -15,6 +16,7 @@ export function CreateBoardDialog({ open, onClose }: CreateBoardDialogProps) {
   const [title, setTitle] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
+  const posthog = usePostHog()
 
   function handleCreate() {
     if (!title.trim()) {
@@ -27,6 +29,7 @@ export function CreateBoardDialog({ open, onClose }: CreateBoardDialogProps) {
       if (result?.error) {
         setError(result.error)
       } else {
+        posthog.capture('board_created', { board_id: result?.data?.id })
         setTitle('')
         onClose()
       }

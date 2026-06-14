@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { Sidebar } from '@/components/dashboard/Sidebar'
+import { PostHogIdentify } from '@/components/PostHogIdentify'
 import { getMyInvitations } from '@/actions/invitations'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -28,6 +29,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
+      <PostHogIdentify userId={user.id} email={user.email ?? ''} name={displayName} />
       <Sidebar displayName={displayName} initials={initials} email={user.email ?? ''} invitationCount={invitationCount} />
 
       {/* Main — offset for desktop sidebar, offset for mobile top bar */}

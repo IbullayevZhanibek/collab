@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
+import { usePostHog } from 'posthog-js/react'
 import { Check, X, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { acceptInvitation, declineInvitation } from '@/actions/invitations'
@@ -9,6 +10,7 @@ import type { MyInvitation } from '@/lib/types'
 
 export function InvitationCard({ invitation }: { invitation: MyInvitation }) {
   const router = useRouter()
+  const posthog = usePostHog()
   const [error, setError] = useState<string | null>(null)
   const [action, setAction] = useState<'accept' | 'decline' | null>(null)
   const [isPending, startTransition] = useTransition()
@@ -26,6 +28,9 @@ export function InvitationCard({ invitation }: { invitation: MyInvitation }) {
         setError(result.error)
         setAction(null)
       } else {
+        if (kind === 'accept') {
+          posthog.capture('invitation_accepted', { invitation_id: invitation.id })
+        }
         startRefresh(() => router.refresh())
       }
     })

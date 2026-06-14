@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
+import { usePostHog } from 'posthog-js/react'
 import { createCard } from '@/actions/cards'
 import { Dialog } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
@@ -18,6 +19,7 @@ interface CreateCardDialogProps {
 
 export function CreateCardDialog({ open, onClose, columnId, boardId }: CreateCardDialogProps) {
   const router = useRouter()
+  const posthog = usePostHog()
 
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -47,6 +49,7 @@ export function CreateCardDialog({ open, onClose, columnId, boardId }: CreateCar
         return
       }
 
+      posthog.capture('card_created', { board_id: boardId, column_id: columnId })
       resetForm()
       onClose()
       startRefresh(() => router.refresh())

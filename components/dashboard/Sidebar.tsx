@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { LayoutDashboard, ListTodo, Calendar, Mail, LogOut, Menu, X } from 'lucide-react'
+import posthog from 'posthog-js'
 import { logout } from '@/actions/auth'
 import { Logo } from '@/components/ui/logo'
 
@@ -112,7 +113,7 @@ export function Sidebar({ displayName, initials, email, invitationCount }: Sideb
             </div>
           </div>
           <form action={logout}>
-            <button type="submit" className="flex w-full items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors">
+            <button type="submit" onClick={() => posthog.reset()} className="flex w-full items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors">
               <LogOut size={16} />
               Выйти
             </button>
@@ -153,7 +154,7 @@ export function Sidebar({ displayName, initials, email, invitationCount }: Sideb
             </div>
           </div>
           <form action={logout}>
-            <button type="submit" className="flex w-full items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors">
+            <button type="submit" onClick={() => posthog.reset()} className="flex w-full items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors">
               <LogOut size={16} />
               Выйти
             </button>

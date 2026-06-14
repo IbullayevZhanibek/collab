@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
+import { usePostHog } from 'posthog-js/react'
 import { UserMinus, Loader2, LogOut } from 'lucide-react'
 import { Dialog } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
@@ -30,6 +31,7 @@ export function MembersDialog({
   invitations = [],
 }: MembersDialogProps) {
   const router = useRouter()
+  const posthog = usePostHog()
   const [email, setEmail] = useState('')
   const [inviteError, setInviteError] = useState<string | null>(null)
   const [inviteSuccess, setInviteSuccess] = useState<string | null>(null)
@@ -53,6 +55,7 @@ export function MembersDialog({
       if (result?.error) {
         setInviteError(result.error)
       } else {
+        posthog.capture('member_invited', { board_id: boardId })
         setEmail('')
         setInviteSuccess('Приглашение отправлено')
         startRefresh(() => router.refresh())
