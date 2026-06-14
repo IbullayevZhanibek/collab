@@ -59,7 +59,6 @@ export function CreateBoardDialog({ open, onClose }: CreateBoardDialogProps) {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
-          autoFocus
         />
       </div>
 

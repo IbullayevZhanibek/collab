@@ -56,7 +56,6 @@ export function CreateColumnDialog({ open, onClose, boardId }: CreateColumnDialo
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
-          autoFocus
         />
       </div>
 

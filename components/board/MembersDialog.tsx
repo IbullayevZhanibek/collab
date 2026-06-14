@@ -119,7 +119,6 @@ export function MembersDialog({
                 setInviteSuccess(null)
               }}
               onKeyDown={(e) => e.key === 'Enter' && handleInvite()}
-              autoFocus
             />
             <Button
               onClick={handleInvite}

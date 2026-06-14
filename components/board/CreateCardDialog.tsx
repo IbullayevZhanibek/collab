@@ -82,7 +82,6 @@ export function CreateCardDialog({ open, onClose, columnId, boardId }: CreateCar
             placeholder="Что нужно сделать?"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            autoFocus
           />
         </div>
 
