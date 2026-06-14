@@ -2,6 +2,7 @@
   "nav": {
     "boards": "Доски",
     "tasks": "Мои задачи",
+    "pomodoro": "Помодоро",
     "calendar": "Календарь",
     "invitations": "Приглашения",
     "logout": "Выйти",
@@ -28,6 +29,27 @@
     "medium": "Средний",
     "high": "Высокий",
     "critical": "Критический"
+  },
+  "pomodoro": {
+    "title": "Помодоро",
+    "subtitle": "Техника фокуса: работай и отдыхай интервалами",
+    "focus": "Фокус",
+    "shortBreak": "Короткий перерыв",
+    "longBreak": "Длинный перерыв",
+    "start": "Старт",
+    "pause": "Пауза",
+    "reset": "Сброс",
+    "settings": "Настройки",
+    "settingsTitle": "Длительность интервалов",
+    "soundOn": "Звук включён",
+    "soundOff": "Звук выключен",
+    "minutesShort": "мин",
+    "increase": "Увеличить",
+    "decrease": "Уменьшить",
+    "cyclesLabel": "Циклов за сессию",
+    "notifyTitle": "Время вышло",
+    "notifyFocusDone": "Фокус завершён — пора сделать перерыв",
+    "notifyBreakDone": "Перерыв окончен — можно вернуться к работе"
   },
   "auth": {
     "login": {

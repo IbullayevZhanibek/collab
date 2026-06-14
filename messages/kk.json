@@ -2,6 +2,7 @@
   "nav": {
     "boards": "Тақталар",
     "tasks": "Тапсырмаларым",
+    "pomodoro": "Помодоро",
     "calendar": "Күнтізбе",
     "invitations": "Шақырулар",
     "logout": "Шығу",
@@ -28,6 +29,27 @@
     "medium": "Орташа",
     "high": "Жоғары",
     "critical": "Аса маңызды"
+  },
+  "pomodoro": {
+    "title": "Помодоро",
+    "subtitle": "Фокус әдісі: аралықпен жұмыс істеп, демал",
+    "focus": "Фокус",
+    "shortBreak": "Қысқа үзіліс",
+    "longBreak": "Ұзақ үзіліс",
+    "start": "Бастау",
+    "pause": "Кідірту",
+    "reset": "Қалпына келтіру",
+    "settings": "Баптаулар",
+    "settingsTitle": "Аралық ұзақтығы",
+    "soundOn": "Дыбыс қосулы",
+    "soundOff": "Дыбыс өшірулі",
+    "minutesShort": "мин",
+    "increase": "Арттыру",
+    "decrease": "Азайту",
+    "cyclesLabel": "Сессиядағы циклдер",
+    "notifyTitle": "Уақыт бітті",
+    "notifyFocusDone": "Фокус аяқталды — үзіліс жасайтын кез",
+    "notifyBreakDone": "Үзіліс бітті — жұмысқа орала аласыз"
   },
   "auth": {
     "login": {

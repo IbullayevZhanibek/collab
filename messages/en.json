@@ -2,6 +2,7 @@
   "nav": {
     "boards": "Boards",
     "tasks": "My tasks",
+    "pomodoro": "Pomodoro",
     "calendar": "Calendar",
     "invitations": "Invitations",
     "logout": "Log out",
@@ -28,6 +29,27 @@
     "medium": "Medium",
     "high": "High",
     "critical": "Critical"
+  },
+  "pomodoro": {
+    "title": "Pomodoro",
+    "subtitle": "Focus technique: work and rest in intervals",
+    "focus": "Focus",
+    "shortBreak": "Short break",
+    "longBreak": "Long break",
+    "start": "Start",
+    "pause": "Pause",
+    "reset": "Reset",
+    "settings": "Settings",
+    "settingsTitle": "Interval lengths",
+    "soundOn": "Sound on",
+    "soundOff": "Sound off",
+    "minutesShort": "min",
+    "increase": "Increase",
+    "decrease": "Decrease",
+    "cyclesLabel": "Cycles this session",
+    "notifyTitle": "Time's up",
+    "notifyFocusDone": "Focus done — time for a break",
+    "notifyBreakDone": "Break over — back to work"
   },
   "auth": {
     "login": {

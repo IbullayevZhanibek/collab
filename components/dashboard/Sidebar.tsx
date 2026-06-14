@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
-import { LayoutDashboard, ListTodo, Calendar, Mail, LogOut, Menu, X } from 'lucide-react'
+import { LayoutDashboard, ListTodo, Calendar, Mail, Timer, LogOut, Menu, X } from 'lucide-react'
 import posthog from 'posthog-js'
 import { logout } from '@/actions/auth'
 import { Logo } from '@/components/ui/logo'
@@ -21,6 +21,7 @@ interface SidebarProps {
 const NAV = [
   { href: '/dashboard', key: 'boards', Icon: LayoutDashboard },
   { href: '/tasks', key: 'tasks', Icon: ListTodo },
+  { href: '/pomodoro', key: 'pomodoro', Icon: Timer },
   { href: '/calendar', key: 'calendar', Icon: Calendar },
   { href: '/invitations', key: 'invitations', Icon: Mail },
 ] as const
