@@ -94,7 +94,7 @@ export function BoardCard({ card, boardId }: BoardCardProps) {
           onClick={handleDelete}
           onPointerDown={(e) => e.stopPropagation()}
           disabled={isPending}
-          className="opacity-0 group-hover:opacity-100 p-1 rounded text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all flex-shrink-0"
+          className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-1 rounded text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all flex-shrink-0"
           title="Удалить"
         >
           <Trash2 size={13} />
