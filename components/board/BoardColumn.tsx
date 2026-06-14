@@ -15,9 +15,12 @@ interface BoardColumnProps {
   cards: Card[]
   boardId: string
   userId: string
+  /** Все колонки доски — для меню «Переместить в колонку» на карточках. */
+  columns: Column[]
+  onMoveCard: (cardId: string, targetColumnId: string) => void
 }
 
-export function BoardColumn({ column, cards, boardId, userId }: BoardColumnProps) {
+export function BoardColumn({ column, cards, boardId, userId, columns, onMoveCard }: BoardColumnProps) {
   const [showCreateCard, setShowCreateCard] = useState(false)
   const [isPending, startTransition] = useTransition()
 
@@ -77,7 +80,14 @@ export function BoardColumn({ column, cards, boardId, userId }: BoardColumnProps
             strategy={verticalListSortingStrategy}
           >
             {sortedCards.map((card) => (
-              <BoardCard key={card.id} card={card} boardId={boardId} userId={userId} />
+              <BoardCard
+                key={card.id}
+                card={card}
+                boardId={boardId}
+                userId={userId}
+                columns={columns}
+                onMoveCard={onMoveCard}
+              />
             ))}
           </SortableContext>
         </div>

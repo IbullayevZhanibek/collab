@@ -17,7 +17,7 @@ import { Plus } from 'lucide-react'
 import { BoardColumn } from './BoardColumn'
 import { BoardCard } from './BoardCard'
 import { CreateColumnDialog } from './CreateColumnDialog'
-import { reorderCards } from '@/actions/cards'
+import { reorderCards, moveCard } from '@/actions/cards'
 import { createClient } from '@/lib/supabase/client'
 import type { Column, Card } from '@/lib/types'
 
@@ -35,18 +35,23 @@ export function KanbanBoard({ boardId, userId, initialColumns, initialCards }: K
   const [cards, setCards] = useState<Card[]>(initialCards)
   const [activeCard, setActiveCard] = useState<Card | null>(null)
   const [showCreateColumn, setShowCreateColumn] = useState(false)
-  const [isPending, startTransition] = useTransition()
+  const [, startTransition] = useTransition()
 
-  // Sync server-fetched props into local state whenever router.refresh() delivers
-  // new data from the Server Component. useState(initial) only runs at mount,
-  // so without this effect new items never appear after creation.
-  useEffect(() => {
+  // Синхронизируем серверные props в локальное состояние, когда сервер
+  // присылает новые данные (после revalidatePath / навигации). Делаем это
+  // прямо во время рендера (рекомендованный React паттерн вместо
+  // useEffect + setState), сравнивая ссылку на пришедший prop.
+  const [prevColumns, setPrevColumns] = useState(initialColumns)
+  if (initialColumns !== prevColumns) {
+    setPrevColumns(initialColumns)
     setColumns([...initialColumns].sort((a, b) => a.position - b.position))
-  }, [initialColumns])
+  }
 
-  useEffect(() => {
+  const [prevCards, setPrevCards] = useState(initialCards)
+  if (initialCards !== prevCards) {
+    setPrevCards(initialCards)
     setCards(initialCards)
-  }, [initialCards])
+  }
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
@@ -107,6 +112,26 @@ export function KanbanBoard({ boardId, userId, initialColumns, initialCards }: K
     return cards
       .filter((c) => c.column_id === columnId)
       .sort((a, b) => a.position - b.position)
+  }
+
+  // Перемещение карточки через меню (мобильная альтернатива drag&drop):
+  // ставим карточку в конец целевой колонки, оптимистично обновляем состояние,
+  // затем фиксируем на сервере (realtime подтвердит/скорректирует).
+  function handleMoveCard(cardId: string, targetColumnId: string) {
+    const card = cards.find((c) => c.id === cardId)
+    if (!card || card.column_id === targetColumnId) return
+
+    const targetPosition = cards.filter((c) => c.column_id === targetColumnId).length
+
+    setCards((prev) =>
+      prev.map((c) =>
+        c.id === cardId ? { ...c, column_id: targetColumnId, position: targetPosition } : c
+      )
+    )
+
+    startTransition(async () => {
+      await moveCard(cardId, targetColumnId, targetPosition, boardId)
+    })
   }
 
   function onDragStart(event: DragStartEvent) {
@@ -198,6 +223,8 @@ export function KanbanBoard({ boardId, userId, initialColumns, initialCards }: K
               cards={getColumnCards(column.id)}
               boardId={boardId}
               userId={userId}
+              columns={columns}
+              onMoveCard={handleMoveCard}
             />
           ))}
         </SortableContext>

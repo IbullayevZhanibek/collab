@@ -5,8 +5,9 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CalendarDays, Trash2 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { MoveCardMenu } from './MoveCardMenu'
 import { deleteCard } from '@/actions/cards'
-import type { Card } from '@/lib/types'
+import type { Card, Column } from '@/lib/types'
 
 const PRIORITY_LABELS: Record<string, string> = {
   low: 'Низкий',
@@ -19,9 +20,13 @@ interface BoardCardProps {
   card: Card
   boardId: string
   userId: string
+  /** Все колонки доски — для меню «Переместить в колонку». */
+  columns?: Column[]
+  /** Перемещение карточки в другую колонку (оптимистично + Server Action). */
+  onMoveCard?: (cardId: string, targetColumnId: string) => void
 }
 
-export function BoardCard({ card, boardId }: BoardCardProps) {
+export function BoardCard({ card, boardId, columns, onMoveCard }: BoardCardProps) {
   const [isPending, startTransition] = useTransition()
 
   const {
@@ -90,15 +95,24 @@ export function BoardCard({ card, boardId }: BoardCardProps) {
           </div>
         </div>
 
-        <button
-          onClick={handleDelete}
-          onPointerDown={(e) => e.stopPropagation()}
-          disabled={isPending}
-          className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-1 rounded text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all flex-shrink-0"
-          title="Удалить"
-        >
-          <Trash2 size={13} />
-        </button>
+        <div className="flex items-center gap-0.5 flex-shrink-0">
+          {onMoveCard && columns && columns.length > 1 && (
+            <MoveCardMenu
+              columns={columns}
+              currentColumnId={card.column_id}
+              onMove={(targetColumnId) => onMoveCard(card.id, targetColumnId)}
+            />
+          )}
+          <button
+            onClick={handleDelete}
+            onPointerDown={(e) => e.stopPropagation()}
+            disabled={isPending}
+            className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-1 rounded text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all"
+            title="Удалить"
+          >
+            <Trash2 size={13} />
+          </button>
+        </div>
       </div>
     </div>
   )
