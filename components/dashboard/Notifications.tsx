@@ -1,42 +1,11 @@
 import Link from 'next/link'
+import { getLocale, getTranslations } from 'next-intl/server'
 import { cn } from '@/lib/utils'
 import type { NotificationItem } from '@/lib/types'
 
 const MAX_VISIBLE = 6
 
-function formatDueDate(dueKey: string): string {
-  return new Date(dueKey + 'T00:00:00').toLocaleDateString('ru-RU', {
-    day: 'numeric',
-    month: 'long',
-  })
-}
-
-function pluralizeDays(n: number): string {
-  const mod10 = n % 10
-  const mod100 = n % 100
-  if (mod10 === 1 && mod100 !== 11) return 'день'
-  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return 'дня'
-  return 'дней'
-}
-
 type Tone = 'red' | 'orange' | 'amber'
-
-function describe(item: NotificationItem): { text: string; tone: Tone } {
-  if (item.days_until < 0) {
-    return {
-      text: `⚠️ Задача «${item.title}» просрочена (срок был ${formatDueDate(item.due_date)})`,
-      tone: 'red',
-    }
-  }
-  if (item.days_until === 0) {
-    return { text: `🔴 Задача «${item.title}» — срок сегодня`, tone: 'orange' }
-  }
-  const when =
-    item.days_until === 1
-      ? 'срок завтра'
-      : `срок через ${item.days_until} ${pluralizeDays(item.days_until)}`
-  return { text: `📅 Задача «${item.title}» — ${when}`, tone: 'amber' }
-}
 
 const TONE_CLASS: Record<Tone, string> = {
   red: 'bg-red-50 border-red-200 text-red-800 hover:bg-red-100/70',
@@ -44,7 +13,32 @@ const TONE_CLASS: Record<Tone, string> = {
   amber: 'bg-amber-50 border-amber-200 text-amber-800 hover:bg-amber-100/70',
 }
 
-export function Notifications({ items }: { items: NotificationItem[] }) {
+export async function Notifications({ items }: { items: NotificationItem[] }) {
+  const t = await getTranslations('dashboard.notifications')
+  const locale = await getLocale()
+
+  const formatDueDate = (dueKey: string): string =>
+    new Date(dueKey + 'T00:00:00').toLocaleDateString(locale, {
+      day: 'numeric',
+      month: 'long',
+    })
+
+  function describe(item: NotificationItem): { text: string; tone: Tone } {
+    if (item.days_until < 0) {
+      return {
+        text: t('overdue', { title: item.title, date: formatDueDate(item.due_date) }),
+        tone: 'red',
+      }
+    }
+    if (item.days_until === 0) {
+      return { text: t('dueToday', { title: item.title }), tone: 'orange' }
+    }
+    if (item.days_until === 1) {
+      return { text: t('dueTomorrow', { title: item.title }), tone: 'amber' }
+    }
+    return { text: t('dueInDays', { title: item.title, count: item.days_until }), tone: 'amber' }
+  }
+
   if (items.length === 0) {
     return (
       <div className="bg-white rounded-2xl border border-gray-200 shadow-soft px-4 py-4 flex items-center gap-2.5">
@@ -52,7 +46,7 @@ export function Notifications({ items }: { items: NotificationItem[] }) {
           ✓
         </span>
         <p className="text-sm font-medium text-gray-700">
-          Нет срочных задач — отличная работа!
+          {t('allClear')}
         </p>
       </div>
     )
@@ -80,7 +74,7 @@ export function Notifications({ items }: { items: NotificationItem[] }) {
         )
       })}
       {extra > 0 && (
-        <p className="text-sm text-gray-500 px-1 pt-0.5">+{extra} ещё</p>
+        <p className="text-sm text-gray-500 px-1 pt-0.5">{t('more', { count: extra })}</p>
       )}
     </div>
   )

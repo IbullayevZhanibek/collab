@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import { getLocale, getTranslations } from 'next-intl/server'
 import { CalendarDays, ExternalLink } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { Badge } from '@/components/ui/badge'
@@ -10,21 +11,6 @@ import { Suspense } from 'react'
 import type { Card, Board } from '@/lib/types'
 
 export const metadata: Metadata = { title: 'Мои задачи' }
-
-const PRIORITY_LABELS: Record<string, string> = {
-  low: 'Низкий',
-  medium: 'Средний',
-  high: 'Высокий',
-  critical: 'Критический',
-}
-
-function pluralizeTasks(n: number): string {
-  const mod10 = n % 10
-  const mod100 = n % 100
-  if (mod10 === 1 && mod100 !== 11) return 'задача'
-  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return 'задачи'
-  return 'задач'
-}
 
 type EnrichedCard = Card & {
   column: { id: string; title: string; board_id: string }
@@ -42,6 +28,10 @@ export default async function TasksPage({
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) redirect('/login')
+
+  const t = await getTranslations('tasks')
+  const tp = await getTranslations('priority')
+  const locale = await getLocale()
 
   // Get all boards accessible to user
   const { data: boards } = await supabase
@@ -85,7 +75,7 @@ export default async function TasksPage({
     .filter((c): c is EnrichedCard => c !== null)
 
   const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('ru-RU', {
+    return new Date(dateStr).toLocaleDateString(locale, {
       day: 'numeric',
       month: 'short',
     })
@@ -108,11 +98,11 @@ export default async function TasksPage({
         {/* Header */}
         <div className="flex items-start justify-between gap-4 mb-5 sm:mb-6">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Мои задачи</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{t('title')}</h1>
             <p className="text-gray-500 text-sm mt-1">
               {enrichedCards.length === 0
-                ? 'Все задачи со всех досок — в одном месте'
-                : `${enrichedCards.length} ${pluralizeTasks(enrichedCards.length)} со всех ваших досок`}
+                ? t('subtitleEmpty')
+                : t('subtitleCount', { count: enrichedCards.length })}
             </p>
           </div>
           <Suspense>
@@ -131,12 +121,10 @@ export default async function TasksPage({
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <div className="text-5xl mb-4">{priority ? '🔍' : '📋'}</div>
             <h2 className="text-lg font-semibold text-gray-900 mb-2">
-              {priority ? 'Под фильтр ничего не подошло' : 'Здесь будут ваши задачи'}
+              {priority ? t('emptyFilteredTitle') : t('emptyTitle')}
             </h2>
             <p className="text-gray-500 text-sm max-w-xs">
-              {priority
-                ? 'Попробуйте сбросить фильтр или выбрать другой приоритет.'
-                : 'Откройте любую доску и добавьте первую карточку — она тут же появится в этом списке.'}
+              {priority ? t('emptyFilteredBody') : t('emptyBody')}
             </p>
           </div>
         ) : view === 'kanban' ? (
@@ -168,7 +156,7 @@ export default async function TasksPage({
                             <Badge
                               variant={card.priority as 'low' | 'medium' | 'high' | 'critical'}
                             >
-                              {PRIORITY_LABELS[card.priority]}
+                              {tp(card.priority)}
                             </Badge>
                           )}
                           {card.due_date && (
@@ -215,7 +203,7 @@ export default async function TasksPage({
 
                   {card.priority && (
                     <Badge variant={card.priority as 'low' | 'medium' | 'high' | 'critical'}>
-                      {PRIORITY_LABELS[card.priority]}
+                      {tp(card.priority)}
                     </Badge>
                   )}
 

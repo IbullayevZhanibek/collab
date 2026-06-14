@@ -1,5 +1,6 @@
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
+import { getTranslations } from 'next-intl/server'
 import { ArrowLeft } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { KanbanBoard } from '@/components/board/KanbanBoard'
@@ -58,6 +59,7 @@ export default async function BoardPage({ params }: { params: Promise<{ id: stri
 
   const members = (membersRaw ?? []) as MemberWithProfile[]
   const isOwner = board.owner_id === user.id
+  const t = await getTranslations('board')
 
   // Отправленные приглашения видны только владельцу доски.
   // Загрузка приглашений не должна влиять на отрисовку шапки и кнопки
@@ -82,7 +84,7 @@ export default async function BoardPage({ params }: { params: Promise<{ id: stri
             className="flex items-center gap-1 sm:gap-1.5 text-sm text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg px-2 py-1.5 -ml-2 transition-colors shrink-0"
           >
             <ArrowLeft size={16} />
-            <span className="hidden sm:inline">К доскам</span>
+            <span className="hidden sm:inline">{t('backToBoards')}</span>
           </Link>
           <div className="h-5 w-px bg-gray-200 shrink-0" />
           <h1 className="font-semibold text-gray-900 text-base sm:text-lg truncate">{board.title}</h1>

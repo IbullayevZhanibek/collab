@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Users } from 'lucide-react'
 import { MembersDialog } from './MembersDialog'
 import type { MemberWithProfile, BoardInvitation } from '@/lib/types'
@@ -14,6 +15,7 @@ interface MembersButtonProps {
 }
 
 export function MembersButton({ boardId, currentUserId, isOwner, members, invitations = [] }: MembersButtonProps) {
+  const t = useTranslations('board')
   const [open, setOpen] = useState(false)
 
   const visibleAvatars = members.slice(0, 3)
@@ -23,7 +25,7 @@ export function MembersButton({ boardId, currentUserId, isOwner, members, invita
     <>
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors text-sm text-gray-600 shrink-0"
+        className="inline-flex items-center gap-2 h-9 px-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 transition-colors text-sm text-gray-600 shrink-0"
       >
         {/* Stacked avatars */}
         <div className="flex -space-x-1.5">
@@ -46,8 +48,8 @@ export function MembersButton({ boardId, currentUserId, isOwner, members, invita
           )}
         </div>
 
-        <Users size={14} className="shrink-0" />
-        <span className="hidden sm:inline">Участники</span>
+        <Users size={16} className="shrink-0" />
+        <span className="hidden sm:inline">{t('members')}</span>
       </button>
 
       <MembersDialog

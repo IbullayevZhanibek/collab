@@ -1,4 +1,5 @@
 import { CalendarDays, AlertTriangle, CheckCircle2, ListTodo } from 'lucide-react'
+import { getTranslations } from 'next-intl/server'
 import { cn } from '@/lib/utils'
 import type { DashboardStats } from '@/lib/types'
 
@@ -10,29 +11,30 @@ interface StatCard {
   valueClass?: string
 }
 
-export function StatsCards({ stats }: { stats: DashboardStats }) {
+export async function StatsCards({ stats }: { stats: DashboardStats }) {
+  const t = await getTranslations('dashboard.stats')
   const cards: StatCard[] = [
     {
-      label: 'Задач на сегодня',
+      label: t('today'),
       value: stats.today,
       Icon: CalendarDays,
       iconWrap: 'bg-brand-100 text-brand-600',
     },
     {
-      label: 'Просрочено',
+      label: t('overdue'),
       value: stats.overdue,
       Icon: AlertTriangle,
       iconWrap: 'bg-red-100 text-red-600',
       valueClass: stats.overdue > 0 ? 'text-red-600' : undefined,
     },
     {
-      label: 'Выполнено',
+      label: t('done'),
       value: stats.done,
       Icon: CheckCircle2,
       iconWrap: 'bg-emerald-100 text-emerald-600',
     },
     {
-      label: 'Всего активных',
+      label: t('active'),
       value: stats.active,
       Icon: ListTodo,
       iconWrap: 'bg-gray-100 text-gray-600',

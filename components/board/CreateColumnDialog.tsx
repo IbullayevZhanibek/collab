@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
+import { useTranslations } from 'next-intl'
 import { createColumn } from '@/actions/columns'
 import { Dialog } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
@@ -13,13 +14,15 @@ interface CreateColumnDialogProps {
 }
 
 export function CreateColumnDialog({ open, onClose, boardId }: CreateColumnDialogProps) {
+  const t = useTranslations('dialogs.createColumn')
+  const tc = useTranslations('common')
   const [title, setTitle] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
 
   function handleCreate() {
     if (!title.trim()) {
-      setError('Введите название колонки')
+      setError(t('errorEmpty'))
       return
     }
     setError(null)
@@ -42,7 +45,7 @@ export function CreateColumnDialog({ open, onClose, boardId }: CreateColumnDialo
   }
 
   return (
-    <Dialog open={open} onClose={handleClose} title="Добавить колонку">
+    <Dialog open={open} onClose={handleClose} title={t('title')}>
       {error && (
         <div className="mb-4 rounded-lg bg-red-50 border border-red-200 p-3 text-sm text-red-700">
           {error}
@@ -50,9 +53,9 @@ export function CreateColumnDialog({ open, onClose, boardId }: CreateColumnDialo
       )}
 
       <div className="mb-5">
-        <label className="block text-sm font-medium text-gray-700 mb-1.5">Название колонки</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('label')}</label>
         <Input
-          placeholder="Например: В работе"
+          placeholder={t('placeholder')}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
@@ -61,10 +64,10 @@ export function CreateColumnDialog({ open, onClose, boardId }: CreateColumnDialo
 
       <div className="flex gap-3 justify-end">
         <Button variant="outline" onClick={handleClose} disabled={isPending}>
-          Отмена
+          {tc('cancel')}
         </Button>
         <Button onClick={handleCreate} disabled={isPending || !title.trim()}>
-          {isPending ? 'Создание...' : 'Добавить'}
+          {isPending ? tc('creating') : t('submit')}
         </Button>
       </div>
     </Dialog>

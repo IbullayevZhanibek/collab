@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
+import { useTranslations } from 'next-intl'
 import { usePostHog } from 'posthog-js/react'
 import { createCard } from '@/actions/cards'
 import { Dialog } from '@/components/ui/dialog'
@@ -18,6 +19,9 @@ interface CreateCardDialogProps {
 
 export function CreateCardDialog({ open, onClose, columnId, boardId }: CreateCardDialogProps) {
   const posthog = usePostHog()
+  const t = useTranslations('dialogs.createCard')
+  const tc = useTranslations('common')
+  const tp = useTranslations('priority')
 
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -28,7 +32,7 @@ export function CreateCardDialog({ open, onClose, columnId, boardId }: CreateCar
 
   function handleCreate() {
     if (!title.trim()) {
-      setError('Введите название задачи')
+      setError(t('errorEmpty'))
       return
     }
     setError(null)
@@ -68,7 +72,7 @@ export function CreateCardDialog({ open, onClose, columnId, boardId }: CreateCar
   }
 
   return (
-    <Dialog open={open} onClose={handleClose} title="Создать задачу">
+    <Dialog open={open} onClose={handleClose} title={t('title')}>
       {error && (
         <div className="mb-4 rounded-lg bg-red-50 border border-red-200 p-3 text-sm text-red-700 whitespace-pre-wrap">
           {error}
@@ -77,18 +81,18 @@ export function CreateCardDialog({ open, onClose, columnId, boardId }: CreateCar
 
       <div className="space-y-4 mb-5">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Название *</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('titleLabel')}</label>
           <Input
-            placeholder="Что нужно сделать?"
+            placeholder={t('titlePlaceholder')}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Описание</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('descriptionLabel')}</label>
           <Textarea
-            placeholder="Подробное описание задачи…"
+            placeholder={t('descriptionPlaceholder')}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={3}
@@ -96,18 +100,18 @@ export function CreateCardDialog({ open, onClose, columnId, boardId }: CreateCar
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Приоритет</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('priorityLabel')}</label>
           <Select value={priority} onChange={(e) => setPriority(e.target.value)}>
-            <option value="" className="text-gray-900">Не выбран</option>
-            <option value="low" className="text-gray-900">Низкий</option>
-            <option value="medium" className="text-gray-900">Средний</option>
-            <option value="high" className="text-gray-900">Высокий</option>
-            <option value="critical" className="text-gray-900">Критический</option>
+            <option value="" className="text-gray-900">{tp('none')}</option>
+            <option value="low" className="text-gray-900">{tp('low')}</option>
+            <option value="medium" className="text-gray-900">{tp('medium')}</option>
+            <option value="high" className="text-gray-900">{tp('high')}</option>
+            <option value="critical" className="text-gray-900">{tp('critical')}</option>
           </Select>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Срок выполнения</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('dueDateLabel')}</label>
           <Input
             type="date"
             value={dueDate}
@@ -118,10 +122,10 @@ export function CreateCardDialog({ open, onClose, columnId, boardId }: CreateCar
 
       <div className="flex gap-3 justify-end">
         <Button variant="outline" onClick={handleClose} disabled={isPending}>
-          Отмена
+          {tc('cancel')}
         </Button>
         <Button onClick={handleCreate} disabled={isPending || !title.trim()}>
-          {isPending ? 'Создание…' : 'Создать задачу'}
+          {isPending ? t('submitting') : t('submit')}
         </Button>
       </div>
     </Dialog>

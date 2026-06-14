@@ -2,6 +2,7 @@
 
 import { useEffect, useCallback, useRef } from 'react'
 import { createPortal } from 'react-dom'
+import { useTranslations } from 'next-intl'
 import { X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -16,6 +17,7 @@ interface DialogProps {
 }
 
 export function Dialog({ open, onClose, title, children, className, disableAutoFocus }: DialogProps) {
+  const tc = useTranslations('common')
   // Внешний flex-контейнер (overlay) и сама панель — нужны для подгонки под
   // видимую область при появлении экранной клавиатуры.
   const containerRef = useRef<HTMLDivElement>(null)
@@ -124,7 +126,7 @@ export function Dialog({ open, onClose, title, children, className, disableAutoF
           <h2 className="text-base sm:text-lg font-semibold text-gray-900">{title}</h2>
           <button
             onClick={onClose}
-            aria-label="Закрыть"
+            aria-label={tc('close')}
             className="rounded-lg p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
           >
             <X size={18} />

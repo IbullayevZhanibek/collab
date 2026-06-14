@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
+import { useTranslations } from 'next-intl'
 import { usePostHog } from 'posthog-js/react'
 import { createBoard } from '@/actions/boards'
 import { Dialog } from '@/components/ui/dialog'
@@ -13,6 +14,8 @@ interface CreateBoardDialogProps {
 }
 
 export function CreateBoardDialog({ open, onClose }: CreateBoardDialogProps) {
+  const t = useTranslations('dialogs.createBoard')
+  const tc = useTranslations('common')
   const [title, setTitle] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
@@ -20,7 +23,7 @@ export function CreateBoardDialog({ open, onClose }: CreateBoardDialogProps) {
 
   function handleCreate() {
     if (!title.trim()) {
-      setError('Введите название доски')
+      setError(t('errorEmpty'))
       return
     }
     setError(null)
@@ -43,7 +46,7 @@ export function CreateBoardDialog({ open, onClose }: CreateBoardDialogProps) {
   }
 
   return (
-    <Dialog open={open} onClose={handleClose} title="Создать доску">
+    <Dialog open={open} onClose={handleClose} title={t('title')}>
       {error && (
         <div className="mb-4 rounded-lg bg-red-50 border border-red-200 p-3 text-sm text-red-700">
           {error}
@@ -52,10 +55,10 @@ export function CreateBoardDialog({ open, onClose }: CreateBoardDialogProps) {
 
       <div className="mb-5">
         <label className="block text-sm font-medium text-gray-700 mb-1.5">
-          Название доски
+          {t('label')}
         </label>
         <Input
-          placeholder="Например: Проект 2025"
+          placeholder={t('placeholder')}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
@@ -64,10 +67,10 @@ export function CreateBoardDialog({ open, onClose }: CreateBoardDialogProps) {
 
       <div className="flex gap-3 justify-end">
         <Button variant="outline" onClick={handleClose} disabled={isPending}>
-          Отмена
+          {tc('cancel')}
         </Button>
         <Button onClick={handleCreate} disabled={isPending || !title.trim()}>
-          {isPending ? 'Создание...' : 'Создать'}
+          {isPending ? tc('creating') : tc('create')}
         </Button>
       </div>
     </Dialog>

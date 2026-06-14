@@ -2,49 +2,52 @@
 
 import { useEffect, useState, useTransition } from 'react'
 import { createPortal } from 'react-dom'
+import { useTranslations, useLocale } from 'next-intl'
 import { History, X, Loader2 } from 'lucide-react'
 import { cn, formatRelativeTime } from '@/lib/utils'
 import { getActivityLog } from '@/actions/activity'
 import type { ActivityLogEntry } from '@/lib/types'
-
-function actorName(entry: ActivityLogEntry): string {
-  return entry.full_name || entry.email || 'Участник'
-}
 
 function detail(entry: ActivityLogEntry, key: string): string {
   const value = entry.details?.[key]
   return typeof value === 'string' ? value : ''
 }
 
-// Человекочитаемый текст действия. Род автора неизвестен,
-// поэтому используем нейтральную форму с «(а)».
-function describe(entry: ActivityLogEntry): string {
-  const who = actorName(entry)
-  switch (entry.action) {
-    case 'card_created':
-      return `${who} создал(а) задачу «${detail(entry, 'cardTitle')}» в колонке «${detail(entry, 'columnTitle')}»`
-    case 'card_moved':
-      return `${who} переместил(а) «${detail(entry, 'cardTitle')}» из «${detail(entry, 'fromColumn')}» в «${detail(entry, 'toColumn')}»`
-    case 'card_deleted':
-      return `${who} удалил(а) задачу «${detail(entry, 'cardTitle')}»`
-    case 'column_created':
-      return `${who} создал(а) колонку «${detail(entry, 'columnTitle')}»`
-    case 'column_deleted':
-      return `${who} удалил(а) колонку «${detail(entry, 'columnTitle')}»`
-    case 'member_joined':
-      return `${who} присоединился(ась) к доске`
-    case 'member_left':
-      return `${who} покинул(а) доску`
-    default:
-      return who
-  }
-}
-
 export function ActivityLog({ boardId }: { boardId: string }) {
+  const t = useTranslations('activity')
+  const tc = useTranslations('common')
+  const locale = useLocale()
   const [open, setOpen] = useState(false)
   const [entries, setEntries] = useState<ActivityLogEntry[]>([])
   const [loaded, setLoaded] = useState(false)
   const [isPending, startTransition] = useTransition()
+
+  const actorName = (entry: ActivityLogEntry): string =>
+    entry.full_name || entry.email || t('actorFallback')
+
+  // Человекочитаемый текст действия. Род автора неизвестен,
+  // поэтому используем нейтральную форму с «(а)».
+  function describe(entry: ActivityLogEntry): string {
+    const who = actorName(entry)
+    switch (entry.action) {
+      case 'card_created':
+        return t('actions.cardCreated', { who, cardTitle: detail(entry, 'cardTitle'), columnTitle: detail(entry, 'columnTitle') })
+      case 'card_moved':
+        return t('actions.cardMoved', { who, cardTitle: detail(entry, 'cardTitle'), fromColumn: detail(entry, 'fromColumn'), toColumn: detail(entry, 'toColumn') })
+      case 'card_deleted':
+        return t('actions.cardDeleted', { who, cardTitle: detail(entry, 'cardTitle') })
+      case 'column_created':
+        return t('actions.columnCreated', { who, columnTitle: detail(entry, 'columnTitle') })
+      case 'column_deleted':
+        return t('actions.columnDeleted', { who, columnTitle: detail(entry, 'columnTitle') })
+      case 'member_joined':
+        return t('actions.memberJoined', { who })
+      case 'member_left':
+        return t('actions.memberLeft', { who })
+      default:
+        return who
+    }
+  }
 
   // Грузим лог при первом открытии и обновляем при каждом следующем.
   useEffect(() => {
@@ -72,10 +75,10 @@ export function ActivityLog({ boardId }: { boardId: string }) {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors text-sm text-gray-600 shrink-0"
+        className="inline-flex items-center gap-2 h-9 px-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 transition-colors text-sm text-gray-600 shrink-0"
       >
-        <History size={14} className="shrink-0" />
-        <span className="hidden sm:inline">История</span>
+        <History size={16} className="shrink-0" />
+        <span className="hidden sm:inline">{t('title')}</span>
       </button>
 
       {open &&
@@ -98,11 +101,11 @@ export function ActivityLog({ boardId }: { boardId: string }) {
               <div className="flex items-center justify-between px-5 h-16 border-b border-gray-200 shrink-0">
                 <div className="flex items-center gap-2">
                   <History size={18} className="text-brand-600" />
-                  <h2 className="text-base sm:text-lg font-semibold text-gray-900">История</h2>
+                  <h2 className="text-base sm:text-lg font-semibold text-gray-900">{t('title')}</h2>
                 </div>
                 <button
                   onClick={() => setOpen(false)}
-                  aria-label="Закрыть"
+                  aria-label={tc('close')}
                   className="rounded-lg p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
                 >
                   <X size={18} />
@@ -117,9 +120,9 @@ export function ActivityLog({ boardId }: { boardId: string }) {
                 ) : entries.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-20 text-center">
                     <div className="text-4xl mb-3">🕘</div>
-                    <p className="text-sm font-medium text-gray-900">Пока нет активности</p>
+                    <p className="text-sm font-medium text-gray-900">{t('emptyTitle')}</p>
                     <p className="text-xs text-gray-500 mt-1 max-w-[14rem]">
-                      Действия с карточками и колонками появятся здесь.
+                      {t('emptyBody')}
                     </p>
                   </div>
                 ) : (
@@ -135,7 +138,7 @@ export function ActivityLog({ boardId }: { boardId: string }) {
                           <div className="flex-1 min-w-0">
                             <p className="text-sm text-gray-700 leading-snug">{describe(entry)}</p>
                             <p className="text-xs text-gray-400 mt-0.5">
-                              {formatRelativeTime(entry.created_at)}
+                              {formatRelativeTime(entry.created_at, locale, t('justNow'))}
                             </p>
                           </div>
                         </li>

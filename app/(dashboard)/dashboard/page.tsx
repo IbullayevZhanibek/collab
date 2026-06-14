@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
+import { getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 
 export const metadata: Metadata = { title: 'Главная' }
@@ -20,7 +21,8 @@ export default async function DashboardPage() {
     .eq('user_id', user.id)
     .single()
 
-  const firstName = (profile?.full_name || user.email?.split('@')[0] || 'друг').split(' ')[0]
+  const t = await getTranslations('dashboard')
+  const firstName = (profile?.full_name || user.email?.split('@')[0] || t('friendFallback')).split(' ')[0]
 
   const [boardsResult, { stats, notifications }] = await Promise.all([
     supabase
@@ -38,9 +40,9 @@ export default async function DashboardPage() {
         {/* Приветствие */}
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-            Привет, {firstName}!
+            {t('greeting', { name: firstName })}
           </h1>
-          <p className="text-gray-500 text-sm mt-1">Вот что происходит по вашим задачам</p>
+          <p className="text-gray-500 text-sm mt-1">{t('subtitle')}</p>
         </div>
 
         {/* Статистика */}

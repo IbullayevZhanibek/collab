@@ -1,0 +1,250 @@
+{
+  "nav": {
+    "boards": "Boards",
+    "tasks": "My tasks",
+    "calendar": "Calendar",
+    "invitations": "Invitations",
+    "logout": "Log out",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "userFallback": "User"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "create": "Create",
+    "creating": "Creating...",
+    "add": "Add",
+    "close": "Close"
+  },
+  "language": {
+    "label": "Language"
+  },
+  "priority": {
+    "none": "Not set",
+    "all": "All priorities",
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High",
+    "critical": "Critical"
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome back 👋",
+      "subtitle": "Sign in to keep working on your projects",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign in",
+      "submitting": "Signing in...",
+      "noAccount": "Don't have an account yet?",
+      "createFree": "Create one for free"
+    },
+    "register": {
+      "title": "Create your account",
+      "subtitle": "Free forever — no credit card needed",
+      "name": "Name",
+      "namePlaceholder": "Alex",
+      "email": "Email",
+      "password": "Password",
+      "passwordPlaceholder": "At least 6 characters",
+      "submit": "Start for free",
+      "submitting": "Creating account…",
+      "haveAccount": "Already with us?",
+      "login": "Sign in",
+      "checkEmailTitle": "Check your email",
+      "checkEmailBody": "We sent a confirmation link to <b>{email}</b>. Follow it to finish signing up.",
+      "checkSpam": "Don't see the email? Check your spam folder — it sometimes hides there.",
+      "confirmedAlready": "Already confirmed?"
+    },
+    "validation": {
+      "fillAll": "Please fill in all fields",
+      "passwordMin": "Password must be at least 6 characters"
+    },
+    "errors": {
+      "invalidCredentials": "Wrong email or password. Check your details and try again.",
+      "emailNotConfirmed": "Your email isn't confirmed yet. Check your inbox and follow the link.",
+      "alreadyRegistered": "An account with this email already exists. Try signing in.",
+      "passwordTooShort": "Password is too short — it needs at least 6 characters.",
+      "invalidEmail": "That email looks off. Please check the address.",
+      "rateLimit": "Too many attempts. Wait a moment and try again.",
+      "generic": "Something went wrong. Please try again in a minute."
+    }
+  },
+  "dashboard": {
+    "greeting": "Hi, {name}!",
+    "subtitle": "Here's what's happening with your tasks",
+    "friendFallback": "there",
+    "stats": {
+      "today": "Due today",
+      "overdue": "Overdue",
+      "done": "Completed",
+      "active": "Active total"
+    },
+    "notifications": {
+      "allClear": "No urgent tasks — great work!",
+      "overdue": "⚠️ Task “{title}” is overdue (was due {date})",
+      "dueToday": "🔴 Task “{title}” — due today",
+      "dueTomorrow": "📅 Task “{title}” — due tomorrow",
+      "dueInDays": "📅 Task “{title}” — {count, plural, one {due in # day} other {due in # days}}",
+      "more": "+{count} more"
+    }
+  },
+  "boards": {
+    "title": "Boards",
+    "emptyHint": "Your projects will live here",
+    "countHint": "{count, plural, one {# board} other {# boards}} · tap to open",
+    "newBoard": "New board",
+    "emptyTitle": "Where shall we start?",
+    "emptyBody": "Create your first board — for a course project or team work, say. It takes just a couple of seconds.",
+    "createFirst": "Create your first board",
+    "createdOn": "Created {date}",
+    "membersCount": "{count, plural, one {# member} other {# members}}",
+    "addBoard": "Add board",
+    "deleteBoard": "Delete board",
+    "leaveBoard": "Leave board",
+    "confirmDelete": "Delete this board? This action can't be undone.",
+    "confirmLeave": "Are you sure you want to leave this board?"
+  },
+  "board": {
+    "backToBoards": "Boards",
+    "history": "History",
+    "members": "Members",
+    "addColumn": "Add column",
+    "addCard": "Add task",
+    "deleteColumn": "Delete column",
+    "confirmDeleteColumn": "Delete this column with all its tasks?",
+    "deleteCard": "Delete",
+    "confirmDeleteCard": "Delete this task?",
+    "moveTo": "Move to column"
+  },
+  "activity": {
+    "title": "History",
+    "emptyTitle": "No activity yet",
+    "emptyBody": "Actions on cards and columns will show up here.",
+    "justNow": "just now",
+    "actorFallback": "A member",
+    "actions": {
+      "cardCreated": "{who} created task “{cardTitle}” in column “{columnTitle}”",
+      "cardMoved": "{who} moved “{cardTitle}” from “{fromColumn}” to “{toColumn}”",
+      "cardDeleted": "{who} deleted task “{cardTitle}”",
+      "columnCreated": "{who} created column “{columnTitle}”",
+      "columnDeleted": "{who} deleted column “{columnTitle}”",
+      "memberJoined": "{who} joined the board",
+      "memberLeft": "{who} left the board"
+    }
+  },
+  "dialogs": {
+    "createBoard": {
+      "title": "Create board",
+      "label": "Board name",
+      "placeholder": "e.g. Project 2025",
+      "errorEmpty": "Enter a board name"
+    },
+    "createColumn": {
+      "title": "Add column",
+      "label": "Column name",
+      "placeholder": "e.g. In progress",
+      "errorEmpty": "Enter a column name",
+      "submit": "Add"
+    },
+    "createCard": {
+      "title": "Create task",
+      "titleLabel": "Title *",
+      "titlePlaceholder": "What needs to be done?",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Detailed task description…",
+      "priorityLabel": "Priority",
+      "dueDateLabel": "Due date",
+      "errorEmpty": "Enter a task title",
+      "submit": "Create task",
+      "submitting": "Creating…"
+    },
+    "members": {
+      "title": "Board members",
+      "inviteLabel": "Invite by email",
+      "invitePlaceholder": "example@mail.com",
+      "inviteSubmit": "Invite",
+      "inviteErrorEmpty": "Enter an email address",
+      "inviteSuccess": "Invitation sent",
+      "membersCount": "Members · {count}",
+      "you": "(you)",
+      "roleOwner": "Owner",
+      "roleMember": "Member",
+      "removeMember": "Remove member",
+      "pendingCount": "Invitations · {count}",
+      "pendingStatus": "Pending",
+      "leaveBoard": "Leave board",
+      "confirmLeave": "Are you sure you want to leave this board?"
+    }
+  },
+  "tasks": {
+    "title": "My tasks",
+    "subtitleEmpty": "Every task from every board — in one place",
+    "subtitleCount": "{count, plural, one {# task} other {# tasks}} from all your boards",
+    "viewList": "List",
+    "viewKanban": "Kanban",
+    "filters": "Filters",
+    "clear": "Clear",
+    "emptyFilteredTitle": "Nothing matched the filter",
+    "emptyFilteredBody": "Try clearing the filter or choosing another priority.",
+    "emptyTitle": "Your tasks will appear here",
+    "emptyBody": "Open any board and add your first card — it'll show up in this list right away."
+  },
+  "calendar": {
+    "subtitle": "Tasks by their due dates",
+    "today": "Today",
+    "prevMonth": "Previous month",
+    "nextMonth": "Next month",
+    "emptyTitle": "No tasks with due dates this month",
+    "emptyBody": "Give a task a due date and it'll appear here.",
+    "todayLabel": "today",
+    "more": "+{count} more"
+  },
+  "invitationsPage": {
+    "title": "Invitations",
+    "subtitle": "Incoming invitations to join boards",
+    "emptyTitle": "No new invitations",
+    "emptyBody": "When someone invites you to a board, the invitation will show up here.",
+    "from": "Invitation from <b>{name}</b>",
+    "accept": "Accept",
+    "decline": "Decline"
+  },
+  "landing": {
+    "nav": {
+      "login": "Sign in",
+      "signup": "Start for free"
+    },
+    "hero": {
+      "badge": "Free for everyone",
+      "title": "Ship projects on time — <accent>together</accent>",
+      "subtitle": "Collab brings your team's tasks and discussions into one place. No more messages lost in chats.",
+      "ctaPrimary": "Create a board for free",
+      "ctaSecondary": "I already have an account",
+      "noCard": "No credit card · Ready to go in a minute"
+    },
+    "preview": {
+      "todoTitle": "To do",
+      "inProgressTitle": "In progress",
+      "doneTitle": "Done",
+      "todoCards": ["Homepage design", "Auth API"],
+      "inProgressCards": ["Mobile layout", "Tests"],
+      "doneCards": ["Database", "Deploy"]
+    },
+    "features": {
+      "title": "Everything for a team project — in one tab",
+      "subtitle": "No extra features or complex settings. Just what helps you get the work done.",
+      "kanbanTitle": "See who's doing what",
+      "kanbanDesc": "Drag cards between stages and assign owners — your team's progress is clear at a glance.",
+      "tasksTitle": "Nothing falls through",
+      "tasksDesc": "Every task across every board in one list. Filter by priority and due date to stay on schedule.",
+      "devicesTitle": "Access from any device",
+      "devicesDesc": "Work from your phone, tablet, or computer — your board is always at hand and syncs instantly."
+    },
+    "benefits": {
+      "title": "Everything for teamwork — in one place",
+      "subtitle": "Boards, tasks, and members all together, so your team always sees the big picture and knows who's working on what.",
+      "items": ["See who's busy with what", "Tasks don't get lost", "Everyone sees changes instantly"],
+      "cta": "Get started"
+    },
+    "footer": "Collab © 2026 — made for students"
+  }
+}

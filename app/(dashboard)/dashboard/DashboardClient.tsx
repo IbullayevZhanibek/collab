@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import Link from 'next/link'
+import { useTranslations, useLocale } from 'next-intl'
 import { Plus, Trash2, LogOut, Users, LayoutDashboard } from 'lucide-react'
 import { deleteBoard } from '@/actions/boards'
 import { leaveBoard } from '@/actions/members'
@@ -22,23 +23,9 @@ interface DashboardClientProps {
   currentUserId: string
 }
 
-function pluralizeBoards(n: number): string {
-  const mod10 = n % 10
-  const mod100 = n % 100
-  if (mod10 === 1 && mod100 !== 11) return 'доска'
-  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return 'доски'
-  return 'досок'
-}
-
-function pluralizeMembers(n: number): string {
-  const mod10 = n % 10
-  const mod100 = n % 100
-  if (mod10 === 1 && mod100 !== 11) return 'участник'
-  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return 'участника'
-  return 'участников'
-}
-
 export function DashboardClient({ boards: initialBoards, currentUserId }: DashboardClientProps) {
+  const t = useTranslations('boards')
+  const locale = useLocale()
   const [showCreate, setShowCreate] = useState(false)
   const [busyId, setBusyId] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
@@ -55,7 +42,7 @@ export function DashboardClient({ boards: initialBoards, currentUserId }: Dashbo
   }
 
   function handleDelete(boardId: string) {
-    if (!confirm('Удалить доску? Это действие нельзя отменить.')) return
+    if (!confirm(t('confirmDelete'))) return
     setBusyId(boardId)
     // Убираем доску из сетки мгновенно, не дожидаясь перезагрузки страницы.
     setBoards((prev) => prev.filter((b) => b.id !== boardId))
@@ -68,7 +55,7 @@ export function DashboardClient({ boards: initialBoards, currentUserId }: Dashbo
   }
 
   function handleLeave(boardId: string) {
-    if (!confirm('Вы уверены, что хотите покинуть доску?')) return
+    if (!confirm(t('confirmLeave'))) return
     setBusyId(boardId)
     setBoards((prev) => prev.filter((b) => b.id !== boardId))
     startTransition(async () => {
@@ -84,7 +71,7 @@ export function DashboardClient({ boards: initialBoards, currentUserId }: Dashbo
   }
 
   const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('ru-RU', {
+    return new Date(dateStr).toLocaleDateString(locale, {
       day: 'numeric',
       month: 'long',
       year: 'numeric',
@@ -95,16 +82,16 @@ export function DashboardClient({ boards: initialBoards, currentUserId }: Dashbo
     <>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Доски</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{t('title')}</h1>
           <p className="text-gray-500 text-sm mt-1">
             {boards.length === 0
-              ? 'Здесь будут жить ваши проекты'
-              : `${boards.length} ${pluralizeBoards(boards.length)} · нажмите, чтобы открыть`}
+              ? t('emptyHint')
+              : t('countHint', { count: boards.length })}
           </p>
         </div>
         <Button onClick={() => setShowCreate(true)} className="w-full sm:w-auto">
           <Plus size={16} className="mr-1.5" />
-          Новая доска
+          {t('newBoard')}
         </Button>
       </div>
 
@@ -113,13 +100,13 @@ export function DashboardClient({ boards: initialBoards, currentUserId }: Dashbo
           <div className="bg-brand-50 rounded-3xl p-6 mb-5">
             <LayoutDashboard className="text-brand-400 mx-auto" size={48} />
           </div>
-          <h2 className="text-lg font-semibold text-gray-900 mb-2">С чего начнём?</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-2">{t('emptyTitle')}</h2>
           <p className="text-gray-500 text-sm mb-6 max-w-xs">
-            Создайте первую доску — например, для курсового проекта или командной работы. Это займёт пару секунд.
+            {t('emptyBody')}
           </p>
           <Button onClick={() => setShowCreate(true)}>
             <Plus size={16} className="mr-1.5" />
-            Создать первую доску
+            {t('createFirst')}
           </Button>
         </div>
       ) : (
@@ -141,11 +128,11 @@ export function DashboardClient({ boards: initialBoards, currentUserId }: Dashbo
                 <h3 className="font-semibold text-gray-900 text-base mb-1 line-clamp-2 group-hover:text-brand-700 transition-colors">
                   {board.title}
                 </h3>
-                <p className="text-xs text-gray-400 mb-4">Создана {formatDate(board.created_at)}</p>
+                <p className="text-xs text-gray-400 mb-4">{t('createdOn', { date: formatDate(board.created_at) })}</p>
                 <div className="flex items-center gap-1.5 text-xs text-gray-500">
                   <Users size={13} />
                   <span>
-                    {memberCount(board)} {pluralizeMembers(memberCount(board))}
+                    {t('membersCount', { count: memberCount(board) })}
                   </span>
                 </div>
               </Link>
@@ -154,7 +141,7 @@ export function DashboardClient({ boards: initialBoards, currentUserId }: Dashbo
                 <button
                   onClick={() => handleDelete(board.id)}
                   disabled={busyId === board.id || isPending}
-                  title="Удалить доску"
+                  title={t('deleteBoard')}
                   className="absolute top-4 right-4 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all disabled:opacity-50"
                 >
                   <Trash2 size={15} />
@@ -163,7 +150,7 @@ export function DashboardClient({ boards: initialBoards, currentUserId }: Dashbo
                 <button
                   onClick={() => handleLeave(board.id)}
                   disabled={busyId === board.id || isPending}
-                  title="Покинуть доску"
+                  title={t('leaveBoard')}
                   className="absolute top-4 right-4 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all disabled:opacity-50"
                 >
                   <LogOut size={15} />
@@ -178,7 +165,7 @@ export function DashboardClient({ boards: initialBoards, currentUserId }: Dashbo
             className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 hover:border-brand-300 hover:bg-brand-50 transition-all p-6 min-h-[160px] text-gray-400 hover:text-brand-600"
           >
             <Plus size={24} className="mb-2" />
-            <span className="text-sm font-medium">Добавить доску</span>
+            <span className="text-sm font-medium">{t('addBoard')}</span>
           </button>
         </div>
       )}

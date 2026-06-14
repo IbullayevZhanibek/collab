@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useTransition } from 'react'
+import { useTranslations } from 'next-intl'
 import {
   DndContext,
   DragEndEvent,
@@ -29,6 +30,7 @@ interface KanbanBoardProps {
 }
 
 export function KanbanBoard({ boardId, userId, initialColumns, initialCards }: KanbanBoardProps) {
+  const t = useTranslations('board')
   const [columns, setColumns] = useState<Column[]>(
     [...initialColumns].sort((a, b) => a.position - b.position)
   )
@@ -236,7 +238,7 @@ export function KanbanBoard({ boardId, userId, initialColumns, initialCards }: K
             className="flex items-center gap-2 bg-white/70 hover:bg-white border-2 border-dashed border-gray-300 hover:border-brand-400 rounded-2xl px-5 py-3 text-sm font-medium text-gray-500 hover:text-brand-600 transition-all w-[280px] sm:w-72 snap-start shrink-0"
           >
             <Plus size={16} />
-            Добавить колонку
+            {t('addColumn')}
           </button>
         </div>
       </div>

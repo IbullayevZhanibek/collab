@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { usePostHog } from 'posthog-js/react'
 import { UserMinus, Loader2, LogOut } from 'lucide-react'
 import { Dialog } from '@/components/ui/dialog'
@@ -32,6 +33,7 @@ export function MembersDialog({
 }: MembersDialogProps) {
   const router = useRouter()
   const posthog = usePostHog()
+  const t = useTranslations('dialogs.members')
   const [email, setEmail] = useState('')
   const [inviteError, setInviteError] = useState<string | null>(null)
   const [inviteSuccess, setInviteSuccess] = useState<string | null>(null)
@@ -45,7 +47,7 @@ export function MembersDialog({
   function handleInvite() {
     const trimmed = email.trim()
     if (!trimmed) {
-      setInviteError('Введите email адрес')
+      setInviteError(t('inviteErrorEmpty'))
       return
     }
     setInviteError(null)
@@ -57,7 +59,7 @@ export function MembersDialog({
       } else {
         posthog.capture('member_invited', { board_id: boardId })
         setEmail('')
-        setInviteSuccess('Приглашение отправлено')
+        setInviteSuccess(t('inviteSuccess'))
         startRefresh(() => router.refresh())
       }
     })
@@ -78,7 +80,7 @@ export function MembersDialog({
   const [leaveError, setLeaveError] = useState<string | null>(null)
 
   function handleLeave() {
-    if (!confirm('Вы уверены, что хотите покинуть доску?')) return
+    if (!confirm(t('confirmLeave'))) return
     setLeaveError(null)
     startLeaveTransition(async () => {
       const result = await leaveBoard(boardId)
@@ -101,17 +103,17 @@ export function MembersDialog({
   }
 
   return (
-    <Dialog open={open} onClose={handleClose} title="Участники доски" className="sm:max-w-lg">
+    <Dialog open={open} onClose={handleClose} title={t('title')} className="sm:max-w-lg">
       {/* Invite section — only visible to the owner */}
       {isOwner && (
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-700 mb-1.5">
-            Пригласить по email
+            {t('inviteLabel')}
           </label>
           <div className="flex gap-2">
             <Input
               type="email"
-              placeholder="example@mail.com"
+              placeholder={t('invitePlaceholder')}
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value)
@@ -128,7 +130,7 @@ export function MembersDialog({
               {isPendingInvite ? (
                 <Loader2 size={15} className="animate-spin" />
               ) : (
-                'Пригласить'
+                t('inviteSubmit')
               )}
             </Button>
           </div>
@@ -147,7 +149,7 @@ export function MembersDialog({
       {/* Members list */}
       <div>
         <p className="text-sm font-medium text-gray-500 mb-3">
-          Участники · {members.length}
+          {t('membersCount', { count: members.length })}
         </p>
         <div className="space-y-1">
           {members.map((member) => {
@@ -171,7 +173,7 @@ export function MembersDialog({
                   <p className="text-sm font-medium text-gray-900 truncate">
                     {displayName}
                     {isMe && (
-                      <span className="ml-1 text-gray-400 font-normal">(вы)</span>
+                      <span className="ml-1 text-gray-400 font-normal">{t('you')}</span>
                     )}
                   </p>
                   <p className="text-xs text-gray-500 truncate">{member.email}</p>
@@ -185,7 +187,7 @@ export function MembersDialog({
                       : 'bg-gray-100 text-gray-600'
                   }`}
                 >
-                  {member.role === 'owner' ? 'Владелец' : 'Участник'}
+                  {member.role === 'owner' ? t('roleOwner') : t('roleMember')}
                 </span>
 
                 {/* Remove button */}
@@ -193,7 +195,7 @@ export function MembersDialog({
                   <button
                     onClick={() => handleRemove(member.user_id)}
                     disabled={isPendingRemove && removingId === member.user_id}
-                    title="Удалить участника"
+                    title={t('removeMember')}
                     className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors shrink-0 disabled:opacity-50"
                   >
                     {isPendingRemove && removingId === member.user_id ? (
@@ -214,7 +216,7 @@ export function MembersDialog({
         <div className="mt-6">
           <div className="border-t border-gray-100 mb-4" />
           <p className="text-sm font-medium text-gray-500 mb-3">
-            Приглашения · {pendingInvitations.length}
+            {t('pendingCount', { count: pendingInvitations.length })}
           </p>
           <div className="space-y-1">
             {pendingInvitations.map((inv) => {
@@ -239,7 +241,7 @@ export function MembersDialog({
 
                   {/* Status badge */}
                   <span className="text-xs px-2 py-0.5 rounded-full font-medium shrink-0 bg-amber-50 text-amber-700">
-                    Ожидает
+                    {t('pendingStatus')}
                   </span>
                 </div>
               )
@@ -261,7 +263,7 @@ export function MembersDialog({
             ) : (
               <LogOut size={15} />
             )}
-            Покинуть доску
+            {t('leaveBoard')}
           </button>
           {leaveError && (
             <p className="mt-2 text-sm text-red-600 text-center">{leaveError}</p>

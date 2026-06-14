@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { useTranslations } from 'next-intl'
 import { MoreVertical, Check } from 'lucide-react'
 import type { Column } from '@/lib/types'
 
@@ -17,6 +18,7 @@ interface MoveCardMenuProps {
  * горизонтальным скроллом доски. Закрывается по тапу вне меню, Escape и скроллу.
  */
 export function MoveCardMenu({ columns, currentColumnId, onMove }: MoveCardMenuProps) {
+  const t = useTranslations('board')
   const [open, setOpen] = useState(false)
   const [pos, setPos] = useState<{ top: number; left: number } | null>(null)
   const btnRef = useRef<HTMLButtonElement>(null)
@@ -68,8 +70,8 @@ export function MoveCardMenu({ columns, currentColumnId, onMove }: MoveCardMenuP
           e.stopPropagation()
           setOpen((v) => !v)
         }}
-        title="Переместить в колонку"
-        aria-label="Переместить в колонку"
+        title={t('moveTo')}
+        aria-label={t('moveTo')}
         className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-1 rounded text-gray-300 hover:text-brand-600 hover:bg-brand-50 transition-all flex-shrink-0"
       >
         <MoreVertical size={14} />
@@ -84,7 +86,7 @@ export function MoveCardMenu({ columns, currentColumnId, onMove }: MoveCardMenuP
             className="fixed z-[60] max-h-[60vh] overflow-y-auto overscroll-contain rounded-xl border border-gray-200 bg-white shadow-pop py-1"
           >
             <p className="px-3 pt-1.5 pb-1 text-xs font-medium text-gray-400">
-              Переместить в колонку
+              {t('moveTo')}
             </p>
             {columns.map((col) => {
               const isCurrent = col.id === currentColumnId

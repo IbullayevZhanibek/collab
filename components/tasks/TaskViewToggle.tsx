@@ -2,12 +2,14 @@
 
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useTransition } from 'react'
+import { useTranslations } from 'next-intl'
 import { List, LayoutGrid } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export function TaskViewToggle() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const t = useTranslations('tasks')
   const [isPending, startTransition] = useTransition()
 
   const view = searchParams.get('view') ?? 'list'
@@ -32,7 +34,7 @@ export function TaskViewToggle() {
         )}
       >
         <List size={15} />
-        Список
+        {t('viewList')}
       </button>
       <button
         onClick={() => setView('kanban')}
@@ -44,7 +46,7 @@ export function TaskViewToggle() {
         )}
       >
         <LayoutGrid size={15} />
-        Канбан
+        {t('viewKanban')}
       </button>
     </div>
   )

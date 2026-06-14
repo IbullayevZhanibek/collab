@@ -32,15 +32,22 @@ export function getBoardColor(seed: string): BoardColor {
   return BOARD_COLORS[hash % BOARD_COLORS.length]
 }
 
-const relativeTime = new Intl.RelativeTimeFormat('ru', { numeric: 'auto' })
-
-/** Относительное время по-русски: «только что», «5 минут назад», «2 часа назад». */
-export function formatRelativeTime(date: string | Date): string {
+/**
+ * Относительное время на выбранном языке: «только что», «5 минут назад» и т.п.
+ * `justNow` передаётся из переводов, остальное форматирует Intl по локали.
+ */
+export function formatRelativeTime(
+  date: string | Date,
+  locale: string = 'ru',
+  justNow: string = 'только что'
+): string {
   const then = new Date(date).getTime()
   const diffSec = Math.round((then - Date.now()) / 1000)
   const absSec = Math.abs(diffSec)
 
-  if (absSec < 45) return 'только что'
+  if (absSec < 45) return justNow
+
+  const relativeTime = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' })
 
   const units: [Intl.RelativeTimeFormatUnit, number][] = [
     ['year', 31536000],

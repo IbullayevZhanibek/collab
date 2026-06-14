@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import { getLocale, getTranslations } from 'next-intl/server'
 import { ChevronLeft, ChevronRight, CalendarDays } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { getCalendarTasks } from '@/actions/calendar'
@@ -9,12 +10,11 @@ import type { CalendarTask } from '@/lib/types'
 
 export const metadata: Metadata = { title: 'Календарь' }
 
-const MONTHS = [
-  'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
-  'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь',
-]
-const WEEKDAYS = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
+// Колонка «Готово» определяется по названию столбца в данных доски,
+// поэтому это не UI-строка перевода, а сопоставление с контентом.
 const DONE_COLUMN = 'Готово'
+
+const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
 
 const pad = (n: number) => String(n).padStart(2, '0')
 const dateKey = (y: number, m: number, d: number) => `${y}-${pad(m)}-${pad(d)}`
@@ -61,6 +61,15 @@ export default async function CalendarPage({
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
+  const t = await getTranslations('calendar')
+  const locale = await getLocale()
+
+  // Названия месяцев и дней недели берём из Intl по текущей локали.
+  const monthFmt = new Intl.DateTimeFormat(locale, { month: 'long' })
+  const weekdayFmt = new Intl.DateTimeFormat(locale, { weekday: 'short' })
+  // 2024-01-01 — понедельник; строим заголовки недели с понедельника.
+  const WEEKDAYS = Array.from({ length: 7 }, (_, i) => weekdayFmt.format(new Date(2024, 0, 1 + i)))
+
   const sp = await searchParams
   const now = new Date()
 
@@ -98,7 +107,7 @@ export default async function CalendarPage({
     .filter(({ key }) => byDay.has(key))
 
   const weekdayLong = (key: string) =>
-    new Date(key + 'T00:00:00').toLocaleDateString('ru-RU', { weekday: 'long' })
+    new Date(key + 'T00:00:00').toLocaleDateString(locale, { weekday: 'long' })
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
@@ -107,15 +116,15 @@ export default async function CalendarPage({
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5 sm:mb-6">
           <div>
             <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-              {MONTHS[month - 1]} {year}
+              {cap(monthFmt.format(new Date(year, month - 1, 1)))} {year}
             </h1>
-            <p className="text-gray-500 text-sm mt-1">Задачи по датам дедлайнов</p>
+            <p className="text-gray-500 text-sm mt-1">{t('subtitle')}</p>
           </div>
 
           <div className="flex items-center gap-2">
             <Link
               href={navHref(prev.y, prev.m)}
-              aria-label="Предыдущий месяц"
+              aria-label={t('prevMonth')}
               className="inline-flex items-center justify-center h-9 w-9 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
             >
               <ChevronLeft size={18} />
@@ -124,11 +133,11 @@ export default async function CalendarPage({
               href="/calendar"
               className="inline-flex items-center h-9 px-3 rounded-lg border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
             >
-              Сегодня
+              {t('today')}
             </Link>
             <Link
               href={navHref(next.y, next.m)}
-              aria-label="Следующий месяц"
+              aria-label={t('nextMonth')}
               className="inline-flex items-center justify-center h-9 w-9 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
             >
               <ChevronRight size={18} />
@@ -142,10 +151,10 @@ export default async function CalendarPage({
               <CalendarDays className="text-brand-400" size={44} />
             </div>
             <h2 className="text-lg font-semibold text-gray-900 mb-2">
-              В этом месяце нет задач с дедлайнами
+              {t('emptyTitle')}
             </h2>
             <p className="text-gray-500 text-sm max-w-xs">
-              Поставьте задаче дату дедлайна — и она появится здесь.
+              {t('emptyBody')}
             </p>
           </div>
         ) : (
@@ -197,7 +206,7 @@ export default async function CalendarPage({
                             ))}
                             {extra > 0 && (
                               <span className="block text-[11px] font-medium text-gray-400 px-1.5">
-                                +{extra} ещё
+                                {t('more', { count: extra })}
                               </span>
                             )}
                           </div>
@@ -228,7 +237,7 @@ export default async function CalendarPage({
                       <span className="text-sm font-medium text-gray-900 capitalize">
                         {weekdayLong(key)}
                       </span>
-                      {isToday && <span className="text-xs text-brand-600 font-medium">сегодня</span>}
+                      {isToday && <span className="text-xs text-brand-600 font-medium">{t('todayLabel')}</span>}
                     </div>
                     <div className="space-y-1.5">
                       {dayTasks.map((task) => {

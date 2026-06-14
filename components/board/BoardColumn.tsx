@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { useDroppable } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { Plus, Trash2 } from 'lucide-react'
@@ -21,6 +22,7 @@ interface BoardColumnProps {
 }
 
 export function BoardColumn({ column, cards, boardId, userId, columns, onMoveCard }: BoardColumnProps) {
+  const t = useTranslations('board')
   const [showCreateCard, setShowCreateCard] = useState(false)
   const [isPending, startTransition] = useTransition()
 
@@ -32,7 +34,7 @@ export function BoardColumn({ column, cards, boardId, userId, columns, onMoveCar
   const sortedCards = [...cards].sort((a, b) => a.position - b.position)
 
   function handleDeleteColumn() {
-    if (!confirm('Удалить колонку со всеми задачами?')) return
+    if (!confirm(t('confirmDeleteColumn'))) return
     startTransition(async () => {
       await deleteColumn(column.id, boardId)
     })
@@ -53,7 +55,7 @@ export function BoardColumn({ column, cards, boardId, userId, columns, onMoveCar
             <button
               onClick={() => setShowCreateCard(true)}
               className="p-1 rounded-lg text-gray-500 hover:text-brand-600 hover:bg-white transition-colors"
-              title="Добавить задачу"
+              title={t('addCard')}
             >
               <Plus size={16} />
             </button>
@@ -61,7 +63,7 @@ export function BoardColumn({ column, cards, boardId, userId, columns, onMoveCar
               onClick={handleDeleteColumn}
               disabled={isPending}
               className="p-1 rounded-lg text-gray-400 hover:text-red-500 hover:bg-white transition-colors"
-              title="Удалить колонку"
+              title={t('deleteColumn')}
             >
               <Trash2 size={15} />
             </button>
@@ -98,7 +100,7 @@ export function BoardColumn({ column, cards, boardId, userId, columns, onMoveCar
           className="mt-2 w-full flex items-center gap-2 px-2 py-2 rounded-lg text-sm font-medium text-gray-500 hover:text-brand-600 hover:bg-white transition-colors"
         >
           <Plus size={15} />
-          Добавить задачу
+          {t('addCard')}
         </button>
       </div>
 

@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { usePostHog } from 'posthog-js/react'
 import { Check, X, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -11,6 +12,7 @@ import type { MyInvitation } from '@/lib/types'
 export function InvitationCard({ invitation }: { invitation: MyInvitation }) {
   const router = useRouter()
   const posthog = usePostHog()
+  const t = useTranslations('invitationsPage')
   const [error, setError] = useState<string | null>(null)
   const [action, setAction] = useState<'accept' | 'decline' | null>(null)
   const [isPending, startTransition] = useTransition()
@@ -49,7 +51,10 @@ export function InvitationCard({ invitation }: { invitation: MyInvitation }) {
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-gray-900 truncate">{invitation.board_title}</p>
           <p className="text-xs text-gray-500 mt-0.5">
-            Приглашение от <span className="font-medium text-gray-700">{invitation.inviter_name}</span>
+            {t.rich('from', {
+              name: invitation.inviter_name,
+              b: (chunks) => <span className="font-medium text-gray-700">{chunks}</span>,
+            })}
           </p>
         </div>
       </div>
@@ -67,7 +72,7 @@ export function InvitationCard({ invitation }: { invitation: MyInvitation }) {
           ) : (
             <>
               <Check size={15} className="mr-1.5" />
-              Принять
+              {t('accept')}
             </>
           )}
         </Button>
@@ -82,7 +87,7 @@ export function InvitationCard({ invitation }: { invitation: MyInvitation }) {
           ) : (
             <>
               <X size={15} className="mr-1.5" />
-              Отклонить
+              {t('decline')}
             </>
           )}
         </Button>

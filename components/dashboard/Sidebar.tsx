@@ -3,11 +3,13 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 import { LayoutDashboard, ListTodo, Calendar, Mail, LogOut, Menu, X } from 'lucide-react'
 import posthog from 'posthog-js'
 import { logout } from '@/actions/auth'
 import { Logo } from '@/components/ui/logo'
+import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 
 interface SidebarProps {
   displayName: string
@@ -17,10 +19,10 @@ interface SidebarProps {
 }
 
 const NAV = [
-  { href: '/dashboard', label: 'Доски', Icon: LayoutDashboard },
-  { href: '/tasks', label: 'Мои задачи', Icon: ListTodo },
-  { href: '/calendar', label: 'Календарь', Icon: Calendar },
-  { href: '/invitations', label: 'Приглашения', Icon: Mail },
+  { href: '/dashboard', key: 'boards', Icon: LayoutDashboard },
+  { href: '/tasks', key: 'tasks', Icon: ListTodo },
+  { href: '/calendar', key: 'calendar', Icon: Calendar },
+  { href: '/invitations', key: 'invitations', Icon: Mail },
 ] as const
 
 function navClass(active: boolean) {
@@ -35,6 +37,7 @@ function navClass(active: boolean) {
 export function Sidebar({ displayName, initials, email, invitationCount }: SidebarProps) {
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
+  const t = useTranslations('nav')
 
   const isActive = (href: string) =>
     href === '/dashboard' ? pathname === href : pathname.startsWith(href)
@@ -52,7 +55,7 @@ export function Sidebar({ displayName, initials, email, invitationCount }: Sideb
         </Link>
         <button
           onClick={() => setOpen(true)}
-          aria-label="Открыть меню"
+          aria-label={t('openMenu')}
           className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
         >
           <Menu size={20} />
@@ -81,7 +84,7 @@ export function Sidebar({ displayName, initials, email, invitationCount }: Sideb
           </Link>
           <button
             onClick={() => setOpen(false)}
-            aria-label="Закрыть меню"
+            aria-label={t('closeMenu')}
             className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
           >
             <X size={18} />
@@ -89,10 +92,10 @@ export function Sidebar({ displayName, initials, email, invitationCount }: Sideb
         </div>
 
         <nav className="flex-1 p-4 space-y-1">
-          {NAV.map(({ href, label, Icon }) => (
+          {NAV.map(({ href, key, Icon }) => (
             <Link key={href} href={href} onClick={() => setOpen(false)} className={navClass(isActive(href))}>
               <Icon size={18} />
-              <span className="flex-1">{label}</span>
+              <span className="flex-1">{t(key)}</span>
               {badgeFor(href) && (
                 <span className="inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full bg-brand-600 text-white text-xs font-semibold tabular-nums">
                   {badgeFor(href)}
@@ -112,10 +115,11 @@ export function Sidebar({ displayName, initials, email, invitationCount }: Sideb
               <p className="text-xs text-gray-500 truncate">{email}</p>
             </div>
           </div>
+          <LanguageSwitcher variant="block" className="mb-2" />
           <form action={logout}>
             <button type="submit" onClick={() => posthog.reset()} className="flex w-full items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors">
               <LogOut size={16} />
-              Выйти
+              {t('logout')}
             </button>
           </form>
         </div>
@@ -130,10 +134,10 @@ export function Sidebar({ displayName, initials, email, invitationCount }: Sideb
         </div>
 
         <nav className="flex-1 p-4 space-y-1">
-          {NAV.map(({ href, label, Icon }) => (
+          {NAV.map(({ href, key, Icon }) => (
             <Link key={href} href={href} className={navClass(isActive(href))}>
               <Icon size={18} />
-              <span className="flex-1">{label}</span>
+              <span className="flex-1">{t(key)}</span>
               {badgeFor(href) && (
                 <span className="inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full bg-brand-600 text-white text-xs font-semibold tabular-nums">
                   {badgeFor(href)}
@@ -153,10 +157,11 @@ export function Sidebar({ displayName, initials, email, invitationCount }: Sideb
               <p className="text-xs text-gray-500 truncate">{email}</p>
             </div>
           </div>
+          <LanguageSwitcher variant="block" className="mb-2" />
           <form action={logout}>
             <button type="submit" onClick={() => posthog.reset()} className="flex w-full items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors">
               <LogOut size={16} />
-              Выйти
+              {t('logout')}
             </button>
           </form>
         </div>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useTransition } from 'react'
+import { useTranslations, useLocale } from 'next-intl'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CalendarDays, Trash2 } from 'lucide-react'
@@ -8,13 +9,6 @@ import { Badge } from '@/components/ui/badge'
 import { MoveCardMenu } from './MoveCardMenu'
 import { deleteCard } from '@/actions/cards'
 import type { Card, Column } from '@/lib/types'
-
-const PRIORITY_LABELS: Record<string, string> = {
-  low: 'Низкий',
-  medium: 'Средний',
-  high: 'Высокий',
-  critical: 'Критический',
-}
 
 interface BoardCardProps {
   card: Card
@@ -27,6 +21,9 @@ interface BoardCardProps {
 }
 
 export function BoardCard({ card, boardId, columns, onMoveCard }: BoardCardProps) {
+  const t = useTranslations('board')
+  const tp = useTranslations('priority')
+  const locale = useLocale()
   const [isPending, startTransition] = useTransition()
 
   const {
@@ -49,14 +46,14 @@ export function BoardCard({ card, boardId, columns, onMoveCard }: BoardCardProps
 
   function handleDelete(e: React.MouseEvent) {
     e.stopPropagation()
-    if (!confirm('Удалить задачу?')) return
+    if (!confirm(t('confirmDeleteCard'))) return
     startTransition(async () => {
       await deleteCard(card.id, boardId)
     })
   }
 
   const formatDate = (dateStr: string) =>
-    new Date(dateStr).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })
+    new Date(dateStr).toLocaleDateString(locale, { day: 'numeric', month: 'short' })
 
   const isOverdue = card.due_date && new Date(card.due_date) < new Date()
 
@@ -79,7 +76,7 @@ export function BoardCard({ card, boardId, columns, onMoveCard }: BoardCardProps
           <div className="flex items-center flex-wrap gap-1.5 mt-2">
             {card.priority && (
               <Badge variant={card.priority as 'low' | 'medium' | 'high' | 'critical'}>
-                {PRIORITY_LABELS[card.priority]}
+                {tp(card.priority)}
               </Badge>
             )}
             {card.due_date && (
@@ -108,7 +105,7 @@ export function BoardCard({ card, boardId, columns, onMoveCard }: BoardCardProps
             onPointerDown={(e) => e.stopPropagation()}
             disabled={isPending}
             className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-1 rounded text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all"
-            title="Удалить"
+            title={t('deleteCard')}
           >
             <Trash2 size={13} />
           </button>

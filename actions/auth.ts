@@ -2,24 +2,25 @@
 
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
+import { getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 
-/** Превращает технические ошибки Supabase в понятные человеку фразы на русском. */
-function humanizeAuthError(message: string): string {
+/**
+ * Превращает технические ошибки Supabase в понятные человеку фразы
+ * на выбранном пользователем языке (через переводы auth.errors).
+ */
+async function humanizeAuthError(message: string): Promise<string> {
+  const t = await getTranslations('auth.errors')
   const m = message.toLowerCase()
-  if (m.includes('invalid login credentials'))
-    return 'Неверный email или пароль. Проверьте данные и попробуйте снова.'
-  if (m.includes('email not confirmed'))
-    return 'Email ещё не подтверждён. Загляните в почту и перейдите по ссылке из письма.'
+  if (m.includes('invalid login credentials')) return t('invalidCredentials')
+  if (m.includes('email not confirmed')) return t('emailNotConfirmed')
   if (m.includes('user already registered') || m.includes('already been registered'))
-    return 'Аккаунт с таким email уже существует. Попробуйте войти.'
-  if (m.includes('password should be at least'))
-    return 'Пароль слишком короткий — нужно минимум 6 символов.'
+    return t('alreadyRegistered')
+  if (m.includes('password should be at least')) return t('passwordTooShort')
   if (m.includes('unable to validate email') || m.includes('invalid email'))
-    return 'Похоже, в email опечатка. Проверьте адрес.'
-  if (m.includes('rate limit') || m.includes('too many'))
-    return 'Слишком много попыток. Немного подождите и попробуйте снова.'
-  return 'Что-то пошло не так. Попробуйте ещё раз через минуту.'
+    return t('invalidEmail')
+  if (m.includes('rate limit') || m.includes('too many')) return t('rateLimit')
+  return t('generic')
 }
 
 export async function login(email: string, password: string) {
@@ -28,7 +29,7 @@ export async function login(email: string, password: string) {
   const { error } = await supabase.auth.signInWithPassword({ email, password })
 
   if (error) {
-    return { error: humanizeAuthError(error.message) }
+    return { error: await humanizeAuthError(error.message) }
   }
 
   revalidatePath('/', 'layout')
@@ -53,7 +54,7 @@ export async function register(email: string, password: string, fullName: string
   })
 
   if (error) {
-    return { error: humanizeAuthError(error.message) }
+    return { error: await humanizeAuthError(error.message) }
   }
 
   // При включённом подтверждении email сессии ещё нет — нельзя редиректить на

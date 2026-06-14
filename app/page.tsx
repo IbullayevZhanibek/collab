@@ -1,8 +1,10 @@
 import Link from 'next/link'
+import { getTranslations } from 'next-intl/server'
 import { Kanban, CheckSquare, Smartphone, ArrowRight } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { Logo } from '@/components/ui/logo'
+import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { AuthRedirectHandler } from '@/components/auth/AuthRedirectHandler'
 
 export default async function RootPage() {
@@ -10,6 +12,8 @@ export default async function RootPage() {
   const { data: { user } } = await supabase.auth.getUser()
 
   if (user) redirect('/dashboard')
+
+  const t = await getTranslations('landing')
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
@@ -20,17 +24,18 @@ export default async function RootPage() {
       <nav className="border-b border-gray-100 px-4 sm:px-8 py-4 flex items-center justify-between">
         <Logo size={32} withWordmark />
         <div className="flex items-center gap-2 sm:gap-3">
+          <LanguageSwitcher />
           <Link
             href="/login"
             className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors px-3 py-2"
           >
-            Войти
+            {t('nav.login')}
           </Link>
           <Link
             href="/register"
             className="text-sm font-semibold bg-brand-600 hover:bg-brand-700 hover:shadow-glow text-white px-4 py-2 rounded-lg transition-all active:scale-[0.98]"
           >
-            Начать бесплатно
+            {t('nav.signup')}
           </Link>
         </div>
       </nav>
@@ -43,17 +48,17 @@ export default async function RootPage() {
 
           <div className="relative inline-flex items-center gap-2 bg-brand-50 text-brand-700 text-xs font-semibold px-3 py-1.5 rounded-full mb-6 ring-1 ring-inset ring-brand-600/10">
             <span>✦</span>
-            <span>Бесплатно для всех</span>
+            <span>{t('hero.badge')}</span>
           </div>
 
           <h1 className="relative text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-[1.1] tracking-tight max-w-3xl">
-            Сдавайте проекты вовремя —
-            <span className="text-brand-600"> вместе</span>
+            {t.rich('hero.title', {
+              accent: (chunks) => <span className="text-brand-600">{chunks}</span>,
+            })}
           </h1>
 
           <p className="relative mt-5 text-lg sm:text-xl text-gray-500 max-w-xl leading-relaxed">
-            Collab собирает задачи и обсуждения команды в одном месте. Никаких потерянных
-            сообщений в чатах.
+            {t('hero.subtitle')}
           </p>
 
           <div className="relative mt-8 flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
@@ -61,19 +66,19 @@ export default async function RootPage() {
               href="/register"
               className="inline-flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-700 hover:shadow-glow text-white font-semibold px-7 py-3.5 rounded-xl text-base transition-all active:scale-[0.98]"
             >
-              Создать доску бесплатно
+              {t('hero.ctaPrimary')}
               <ArrowRight size={18} />
             </Link>
             <Link
               href="/login"
               className="inline-flex items-center justify-center border border-gray-200 hover:border-gray-300 hover:bg-gray-50 bg-white text-gray-700 font-semibold px-7 py-3.5 rounded-xl text-base transition-colors"
             >
-              У меня уже есть аккаунт
+              {t('hero.ctaSecondary')}
             </Link>
           </div>
 
           <p className="relative mt-4 text-xs text-gray-400">
-            Без карты банка · Готово к работе за минуту
+            {t('hero.noCard')}
           </p>
 
           {/* Превью доски */}
@@ -85,9 +90,9 @@ export default async function RootPage() {
             </div>
             <div className="flex gap-3 overflow-hidden">
               {[
-                { title: 'К работе', color: 'bg-gray-200 text-gray-700', cards: ['Дизайн главной', 'API авторизации'] },
-                { title: 'В процессе', color: 'bg-brand-100 text-brand-700', cards: ['Мобильная вёрстка', 'Тесты'] },
-                { title: 'Готово', color: 'bg-emerald-100 text-emerald-700', cards: ['База данных', 'Деплой'] },
+                { title: t('preview.todoTitle'), color: 'bg-gray-200 text-gray-700', cards: t.raw('preview.todoCards') as string[] },
+                { title: t('preview.inProgressTitle'), color: 'bg-brand-100 text-brand-700', cards: t.raw('preview.inProgressCards') as string[] },
+                { title: t('preview.doneTitle'), color: 'bg-emerald-100 text-emerald-700', cards: t.raw('preview.doneCards') as string[] },
               ].map((col) => (
                 <div key={col.title} className="flex-1 min-w-0">
                   <div className={`text-xs font-semibold px-2 py-1 rounded-md mb-2 w-fit ${col.color}`}>
@@ -110,30 +115,30 @@ export default async function RootPage() {
         <section className="px-4 sm:px-8 py-20 bg-gray-50">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center mb-3">
-              Всё для командного проекта — в одной вкладке
+              {t('features.title')}
             </h2>
             <p className="text-gray-500 text-center mb-12 max-w-md mx-auto">
-              Без лишних функций и сложных настроек. Только то, что помогает довести работу до сдачи.
+              {t('features.subtitle')}
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
               {[
                 {
                   Icon: Kanban,
-                  title: 'Видно, кто что делает',
-                  desc: 'Перетаскивайте карточки между этапами и назначайте ответственных — прогресс команды виден с первого взгляда.',
+                  title: t('features.kanbanTitle'),
+                  desc: t('features.kanbanDesc'),
                   accent: 'bg-brand-50 text-brand-600',
                 },
                 {
                   Icon: CheckSquare,
-                  title: 'Ничего не теряется',
-                  desc: 'Все задачи по всем доскам в одном списке. Фильтруйте по приоритету и дедлайну, чтобы успеть к сроку.',
+                  title: t('features.tasksTitle'),
+                  desc: t('features.tasksDesc'),
                   accent: 'bg-violet-50 text-violet-600',
                 },
                 {
                   Icon: Smartphone,
-                  title: 'Доступ с любого устройства',
-                  desc: 'Работайте с телефона, планшета или компьютера — доска всегда под рукой и синхронизируется мгновенно.',
+                  title: t('features.devicesTitle'),
+                  desc: t('features.devicesDesc'),
                   accent: 'bg-blue-50 text-blue-600',
                 },
               ].map(({ Icon, title, desc, accent }) => (
@@ -159,19 +164,14 @@ export default async function RootPage() {
               <span className="text-2xl">🎓</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">
-              Всё для командной работы — в одном месте
+              {t('benefits.title')}
             </h2>
             <p className="text-gray-500 mb-10 max-w-md mx-auto">
-              Доски, задачи и участники собраны вместе, чтобы команда всегда видела общую картину
-              и понимала, кто над чем работает.
+              {t('benefits.subtitle')}
             </p>
 
             <ul className="space-y-3 mb-10 text-left inline-block">
-              {[
-                'Видно, кто чем занят',
-                'Задачи не теряются',
-                'Изменения видны сразу всем',
-              ].map((item) => (
+              {(t.raw('benefits.items') as string[]).map((item) => (
                 <li key={item} className="flex items-center gap-3 text-gray-700">
                   <span className="flex-shrink-0 w-5 h-5 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center text-xs font-bold">✓</span>
                   {item}
@@ -184,7 +184,7 @@ export default async function RootPage() {
                 href="/register"
                 className="inline-flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-700 hover:shadow-glow text-white font-semibold px-8 py-3.5 rounded-xl text-base transition-all active:scale-[0.98]"
               >
-                Начать работу
+                {t('benefits.cta')}
                 <ArrowRight size={18} />
               </Link>
             </div>
@@ -195,7 +195,7 @@ export default async function RootPage() {
       {/* ── Footer ── */}
       <footer className="border-t border-gray-100 px-4 sm:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-3">
         <Logo size={24} withWordmark wordmarkClassName="text-base" />
-        <p className="text-sm text-gray-400">Collab © 2026 — сделано для студентов</p>
+        <p className="text-sm text-gray-400">{t('footer')}</p>
       </footer>
     </div>
   )

@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+import { getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { Sidebar } from '@/components/dashboard/Sidebar'
 import { PostHogIdentify } from '@/components/PostHogIdentify'
@@ -19,7 +20,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const { data: invitations } = await getMyInvitations()
   const invitationCount = invitations?.length ?? 0
 
-  const displayName = profile?.full_name || user.email?.split('@')[0] || 'Пользователь'
+  const t = await getTranslations('nav')
+  const displayName = profile?.full_name || user.email?.split('@')[0] || t('userFallback')
   const initials = displayName
     .split(' ')
     .map((n: string) => n[0])
