@@ -6,7 +6,7 @@ import { KanbanBoard } from '@/components/board/KanbanBoard'
 import { MembersButton } from '@/components/board/MembersButton'
 import { ActivityLog } from '@/components/board/ActivityLog'
 import { getBoardInvitations } from '@/actions/invitations'
-import type { MemberWithProfile, BoardInvitation } from '@/lib/types'
+import type { MemberWithProfile, BoardInvitation, Card } from '@/lib/types'
 
 export default async function BoardPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -16,7 +16,7 @@ export default async function BoardPage({ params }: { params: Promise<{ id: stri
 
   if (!user) redirect('/login')
 
-  const [{ data: board }, { data: columns }, cardsResult, { data: membersRaw }] =
+  const [{ data: board }, { data: columns }, { data: cardsRaw }, { data: membersRaw }] =
     await Promise.all([
       supabase.from('boards').select('*').eq('id', id).single(),
       supabase
@@ -24,21 +24,24 @@ export default async function BoardPage({ params }: { params: Promise<{ id: stri
         .select('*')
         .eq('board_id', id)
         .order('position', { ascending: true }),
+      // Карточки одним запросом через inner-join на columns по board_id —
+      // раньше тут шли два последовательных запроса (id колонок → cards.in()).
       supabase
-        .from('columns')
-        .select('id')
-        .eq('board_id', id)
-        .then(({ data: cols }) =>
-          supabase
-            .from('cards')
-            .select('*')
-            .in('column_id', cols?.map((c) => c.id) ?? [])
-            .order('position', { ascending: true })
-        ),
+        .from('cards')
+        .select('*, columns!inner(board_id)')
+        .eq('columns.board_id', id)
+        .order('position', { ascending: true }),
       supabase.rpc('get_board_members_with_info', { bid: id }),
     ])
 
   if (!board) notFound()
+
+  // Убираем вспомогательное вложенное поле columns, добавленное только для фильтра.
+  const cards = ((cardsRaw ?? []) as Record<string, unknown>[]).map((row) => {
+    const card = { ...row }
+    delete card.columns
+    return card
+  }) as unknown as Card[]
 
   const members = (membersRaw ?? []) as MemberWithProfile[]
   const isOwner = board.owner_id === user.id
@@ -91,7 +94,7 @@ export default async function BoardPage({ params }: { params: Promise<{ id: stri
             boardId={id}
             userId={user.id}
             initialColumns={columns ?? []}
-            initialCards={cardsResult.data ?? []}
+            initialCards={cards}
           />
         </div>
       </div>

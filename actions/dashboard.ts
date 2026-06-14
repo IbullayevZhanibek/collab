@@ -36,30 +36,20 @@ type LoadedCard = {
 
 // Все карточки со всех досок пользователя (RLS ограничивает доступ),
 // обогащённые контекстом доски/колонки и флагом «выполнено».
+// Один запрос с вложенным join cards → columns → boards вместо трёх
+// последовательных round-trip'ов.
 async function loadCards(
   supabase: Awaited<ReturnType<typeof createClient>>,
 ): Promise<LoadedCard[]> {
-  const { data: boards } = await supabase.from('boards').select('id, title')
-  const boardIds = boards?.map((b) => b.id) ?? []
-
-  const { data: columns } = await supabase
-    .from('columns')
-    .select('id, title, board_id')
-    .in('board_id', boardIds.length > 0 ? boardIds : [''])
-  const columnIds = columns?.map((c) => c.id) ?? []
-
   const { data: cards } = await supabase
     .from('cards')
-    .select('id, title, due_date, priority, column_id')
-    .in('column_id', columnIds.length > 0 ? columnIds : [''])
-
-  const columnMap = new Map(columns?.map((c) => [c.id, c]) ?? [])
-  const boardMap = new Map(boards?.map((b) => [b.id, b]) ?? [])
+    .select('id, title, due_date, priority, columns!inner(title, boards!inner(id, title))')
 
   return (cards ?? [])
     .map((card): LoadedCard | null => {
-      const column = columnMap.get(card.column_id)
-      const board = column ? boardMap.get(column.board_id) : undefined
+      // PostgREST возвращает вложенные связи как объекты (для !inner — не массив).
+      const column = card.columns as unknown as { title: string; boards: { id: string; title: string } } | null
+      const board = column?.boards
       if (!column || !board) return null
       return {
         id: card.id,
@@ -74,14 +64,7 @@ async function loadCards(
     .filter((c): c is LoadedCard => c !== null)
 }
 
-export async function getDashboardStats(): Promise<DashboardStats> {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
-
-  const cards = await loadCards(supabase)
-  const today = todayKey()
-
+function computeStats(cards: LoadedCard[], today: string): DashboardStats {
   let todayCount = 0
   let overdue = 0
   let done = 0
@@ -100,15 +83,8 @@ export async function getDashboardStats(): Promise<DashboardStats> {
   return { today: todayCount, overdue, done, active }
 }
 
-export async function getImportantNotifications(): Promise<{ data: NotificationItem[] }> {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
-
-  const cards = await loadCards(supabase)
-  const today = todayKey()
-
-  const items: NotificationItem[] = cards
+function computeNotifications(cards: LoadedCard[], today: string): NotificationItem[] {
+  return cards
     .filter((c) => !c.done && c.due_date)
     .map((c) => ({
       id: c.id,
@@ -123,6 +99,26 @@ export async function getImportantNotifications(): Promise<{ data: NotificationI
     .filter((c) => c.days_until <= SOON_DAYS)
     // Сначала самые просроченные, затем по близости дедлайна.
     .sort((a, b) => a.days_until - b.days_until)
+}
 
-  return { data: items }
+/**
+ * Статистика и важные уведомления за один проход.
+ * Раньше getDashboardStats и getImportantNotifications грузили одни и те же
+ * карточки по отдельности (6 запросов суммарно) — теперь это один запрос.
+ */
+export async function getDashboardData(): Promise<{
+  stats: DashboardStats
+  notifications: NotificationItem[]
+}> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
+
+  const cards = await loadCards(supabase)
+  const today = todayKey()
+
+  return {
+    stats: computeStats(cards, today),
+    notifications: computeNotifications(cards, today),
+  }
 }

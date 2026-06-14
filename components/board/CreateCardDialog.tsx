@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { useRouter } from 'next/navigation'
 import { usePostHog } from 'posthog-js/react'
 import { createCard } from '@/actions/cards'
 import { Dialog } from '@/components/ui/dialog'
@@ -18,7 +17,6 @@ interface CreateCardDialogProps {
 }
 
 export function CreateCardDialog({ open, onClose, columnId, boardId }: CreateCardDialogProps) {
-  const router = useRouter()
   const posthog = usePostHog()
 
   const [title, setTitle] = useState('')
@@ -27,7 +25,6 @@ export function CreateCardDialog({ open, onClose, columnId, boardId }: CreateCar
   const [dueDate, setDueDate] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
-  const [, startRefresh] = useTransition()
 
   function handleCreate() {
     if (!title.trim()) {
@@ -50,9 +47,10 @@ export function CreateCardDialog({ open, onClose, columnId, boardId }: CreateCar
       }
 
       posthog.capture('card_created', { board_id: boardId, column_id: columnId })
+      // Новая карточка появится через realtime-подписку KanbanBoard —
+      // полный router.refresh() страницы доски не нужен.
       resetForm()
       onClose()
-      startRefresh(() => router.refresh())
     })
   }
 

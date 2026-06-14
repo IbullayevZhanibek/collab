@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { useRouter } from 'next/navigation'
 import { createColumn } from '@/actions/columns'
 import { Dialog } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
@@ -14,11 +13,9 @@ interface CreateColumnDialogProps {
 }
 
 export function CreateColumnDialog({ open, onClose, boardId }: CreateColumnDialogProps) {
-  const router = useRouter()
   const [title, setTitle] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
-  const [, startRefresh] = useTransition()
 
   function handleCreate() {
     if (!title.trim()) {
@@ -31,9 +28,9 @@ export function CreateColumnDialog({ open, onClose, boardId }: CreateColumnDialo
       if (result?.error) {
         setError(result.error)
       } else {
+        // Новая колонка прилетит через realtime-подписку KanbanBoard.
         setTitle('')
         onClose()
-        startRefresh(() => router.refresh())
       }
     })
   }

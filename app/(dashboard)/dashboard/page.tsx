@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { getDashboardStats, getImportantNotifications } from '@/actions/dashboard'
+import { getDashboardData } from '@/actions/dashboard'
 import { StatsCards } from '@/components/dashboard/StatsCards'
 import { Notifications } from '@/components/dashboard/Notifications'
 import { DashboardClient } from './DashboardClient'
@@ -19,13 +19,12 @@ export default async function DashboardPage() {
 
   const firstName = (profile?.full_name || user.email?.split('@')[0] || 'друг').split(' ')[0]
 
-  const [boardsResult, stats, notifications] = await Promise.all([
+  const [boardsResult, { stats, notifications }] = await Promise.all([
     supabase
       .from('boards')
       .select('*, board_members(count)')
       .order('created_at', { ascending: false }),
-    getDashboardStats(),
-    getImportantNotifications(),
+    getDashboardData(),
   ])
 
   const boards = boardsResult.data
@@ -45,7 +44,7 @@ export default async function DashboardPage() {
         <StatsCards stats={stats} />
 
         {/* Важные уведомления */}
-        <Notifications items={notifications.data} />
+        <Notifications items={notifications} />
 
         {/* Список досок */}
         <DashboardClient boards={boards ?? []} currentUserId={user.id} />

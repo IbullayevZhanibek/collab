@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Plus, Trash2, LogOut, Users, LayoutDashboard } from 'lucide-react'
 import { deleteBoard } from '@/actions/boards'
@@ -40,28 +39,42 @@ function pluralizeMembers(n: number): string {
 }
 
 export function DashboardClient({ boards: initialBoards, currentUserId }: DashboardClientProps) {
-  const router = useRouter()
   const [showCreate, setShowCreate] = useState(false)
   const [busyId, setBusyId] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
 
+  // Локальная копия списка досок для оптимистичных обновлений.
+  // Когда сервер присылает новые props (после revalidatePath/навигации),
+  // синхронизируемся прямо во время рендера — рекомендованный React паттерн
+  // вместо useEffect + setState (не вызывает каскадных ре-рендеров).
+  const [boards, setBoards] = useState(initialBoards)
+  const [prevInitial, setPrevInitial] = useState(initialBoards)
+  if (initialBoards !== prevInitial) {
+    setPrevInitial(initialBoards)
+    setBoards(initialBoards)
+  }
+
   function handleDelete(boardId: string) {
     if (!confirm('Удалить доску? Это действие нельзя отменить.')) return
     setBusyId(boardId)
+    // Убираем доску из сетки мгновенно, не дожидаясь перезагрузки страницы.
+    setBoards((prev) => prev.filter((b) => b.id !== boardId))
     startTransition(async () => {
-      await deleteBoard(boardId)
+      const result = await deleteBoard(boardId)
       setBusyId(null)
-      router.refresh()
+      // Откат, если сервер вернул ошибку.
+      if (result?.error) setBoards(initialBoards)
     })
   }
 
   function handleLeave(boardId: string) {
     if (!confirm('Вы уверены, что хотите покинуть доску?')) return
     setBusyId(boardId)
+    setBoards((prev) => prev.filter((b) => b.id !== boardId))
     startTransition(async () => {
-      await leaveBoard(boardId)
+      const result = await leaveBoard(boardId)
       setBusyId(null)
-      router.refresh()
+      if (result?.error) setBoards(initialBoards)
     })
   }
 
@@ -84,9 +97,9 @@ export function DashboardClient({ boards: initialBoards, currentUserId }: Dashbo
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Доски</h1>
           <p className="text-gray-500 text-sm mt-1">
-            {initialBoards.length === 0
+            {boards.length === 0
               ? 'Здесь будут жить ваши проекты'
-              : `${initialBoards.length} ${pluralizeBoards(initialBoards.length)} · нажмите, чтобы открыть`}
+              : `${boards.length} ${pluralizeBoards(boards.length)} · нажмите, чтобы открыть`}
           </p>
         </div>
         <Button onClick={() => setShowCreate(true)} className="w-full sm:w-auto">
@@ -95,7 +108,7 @@ export function DashboardClient({ boards: initialBoards, currentUserId }: Dashbo
         </Button>
       </div>
 
-      {initialBoards.length === 0 ? (
+      {boards.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-center">
           <div className="bg-brand-50 rounded-3xl p-6 mb-5">
             <LayoutDashboard className="text-brand-400 mx-auto" size={48} />
@@ -111,7 +124,7 @@ export function DashboardClient({ boards: initialBoards, currentUserId }: Dashbo
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {initialBoards.map((board) => {
+          {boards.map((board) => {
             // Цвет иконки детерминирован по id — у доски он всегда одинаковый.
             const color = getBoardColor(board.id)
             return (
