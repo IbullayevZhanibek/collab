@@ -72,7 +72,7 @@ export function MoveCardMenu({ columns, currentColumnId, onMove }: MoveCardMenuP
         }}
         title={t('moveTo')}
         aria-label={t('moveTo')}
-        className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-1 rounded text-gray-300 hover:text-brand-600 hover:bg-brand-50 transition-all flex-shrink-0"
+        className="action-btn p-1 rounded text-gray-300 hover:text-brand-600 hover:bg-brand-50 transition-all flex-shrink-0"
       >
         <MoreVertical size={14} />
       </button>

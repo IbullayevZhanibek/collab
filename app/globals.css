@@ -81,6 +81,21 @@
     background: transparent;
   }
 
+  /* Кнопки действий на карточках (удаление/выход/перемещение).
+     На тач-устройствах всегда видны; за hover прячем только при наличии
+     настоящего указателя (мышь), чтобы планшеты не теряли кнопки. */
+  .action-btn {
+    opacity: 1;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .action-btn {
+      opacity: 0;
+    }
+    .group:hover .action-btn {
+      opacity: 1;
+    }
+  }
+
   /* Появление диалога и подложки */
   .animate-overlay-in {
     animation: overlay-in 0.16s ease-out;

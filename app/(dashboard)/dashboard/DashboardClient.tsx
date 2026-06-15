@@ -142,7 +142,7 @@ export function DashboardClient({ boards: initialBoards, currentUserId }: Dashbo
                   onClick={() => handleDelete(board.id)}
                   disabled={busyId === board.id || isPending}
                   title={t('deleteBoard')}
-                  className="absolute top-4 right-4 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all disabled:opacity-50"
+                  className="action-btn absolute top-4 right-4 p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all disabled:opacity-50"
                 >
                   <Trash2 size={15} />
                 </button>
@@ -151,7 +151,7 @@ export function DashboardClient({ boards: initialBoards, currentUserId }: Dashbo
                   onClick={() => handleLeave(board.id)}
                   disabled={busyId === board.id || isPending}
                   title={t('leaveBoard')}
-                  className="absolute top-4 right-4 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all disabled:opacity-50"
+                  className="action-btn absolute top-4 right-4 p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all disabled:opacity-50"
                 >
                   <LogOut size={15} />
                 </button>

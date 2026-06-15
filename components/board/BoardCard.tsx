@@ -114,7 +114,7 @@ export function BoardCard({ card, boardId, columns, onMoveCard, onUpdateCard }: 
             onClick={handleDelete}
             onPointerDown={(e) => e.stopPropagation()}
             disabled={isPending}
-            className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-1 rounded text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all"
+            className="action-btn p-1 rounded text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all"
             title={t('deleteCard')}
           >
             <Trash2 size={13} />
