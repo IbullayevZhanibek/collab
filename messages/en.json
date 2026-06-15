@@ -239,7 +239,8 @@
   "landing": {
     "nav": {
       "login": "Sign in",
-      "signup": "Start for free"
+      "signup": "Start for free",
+      "signupShort": "Start"
     },
     "hero": {
       "badge": "Free for everyone",

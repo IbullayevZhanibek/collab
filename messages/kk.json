@@ -239,7 +239,8 @@
   "landing": {
     "nav": {
       "login": "Кіру",
-      "signup": "Тегін бастау"
+      "signup": "Тегін бастау",
+      "signupShort": "Бастау"
     },
     "hero": {
       "badge": "Барлығына тегін",
