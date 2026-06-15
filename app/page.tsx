@@ -23,9 +23,8 @@ export default async function RootPage() {
       {/* ── Nav ── */}
       <nav className="border-b border-gray-100 px-4 sm:px-8 py-4 flex items-center justify-between">
         <Logo size={32} withWordmark />
-
-        {/* Десктоп: язык + Войти + Начать бесплатно в одну строку */}
-        <div className="hidden md:flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Переключатель языка и «Войти» — на всех экранах */}
           <LanguageSwitcher />
           <Link
             href="/login"
@@ -33,21 +32,14 @@ export default async function RootPage() {
           >
             {t('nav.login')}
           </Link>
+          {/* «Начать бесплатно» — только на десктопе, на мобильных она есть в hero */}
           <Link
             href="/register"
-            className="text-sm font-semibold bg-brand-600 hover:bg-brand-700 hover:shadow-glow text-white px-4 py-2 rounded-lg transition-all active:scale-[0.98]"
+            className="hidden md:inline-flex text-sm font-semibold bg-brand-600 hover:bg-brand-700 hover:shadow-glow text-white px-4 py-2 rounded-lg transition-all active:scale-[0.98]"
           >
             {t('nav.signup')}
           </Link>
         </div>
-
-        {/* Мобильные: только компактная кнопка «Начать» */}
-        <Link
-          href="/register"
-          className="md:hidden text-sm font-semibold bg-brand-600 hover:bg-brand-700 text-white px-3 py-2 rounded-lg transition-all active:scale-[0.98]"
-        >
-          {t('nav.signupShort')}
-        </Link>
       </nav>
 
       <main className="flex-1">
@@ -90,11 +82,6 @@ export default async function RootPage() {
           <p className="relative mt-4 text-xs text-gray-400">
             {t('hero.noCard')}
           </p>
-
-          {/* Переключатель языка — на мобильных, т.к. скрыт в шапке */}
-          <div className="relative mt-6 md:hidden">
-            <LanguageSwitcher />
-          </div>
 
           {/* Превью доски */}
           <div className="relative mt-16 w-full max-w-2xl bg-gray-50 border border-gray-200 rounded-2xl p-5 text-left shadow-card">
