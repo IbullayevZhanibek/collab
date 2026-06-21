@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/server'
 import { KanbanBoard } from '@/components/board/KanbanBoard'
 import { MembersButton } from '@/components/board/MembersButton'
 import { ActivityLog } from '@/components/board/ActivityLog'
+import { GradingButton } from '@/components/board/GradingButton'
 import { ProjectStages } from '@/components/board/ProjectStages'
 import { ProjectOverview } from '@/components/board/ProjectOverview'
 import { getBoardInvitations } from '@/actions/invitations'
@@ -100,6 +101,12 @@ export default async function BoardPage({ params }: { params: Promise<{ id: stri
 
         <div className="flex items-center gap-2 shrink-0">
           <ActivityLog boardId={id} />
+          <GradingButton
+            boardId={id}
+            currentUserId={user.id}
+            isOwner={isOwner}
+            members={members}
+          />
           <MembersButton
             boardId={id}
             currentUserId={user.id}

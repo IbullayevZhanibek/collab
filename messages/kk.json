@@ -194,7 +194,8 @@
       "stagesLabel": "Жоба кезеңдері",
       "stageTitlePlaceholder": "Кезең атауы",
       "stageAdd": "Кезең қосу",
-      "stageRemove": "Кезеңді жою"
+      "stageRemove": "Кезеңді жою",
+      "standardRubric": "Стандартты бағалау рубрикасын құру (100 балл)"
     },
     "createColumn": {
       "title": "Баған қосу",
@@ -257,6 +258,36 @@
     "expectedResult": "Күтілетін нәтиже",
     "dates": "Мерзімдер",
     "defenseFormat": "Қорғау форматы"
+  },
+  "grading": {
+    "title": "Бағалау",
+    "gradingTarget": "Кімді бағалаймыз",
+    "wholeProject": "Жоба толығымен",
+    "score": "Балл",
+    "maxScore": "Макс.",
+    "outOf": "{max} ішінен",
+    "scoreOfMax": "{max} ішінен {score}",
+    "totalScore": "Қорытынды балл",
+    "addCriterion": "Критерий қосу",
+    "deleteCriterion": "Критерийді жою",
+    "newCriterionTitle": "Жаңа критерий",
+    "applyStandard": "Стандартты рубриканы қолдану",
+    "commentPlaceholder": "Пікір (міндетті емес)",
+    "emptyTitle": "Рубрика әзірге бос",
+    "emptyBodyTeacher": "Стандартты рубриканы қолданыңыз немесе өз критерийлеріңізді қосыңыз.",
+    "emptyBodyStudent": "Оқытушы әзірге бағалау критерийлерін орнатпаған.",
+    "studentHint": "Осы жоба бойынша сіздің балдарыңыз",
+    "notGraded": "Бағаланбаған",
+    "notGradedYet": "Баға әлі қойылмаған",
+    "standard": {
+      "relevance": "Мәселенің өзектілігі",
+      "research": "Талдау және зерттеу",
+      "design": "Шешімді жобалау",
+      "implementation": "Практикалық іске асыру",
+      "teamwork": "Командалық жұмыс",
+      "documentation": "Құжаттама",
+      "presentation": "Презентация және қорғау"
+    }
   },
   "tasks": {
     "title": "Тапсырмаларым",

@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl'
 import { usePostHog } from 'posthog-js/react'
 import { Plus, Trash2 } from 'lucide-react'
 import { createBoard } from '@/actions/boards'
+import { applyStandardRubric } from '@/actions/grading'
 import { Dialog } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -29,6 +30,7 @@ export function CreateBoardDialog({ open, onClose }: CreateBoardDialogProps) {
   const [endDate, setEndDate] = useState('')
   const [defenseFormat, setDefenseFormat] = useState('')
   const [stages, setStages] = useState<StageDraft[]>([])
+  const [withStandardRubric, setWithStandardRubric] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
   const posthog = usePostHog()
@@ -42,6 +44,7 @@ export function CreateBoardDialog({ open, onClose }: CreateBoardDialogProps) {
     setEndDate('')
     setDefenseFormat('')
     setStages([])
+    setWithStandardRubric(true)
     setError(null)
   }
 
@@ -70,6 +73,10 @@ export function CreateBoardDialog({ open, onClose }: CreateBoardDialogProps) {
         setError(result.error)
       } else {
         posthog.capture('project_created', { board_id: result?.data?.id })
+        // Опционально сразу создаём стандартную рубрику оценивания.
+        if (withStandardRubric && result?.data?.id) {
+          await applyStandardRubric(result.data.id)
+        }
         reset()
         onClose()
       }
@@ -186,6 +193,17 @@ export function CreateBoardDialog({ open, onClose }: CreateBoardDialogProps) {
             {t('stageAdd')}
           </button>
         </div>
+
+        {/* Опция: сразу создать стандартную рубрику оценивания */}
+        <label className="flex items-start gap-2.5 cursor-pointer rounded-xl border border-gray-200 p-3 hover:border-gray-300 transition-colors">
+          <input
+            type="checkbox"
+            checked={withStandardRubric}
+            onChange={(e) => setWithStandardRubric(e.target.checked)}
+            className="mt-0.5 h-4 w-4 shrink-0 rounded border-gray-300 text-brand-600 focus:ring-brand-500/30 accent-brand-600"
+          />
+          <span className="text-sm text-gray-700">{t('standardRubric')}</span>
+        </label>
       </div>
 
       <div className="flex gap-3 justify-end mt-6">

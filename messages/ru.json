@@ -194,7 +194,8 @@
       "stagesLabel": "Этапы проекта",
       "stageTitlePlaceholder": "Название этапа",
       "stageAdd": "Добавить этап",
-      "stageRemove": "Удалить этап"
+      "stageRemove": "Удалить этап",
+      "standardRubric": "Создать стандартную рубрику оценивания (100 баллов)"
     },
     "createColumn": {
       "title": "Добавить колонку",
@@ -257,6 +258,36 @@
     "expectedResult": "Ожидаемый результат",
     "dates": "Сроки",
     "defenseFormat": "Формат защиты"
+  },
+  "grading": {
+    "title": "Оценивание",
+    "gradingTarget": "Кого оцениваем",
+    "wholeProject": "Проект целиком",
+    "score": "Балл",
+    "maxScore": "Макс.",
+    "outOf": "из {max}",
+    "scoreOfMax": "{score} из {max}",
+    "totalScore": "Итоговый балл",
+    "addCriterion": "Добавить критерий",
+    "deleteCriterion": "Удалить критерий",
+    "newCriterionTitle": "Новый критерий",
+    "applyStandard": "Применить стандартную рубрику",
+    "commentPlaceholder": "Комментарий (необязательно)",
+    "emptyTitle": "Рубрика пока пуста",
+    "emptyBodyTeacher": "Примените стандартную рубрику или добавьте свои критерии.",
+    "emptyBodyStudent": "Преподаватель ещё не настроил критерии оценивания.",
+    "studentHint": "Ваши баллы по этому проекту",
+    "notGraded": "Не оценено",
+    "notGradedYet": "Оценка пока не выставлена",
+    "standard": {
+      "relevance": "Актуальность проблемы",
+      "research": "Анализ и исследование",
+      "design": "Проектирование решения",
+      "implementation": "Практическая реализация",
+      "teamwork": "Командная работа",
+      "documentation": "Документация",
+      "presentation": "Презентация и защита"
+    }
   },
   "tasks": {
     "title": "Мои задачи",

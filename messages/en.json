@@ -194,7 +194,8 @@
       "stagesLabel": "Project stages",
       "stageTitlePlaceholder": "Stage title",
       "stageAdd": "Add stage",
-      "stageRemove": "Remove stage"
+      "stageRemove": "Remove stage",
+      "standardRubric": "Create the standard grading rubric (100 points)"
     },
     "createColumn": {
       "title": "Add column",
@@ -257,6 +258,36 @@
     "expectedResult": "Expected result",
     "dates": "Timeline",
     "defenseFormat": "Defense format"
+  },
+  "grading": {
+    "title": "Grading",
+    "gradingTarget": "Who are you grading",
+    "wholeProject": "Whole project",
+    "score": "Score",
+    "maxScore": "Max",
+    "outOf": "out of {max}",
+    "scoreOfMax": "{score} of {max}",
+    "totalScore": "Total score",
+    "addCriterion": "Add criterion",
+    "deleteCriterion": "Delete criterion",
+    "newCriterionTitle": "New criterion",
+    "applyStandard": "Apply standard rubric",
+    "commentPlaceholder": "Comment (optional)",
+    "emptyTitle": "No rubric yet",
+    "emptyBodyTeacher": "Apply the standard rubric or add criteria of your own.",
+    "emptyBodyStudent": "The teacher hasn't set up grading criteria yet.",
+    "studentHint": "Your scores for this project",
+    "notGraded": "Not graded",
+    "notGradedYet": "Not graded yet",
+    "standard": {
+      "relevance": "Problem relevance",
+      "research": "Analysis and research",
+      "design": "Solution design",
+      "implementation": "Practical implementation",
+      "teamwork": "Teamwork",
+      "documentation": "Documentation",
+      "presentation": "Presentation and defense"
+    }
   },
   "tasks": {
     "title": "My tasks",

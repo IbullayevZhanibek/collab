@@ -184,3 +184,36 @@ export type ActivityLogEntry = {
   details: Record<string, unknown> | null
   created_at: string
 }
+
+// ── Оценивание проекта по рубрике (этап 2) ──
+
+// Критерий оценивания.
+export type RubricCriterion = {
+  id: string
+  board_id: string
+  title: string
+  max_score: number
+  order_index: number
+  created_at: string
+}
+
+// Выставленная оценка по критерию (для всего проекта или конкретного студента).
+export type Grade = {
+  id: string
+  board_id: string
+  criterion_id: string
+  student_id: string | null
+  score: number
+  comment: string | null
+  graded_by: string | null
+  created_at: string
+  updated_at: string
+}
+
+// Итоговый балл по проекту/студенту.
+export type ProjectScore = {
+  total: number   // сумма выставленных баллов
+  max: number     // сумма максимумов всех критериев
+  percent: number // total / max * 100, округлено
+  graded: number  // сколько критериев уже оценено
+}
