@@ -137,6 +137,25 @@ export type CardLinkWithAuthor = CardLink & {
 
 export type ColumnWithCards = Column & { cards: Card[] }
 
+export type Reflection = {
+  id: string
+  board_id: string
+  stage_id: string | null
+  student_id: string
+  what_done: string | null
+  difficulties: string | null
+  improvements: string | null
+  contribution: string | null
+  created_at: string
+  updated_at: string
+}
+
+// Рефлексия с именем студента и названием этапа (возвращается get_project_reflections).
+export type ReflectionWithMeta = Reflection & {
+  full_name: string | null
+  stage_title: string | null
+}
+
 export type BoardWithMembers = Board & { board_members: BoardMember[] }
 
 export type MemberWithProfile = {
