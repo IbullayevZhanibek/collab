@@ -156,6 +156,57 @@ export type ReflectionWithMeta = Reflection & {
   stage_title: string | null
 }
 
+// ── Мониторинг ────────────────────────────────────────────────────────────────
+
+export type ProjectMetrics = {
+  totalCards: number
+  doneCards: number
+  completionRate: number     // 0–100
+  cardsWithDeadline: number
+  onTimeCards: number
+  deadlineCompliance: number // 0–100
+  overdueCount: number
+  totalStages: number
+  doneStages: number
+  stageProgress: number      // 0–100
+}
+
+export type ActivityLevel = 'active' | 'low' | 'inactive'
+
+export type StudentActivityMetric = {
+  userId: string
+  fullName: string | null
+  email: string
+  teamRole: string | null
+  assignedCards: number
+  doneCards: number
+  commentsCount: number
+  linksCount: number
+  reflectionsCount: number
+  activityScore: number
+  activityLevel: ActivityLevel
+}
+
+export type TaskDistItem = {
+  name: string
+  assigned: number
+  done: number
+}
+
+export type TeamCollaborationMetrics = {
+  totalComments: number
+  totalLinks: number
+  activeStudents: number
+  totalStudents: number
+  taskDistribution: TaskDistItem[]
+}
+
+export type MonitoringData = {
+  project: ProjectMetrics
+  students: StudentActivityMetric[]
+  collaboration: TeamCollaborationMetrics
+}
+
 export type BoardWithMembers = Board & { board_members: BoardMember[] }
 
 export type MemberWithProfile = {
