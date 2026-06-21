@@ -20,6 +20,7 @@ import { BoardCard } from './BoardCard'
 import { CreateColumnDialog } from './CreateColumnDialog'
 import { reorderCards, moveCard, updateCard } from '@/actions/cards'
 import { getBulkCommentsCounts } from '@/actions/comments'
+import { getBulkLinksCounts } from '@/actions/card_links'
 import { createClient } from '@/lib/supabase/client'
 import type { Column, Card } from '@/lib/types'
 
@@ -41,6 +42,7 @@ export function KanbanBoard({ boardId, userId, isOwner = false, initialColumns, 
   const [showCreateColumn, setShowCreateColumn] = useState(false)
   const [, startTransition] = useTransition()
   const [commentCounts, setCommentCounts] = useState<Record<string, number>>({})
+  const [linkCounts, setLinkCounts] = useState<Record<string, number>>({})
 
   // Синхронизируем серверные props в локальное состояние, когда сервер
   // присылает новые данные (после revalidatePath / навигации). Делаем это
@@ -62,12 +64,12 @@ export function KanbanBoard({ boardId, userId, isOwner = false, initialColumns, 
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
   )
 
-  // Загрузка количества комментариев по всем карточкам (одним запросом).
+  // Загрузка счётчиков комментариев и ссылок по всем карточкам (по одному запросу).
   useEffect(() => {
     if (!cards.length) return
-    getBulkCommentsCounts(cards.map((c) => c.id)).then(({ data }) => {
-      if (data) setCommentCounts(data)
-    })
+    const ids = cards.map((c) => c.id)
+    getBulkCommentsCounts(ids).then(({ data }) => { if (data) setCommentCounts(data) })
+    getBulkLinksCounts(ids).then(({ data }) => { if (data) setLinkCounts(data) })
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []) // только при монтировании; далее обновляется через realtime
 
@@ -140,15 +142,44 @@ export function KanbanBoard({ boardId, userId, isOwner = false, initialColumns, 
       )
       .subscribe()
 
+    // Обновляем счётчики ссылок в реальном времени.
+    const linksChannel = supabase
+      .channel(`board-${boardId}-links`)
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'card_links' },
+        (payload) => {
+          const cardId = (payload.new as { card_id: string }).card_id
+          setLinkCounts((prev) => ({ ...prev, [cardId]: (prev[cardId] ?? 0) + 1 }))
+        },
+      )
+      .on(
+        'postgres_changes',
+        { event: 'DELETE', schema: 'public', table: 'card_links' },
+        (payload) => {
+          const cardId = (payload.old as { card_id: string }).card_id
+          setLinkCounts((prev) => ({
+            ...prev,
+            [cardId]: Math.max(0, (prev[cardId] ?? 0) - 1),
+          }))
+        },
+      )
+      .subscribe()
+
     return () => {
       supabase.removeChannel(cardsChannel)
       supabase.removeChannel(columnsChannel)
       supabase.removeChannel(commentsChannel)
+      supabase.removeChannel(linksChannel)
     }
   }, [boardId])
 
   function handleCommentCountChange(cardId: string, count: number) {
     setCommentCounts((prev) => ({ ...prev, [cardId]: count }))
+  }
+
+  function handleLinkCountChange(cardId: string, count: number) {
+    setLinkCounts((prev) => ({ ...prev, [cardId]: count }))
   }
 
   function getColumnCards(columnId: string) {
@@ -278,10 +309,12 @@ export function KanbanBoard({ boardId, userId, isOwner = false, initialColumns, 
               userId={userId}
               isTeacher={isOwner}
               commentCounts={commentCounts}
+              linkCounts={linkCounts}
               columns={columns}
               onMoveCard={handleMoveCard}
               onUpdateCard={handleUpdateCard}
               onCommentCountChange={handleCommentCountChange}
+              onLinkCountChange={handleLinkCountChange}
             />
           ))}
         </SortableContext>

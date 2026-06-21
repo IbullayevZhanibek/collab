@@ -289,6 +289,26 @@
       "presentation": "Презентация и защита"
     }
   },
+  "links": {
+    "title": "Материалы",
+    "add": "Добавить ссылку",
+    "url": "Ссылка (URL)",
+    "urlPlaceholder": "https://…",
+    "name": "Название (необязательно)",
+    "namePlaceholder": "Например: Макет в Figma",
+    "empty": "Материалы пока не прикреплены",
+    "delete": "Удалить ссылку",
+    "confirmDelete": "Удалить ссылку?",
+    "invalidUrl": "Некорректная ссылка — должна начинаться с https://",
+    "addedBy": "Добавил(а) {name}",
+    "types": {
+      "github": "GitHub",
+      "figma": "Figma",
+      "gdrive": "Google Drive",
+      "video": "Видео",
+      "other": "Ссылка"
+    }
+  },
   "comments": {
     "title": "Комментарии",
     "add": "Написать комментарий…",

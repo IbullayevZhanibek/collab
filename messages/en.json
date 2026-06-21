@@ -289,6 +289,26 @@
       "presentation": "Presentation and defense"
     }
   },
+  "links": {
+    "title": "Materials",
+    "add": "Add link",
+    "url": "Link (URL)",
+    "urlPlaceholder": "https://…",
+    "name": "Title (optional)",
+    "namePlaceholder": "e.g. Figma mockup",
+    "empty": "No materials attached yet",
+    "delete": "Delete link",
+    "confirmDelete": "Delete this link?",
+    "invalidUrl": "Invalid URL — must start with https://",
+    "addedBy": "Added by {name}",
+    "types": {
+      "github": "GitHub",
+      "figma": "Figma",
+      "gdrive": "Google Drive",
+      "video": "Video",
+      "other": "Link"
+    }
+  },
   "comments": {
     "title": "Comments",
     "add": "Write a comment…",

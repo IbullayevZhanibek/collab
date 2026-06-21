@@ -116,6 +116,25 @@ export type CommentWithAuthor = {
   team_role: string | null
 }
 
+export type LinkType = 'github' | 'figma' | 'gdrive' | 'video' | 'other'
+
+// Ссылка на материал, прикреплённая к задаче.
+export type CardLink = {
+  id: string
+  card_id: string
+  board_id: string
+  user_id: string
+  url: string
+  title: string | null
+  link_type: LinkType
+  created_at: string
+}
+
+// Ссылка с именем добавившего (возвращается get_card_links).
+export type CardLinkWithAuthor = CardLink & {
+  full_name: string | null
+}
+
 export type ColumnWithCards = Column & { cards: Card[] }
 
 export type BoardWithMembers = Board & { board_members: BoardMember[] }

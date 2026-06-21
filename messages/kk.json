@@ -289,6 +289,26 @@
       "presentation": "Презентация және қорғау"
     }
   },
+  "links": {
+    "title": "Материалдар",
+    "add": "Сілтеме қосу",
+    "url": "Сілтеме (URL)",
+    "urlPlaceholder": "https://…",
+    "name": "Атауы (міндетті емес)",
+    "namePlaceholder": "Мысалы: Figma макеті",
+    "empty": "Материалдар әлі тіркелмеген",
+    "delete": "Сілтемені жою",
+    "confirmDelete": "Сілтемені жою керек пе?",
+    "invalidUrl": "Сілтеме дұрыс емес — https:// болуы тиіс",
+    "addedBy": "{name} қосты",
+    "types": {
+      "github": "GitHub",
+      "figma": "Figma",
+      "gdrive": "Google Drive",
+      "video": "Бейне",
+      "other": "Сілтеме"
+    }
+  },
   "comments": {
     "title": "Пікірлер",
     "add": "Пікір жазыңыз…",

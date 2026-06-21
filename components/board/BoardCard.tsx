@@ -4,7 +4,7 @@ import { useState, useTransition } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { CalendarDays, MessageSquare, Trash2 } from 'lucide-react'
+import { CalendarDays, MessageSquare, Paperclip, Trash2 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { MoveCardMenu } from './MoveCardMenu'
 import { CardDetailDialog } from './CardDetailDialog'
@@ -17,6 +17,7 @@ interface BoardCardProps {
   userId: string
   isTeacher?: boolean
   commentsCount?: number
+  linksCount?: number
   /** Все колонки доски — для меню «Переместить в колонку» и диалога деталей. */
   columns?: Column[]
   /** Перемещение карточки в другую колонку (оптимистично + Server Action). */
@@ -24,6 +25,7 @@ interface BoardCardProps {
   /** Сохранение правок из диалога деталей (оптимистично + Server Action). */
   onUpdateCard?: (cardId: string, updates: Partial<Card>) => Promise<{ error?: string } | void>
   onCommentCountChange?: (cardId: string, count: number) => void
+  onLinkCountChange?: (cardId: string, count: number) => void
 }
 
 export function BoardCard({
@@ -32,10 +34,12 @@ export function BoardCard({
   userId,
   isTeacher = false,
   commentsCount = 0,
+  linksCount = 0,
   columns,
   onMoveCard,
   onUpdateCard,
   onCommentCountChange,
+  onLinkCountChange,
 }: BoardCardProps) {
   const t = useTranslations('board')
   const tp = useTranslations('priority')
@@ -43,12 +47,18 @@ export function BoardCard({
   const [isPending, startTransition] = useTransition()
   const [showDetail, setShowDetail] = useState(false)
   const [localCount, setLocalCount] = useState(commentsCount)
+  const [localLinksCount, setLocalLinksCount] = useState(linksCount)
 
-  // Синхронизируем с пропом когда KanbanBoard обновляет карту после realtime.
+  // Синхронизируем с пропами когда KanbanBoard обновляет счётчики через realtime.
   const [prevCount, setPrevCount] = useState(commentsCount)
   if (commentsCount !== prevCount) {
     setPrevCount(commentsCount)
     setLocalCount(commentsCount)
+  }
+  const [prevLinksCount, setPrevLinksCount] = useState(linksCount)
+  if (linksCount !== prevLinksCount) {
+    setPrevLinksCount(linksCount)
+    setLocalLinksCount(linksCount)
   }
 
   const {
@@ -120,6 +130,12 @@ export function BoardCard({
                 {formatDate(card.due_date)}
               </span>
             )}
+            {localLinksCount > 0 && (
+              <span className="inline-flex items-center gap-0.5 text-xs text-gray-400">
+                <Paperclip size={11} />
+                {localLinksCount}
+              </span>
+            )}
             {localCount > 0 && (
               <span className="inline-flex items-center gap-0.5 text-xs text-gray-400">
                 <MessageSquare size={11} />
@@ -164,6 +180,10 @@ export function BoardCard({
         onCommentCountChange={(count) => {
           setLocalCount(count)
           onCommentCountChange?.(card.id, count)
+        }}
+        onLinkCountChange={(count) => {
+          setLocalLinksCount(count)
+          onLinkCountChange?.(card.id, count)
         }}
       />
     )}

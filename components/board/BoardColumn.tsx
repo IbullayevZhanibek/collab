@@ -18,11 +18,13 @@ interface BoardColumnProps {
   userId: string
   isTeacher?: boolean
   commentCounts?: Record<string, number>
+  linkCounts?: Record<string, number>
   /** Все колонки доски — для меню «Переместить в колонку» на карточках. */
   columns: Column[]
   onMoveCard: (cardId: string, targetColumnId: string) => void
   onUpdateCard: (cardId: string, updates: Partial<Card>) => Promise<{ error?: string } | void>
   onCommentCountChange?: (cardId: string, count: number) => void
+  onLinkCountChange?: (cardId: string, count: number) => void
 }
 
 export function BoardColumn({
@@ -32,10 +34,12 @@ export function BoardColumn({
   userId,
   isTeacher = false,
   commentCounts = {},
+  linkCounts = {},
   columns,
   onMoveCard,
   onUpdateCard,
   onCommentCountChange,
+  onLinkCountChange,
 }: BoardColumnProps) {
   const t = useTranslations('board')
   const [showCreateCard, setShowCreateCard] = useState(false)
@@ -104,10 +108,12 @@ export function BoardColumn({
                 userId={userId}
                 isTeacher={isTeacher}
                 commentsCount={commentCounts[card.id] ?? 0}
+                linksCount={linkCounts[card.id] ?? 0}
                 columns={columns}
                 onMoveCard={onMoveCard}
                 onUpdateCard={onUpdateCard}
                 onCommentCountChange={onCommentCountChange}
+                onLinkCountChange={onLinkCountChange}
               />
             ))}
           </SortableContext>

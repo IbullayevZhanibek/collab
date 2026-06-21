@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge'
 import { MoveCardMenu } from './MoveCardMenu'
 import { deleteCard } from '@/actions/cards'
 import { CardCommentsSection } from './CardCommentsSection'
+import { CardLinksSection } from './CardLinksSection'
 import type { Card, Column } from '@/lib/types'
 
 interface CardDetailDialogProps {
@@ -27,6 +28,7 @@ interface CardDetailDialogProps {
   /** Сохранение изменений: оптимистично обновляет доску и пишет на сервер. */
   onUpdate: (updates: Partial<Card>) => Promise<{ error?: string } | void>
   onCommentCountChange?: (count: number) => void
+  onLinkCountChange?: (count: number) => void
 }
 
 type Priority = 'low' | 'medium' | 'high' | 'critical'
@@ -42,6 +44,7 @@ export function CardDetailDialog({
   onMove,
   onUpdate,
   onCommentCountChange,
+  onLinkCountChange,
 }: CardDetailDialogProps) {
   const t = useTranslations('board')
   const tf = useTranslations('dialogs.createCard')
@@ -205,6 +208,14 @@ export function CardDetailDialog({
           <CalendarDays size={12} />
           {t('createdAt', { date: createdAt })}
         </p>
+
+        {/* Материалы */}
+        <CardLinksSection
+          cardId={card.id}
+          boardId={boardId}
+          currentUserId={currentUserId}
+          onCountChange={onLinkCountChange}
+        />
 
         {/* Комментарии */}
         <CardCommentsSection
