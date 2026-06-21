@@ -67,6 +67,9 @@
       "subtitle": "Тегін әрі мәңгілік — банк картасы қажет емес",
       "name": "Аты",
       "namePlaceholder": "Жәнібек",
+      "roleLabel": "Мен —",
+      "roleTeacher": "Оқытушы",
+      "roleStudent": "Студент",
       "email": "Email",
       "password": "Құпиясөз",
       "passwordPlaceholder": "Кемінде 6 таңба",
@@ -114,19 +117,31 @@
   },
   "boards": {
     "title": "Тақталар",
+    "titleTeacher": "Менің жобаларым (оқытушы ретінде)",
+    "titleStudent": "Мен қатысатын жобалар",
     "emptyHint": "Жобаларыңыз осында сақталады",
-    "countHint": "{count} тақта · ашу үшін басыңыз",
+    "emptyHintTeacher": "Студенттеріңізге арналған оқу жобасын жасаңыз",
+    "emptyHintStudent": "Сізді қосқан жобалар осында көрінеді",
+    "countHint": "{count} жоба · ашу үшін басыңыз",
     "newBoard": "Жаңа тақта",
+    "newProject": "Жаңа жоба",
     "emptyTitle": "Неден бастаймыз?",
-    "emptyBody": "Алғашқы тақтаңызды жасаңыз — мысалы, курстық жоба не топтық жұмыс үшін. Бұл бірнеше секунд алады.",
-    "createFirst": "Алғашқы тақтаны жасау",
+    "emptyBody": "Алғашқы оқу жобаңызды жасаңыз — мақсатын, мерзімдерін және кезеңдерін белгілеңіз. Бұл бірнеше минут алады.",
+    "emptyTitleStudent": "Әзірге жоба жоқ",
+    "emptyBodyStudent": "Оқытушы сізді жобаға қосқанда, ол осында көрінеді.",
+    "createFirst": "Алғашқы жобаны жасау",
     "createdOn": "Жасалған: {date}",
     "membersCount": "{count} қатысушы",
     "addBoard": "Тақта қосу",
-    "deleteBoard": "Тақтаны жою",
-    "leaveBoard": "Тақтадан шығу",
-    "confirmDelete": "Тақтаны жою керек пе? Бұл әрекетті болдырмау мүмкін емес.",
-    "confirmLeave": "Тақтадан шыққыңыз келетініне сенімдісіз бе?"
+    "addProject": "Жоба қосу",
+    "deleteBoard": "Жобаны жою",
+    "leaveBoard": "Жобадан шығу",
+    "confirmDelete": "Жобаны жою керек пе? Бұл әрекетті болдырмау мүмкін емес.",
+    "confirmLeave": "Жобадан шыққыңыз келетініне сенімдісіз бе?"
+  },
+  "roles": {
+    "teacher": "Оқытушы",
+    "student": "Студент"
   },
   "board": {
     "backToBoards": "Тақталарға",
@@ -162,10 +177,24 @@
   },
   "dialogs": {
     "createBoard": {
-      "title": "Тақта құру",
-      "label": "Тақта атауы",
-      "placeholder": "Мысалы: 2025 жобасы",
-      "errorEmpty": "Тақта атауын енгізіңіз"
+      "title": "Оқу жобасын құру",
+      "label": "Жоба атауы",
+      "placeholder": "Мысалы: 2026 дипломдық жоба",
+      "errorEmpty": "Жоба атауын енгізіңіз",
+      "descriptionLabel": "Сипаттама",
+      "descriptionPlaceholder": "Бұл жоба не туралы?",
+      "goalLabel": "Мақсаты",
+      "goalPlaceholder": "Жобада неге қол жеткізу керек?",
+      "expectedResultLabel": "Күтілетін нәтиже",
+      "expectedResultPlaceholder": "Нәтижесінде не болуы керек?",
+      "startDateLabel": "Басталу күні",
+      "endDateLabel": "Аяқталу күні",
+      "defenseFormatLabel": "Қорғау форматы",
+      "defenseFormatPlaceholder": "Мысалы: презентация + демонстрация",
+      "stagesLabel": "Жоба кезеңдері",
+      "stageTitlePlaceholder": "Кезең атауы",
+      "stageAdd": "Кезең қосу",
+      "stageRemove": "Кезеңді жою"
     },
     "createColumn": {
       "title": "Баған қосу",
@@ -195,14 +224,39 @@
       "inviteSuccess": "Шақыру жіберілді",
       "membersCount": "Қатысушылар · {count}",
       "you": "(сіз)",
-      "roleOwner": "Иесі",
-      "roleMember": "Қатысушы",
+      "roleOwner": "Оқытушы",
+      "roleMember": "Студент",
       "removeMember": "Қатысушыны жою",
       "pendingCount": "Шақырулар · {count}",
       "pendingStatus": "Күтілуде",
-      "leaveBoard": "Тақтадан шығу",
-      "confirmLeave": "Тақтадан шыққыңыз келетініне сенімдісіз бе?"
+      "leaveBoard": "Жобадан шығу",
+      "confirmLeave": "Жобадан шыққыңыз келетініне сенімдісіз бе?",
+      "teamRoleNone": "Рөлсіз",
+      "teamRoles": {
+        "project_manager": "Жоба менеджері",
+        "researcher": "Зерттеуші",
+        "developer": "Әзірлеуші",
+        "analyst": "Талдаушы",
+        "presenter": "Баяндамашы"
+      }
     }
+  },
+  "stages": {
+    "title": "Жоба кезеңдері",
+    "count": "{count} кезең",
+    "toggleHint": "Күйін өзгерту үшін басыңыз",
+    "status": {
+      "pending": "Басталмаған",
+      "in_progress": "Орындалуда",
+      "done": "Аяқталған"
+    }
+  },
+  "projectOverview": {
+    "title": "Жоба туралы",
+    "goal": "Мақсаты",
+    "expectedResult": "Күтілетін нәтиже",
+    "dates": "Мерзімдер",
+    "defenseFormat": "Қорғау форматы"
   },
   "tasks": {
     "title": "Тапсырмаларым",

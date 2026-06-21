@@ -13,9 +13,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name')
+    .select('full_name, global_role')
     .eq('user_id', user.id)
     .single()
+
+  const globalRole: 'teacher' | 'student' = profile?.global_role === 'teacher' ? 'teacher' : 'student'
 
   const { data: invitations } = await getMyInvitations()
   const invitationCount = invitations?.length ?? 0
@@ -32,7 +34,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   return (
     <div className="min-h-screen bg-gray-50 flex">
       <PostHogIdentify userId={user.id} email={user.email ?? ''} name={displayName} />
-      <Sidebar displayName={displayName} initials={initials} email={user.email ?? ''} invitationCount={invitationCount} />
+      <Sidebar displayName={displayName} initials={initials} email={user.email ?? ''} invitationCount={invitationCount} globalRole={globalRole} />
 
       {/* Main — offset for desktop sidebar, offset for mobile top bar */}
       <main className="flex-1 md:ml-64 min-h-screen pt-14 md:pt-0">

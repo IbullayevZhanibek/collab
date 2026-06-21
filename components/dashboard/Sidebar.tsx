@@ -16,6 +16,7 @@ interface SidebarProps {
   initials: string
   email: string
   invitationCount: number
+  globalRole: 'teacher' | 'student'
 }
 
 const NAV = [
@@ -35,10 +36,22 @@ function navClass(active: boolean) {
   )
 }
 
-export function Sidebar({ displayName, initials, email, invitationCount }: SidebarProps) {
+export function Sidebar({ displayName, initials, email, invitationCount, globalRole }: SidebarProps) {
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
   const t = useTranslations('nav')
+  const tr = useTranslations('roles')
+
+  const roleBadge = (
+    <span
+      className={cn(
+        'mt-0.5 inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-semibold',
+        globalRole === 'teacher' ? 'bg-brand-100 text-brand-700' : 'bg-emerald-100 text-emerald-700'
+      )}
+    >
+      {globalRole === 'teacher' ? tr('teacher') : tr('student')}
+    </span>
+  )
 
   const isActive = (href: string) =>
     href === '/dashboard' ? pathname === href : pathname.startsWith(href)
@@ -114,6 +127,7 @@ export function Sidebar({ displayName, initials, email, invitationCount }: Sideb
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-gray-900 truncate">{displayName}</p>
               <p className="text-xs text-gray-500 truncate">{email}</p>
+              {roleBadge}
             </div>
           </div>
           <LanguageSwitcher variant="block" className="mb-2" />
@@ -156,6 +170,7 @@ export function Sidebar({ displayName, initials, email, invitationCount }: Sideb
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-gray-900 truncate">{displayName}</p>
               <p className="text-xs text-gray-500 truncate">{email}</p>
+              {roleBadge}
             </div>
           </div>
           <LanguageSwitcher variant="block" className="mb-2" />

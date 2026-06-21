@@ -8,9 +8,11 @@ import { UserMinus, Loader2, LogOut } from 'lucide-react'
 import { Dialog } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { removeMember, leaveBoard } from '@/actions/members'
+import { removeMember, leaveBoard, setTeamRole } from '@/actions/members'
 import { sendInvitation } from '@/actions/invitations'
-import type { MemberWithProfile, BoardInvitation } from '@/lib/types'
+import { Select } from '@/components/ui/select'
+import { TEAM_ROLES } from '@/lib/types'
+import type { MemberWithProfile, BoardInvitation, TeamRole } from '@/lib/types'
 
 interface MembersDialogProps {
   open: boolean
@@ -70,6 +72,21 @@ export function MembersDialog({
     startRemoveTransition(async () => {
       const result = await removeMember(boardId, userId)
       setRemovingId(null)
+      if (!result?.error) {
+        startRefresh(() => router.refresh())
+      }
+    })
+  }
+
+  const [savingRoleId, setSavingRoleId] = useState<string | null>(null)
+  const [, startRoleTransition] = useTransition()
+
+  function handleTeamRole(userId: string, value: string) {
+    const role = (value || null) as TeamRole | null
+    setSavingRoleId(userId)
+    startRoleTransition(async () => {
+      const result = await setTeamRole(boardId, userId, role)
+      setSavingRoleId(null)
       if (!result?.error) {
         startRefresh(() => router.refresh())
       }
@@ -168,16 +185,38 @@ export function MembersDialog({
                   {initial}
                 </div>
 
-                {/* Name + email */}
+                {/* Name + email + командная роль */}
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-gray-900 truncate">
                     {displayName}
                     {isMe && (
                       <span className="ml-1 text-gray-400 font-normal">{t('you')}</span>
                     )}
+                    {member.team_role && member.role !== 'owner' && (
+                      <span className="ml-2 text-xs px-1.5 py-0.5 rounded-md bg-brand-50 text-brand-600 font-medium align-middle">
+                        {t(`teamRoles.${member.team_role}`)}
+                      </span>
+                    )}
                   </p>
                   <p className="text-xs text-gray-500 truncate">{member.email}</p>
                 </div>
+
+                {/* Назначение командной роли — только преподаватель, только студентам */}
+                {isOwner && member.role !== 'owner' && (
+                  <Select
+                    value={member.team_role ?? ''}
+                    disabled={savingRoleId === member.user_id}
+                    onChange={(e) => handleTeamRole(member.user_id, e.target.value)}
+                    className="h-8 w-auto max-w-[140px] text-xs shrink-0"
+                  >
+                    <option value="">{t('teamRoleNone')}</option>
+                    {TEAM_ROLES.map((r) => (
+                      <option key={r} value={r}>
+                        {t(`teamRoles.${r}`)}
+                      </option>
+                    ))}
+                  </Select>
+                )}
 
                 {/* Role badge */}
                 <span

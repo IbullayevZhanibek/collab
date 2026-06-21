@@ -67,6 +67,9 @@
       "subtitle": "Бесплатно и навсегда — карта банка не нужна",
       "name": "Имя",
       "namePlaceholder": "Жанибек",
+      "roleLabel": "Я —",
+      "roleTeacher": "Преподаватель",
+      "roleStudent": "Студент",
       "email": "Email",
       "password": "Пароль",
       "passwordPlaceholder": "Минимум 6 символов",
@@ -114,19 +117,31 @@
   },
   "boards": {
     "title": "Доски",
+    "titleTeacher": "Мои проекты (как преподаватель)",
+    "titleStudent": "Проекты, где я участвую",
     "emptyHint": "Здесь будут жить ваши проекты",
-    "countHint": "{count, plural, one {# доска} few {# доски} many {# досок} other {# досок}} · нажмите, чтобы открыть",
+    "emptyHintTeacher": "Создайте учебный проект для своих студентов",
+    "emptyHintStudent": "Проекты, куда вас добавят, появятся здесь",
+    "countHint": "{count, plural, one {# проект} few {# проекта} many {# проектов} other {# проектов}} · нажмите, чтобы открыть",
     "newBoard": "Новая доска",
+    "newProject": "Новый проект",
     "emptyTitle": "С чего начнём?",
-    "emptyBody": "Создайте первую доску — например, для курсового проекта или командной работы. Это займёт пару секунд.",
-    "createFirst": "Создать первую доску",
+    "emptyBody": "Создайте первый учебный проект — задайте цель, сроки и этапы. Это займёт пару минут.",
+    "emptyTitleStudent": "Пока нет проектов",
+    "emptyBodyStudent": "Когда преподаватель добавит вас в проект, он появится здесь.",
+    "createFirst": "Создать первый проект",
     "createdOn": "Создана {date}",
     "membersCount": "{count, plural, one {# участник} few {# участника} many {# участников} other {# участников}}",
     "addBoard": "Добавить доску",
-    "deleteBoard": "Удалить доску",
-    "leaveBoard": "Покинуть доску",
-    "confirmDelete": "Удалить доску? Это действие нельзя отменить.",
-    "confirmLeave": "Вы уверены, что хотите покинуть доску?"
+    "addProject": "Добавить проект",
+    "deleteBoard": "Удалить проект",
+    "leaveBoard": "Покинуть проект",
+    "confirmDelete": "Удалить проект? Это действие нельзя отменить.",
+    "confirmLeave": "Вы уверены, что хотите покинуть проект?"
+  },
+  "roles": {
+    "teacher": "Преподаватель",
+    "student": "Студент"
   },
   "board": {
     "backToBoards": "К доскам",
@@ -162,10 +177,24 @@
   },
   "dialogs": {
     "createBoard": {
-      "title": "Создать доску",
-      "label": "Название доски",
-      "placeholder": "Например: Проект 2025",
-      "errorEmpty": "Введите название доски"
+      "title": "Создать учебный проект",
+      "label": "Название проекта",
+      "placeholder": "Например: Дипломный проект 2026",
+      "errorEmpty": "Введите название проекта",
+      "descriptionLabel": "Описание",
+      "descriptionPlaceholder": "О чём этот проект?",
+      "goalLabel": "Цель",
+      "goalPlaceholder": "Чего нужно достичь в проекте?",
+      "expectedResultLabel": "Ожидаемый результат",
+      "expectedResultPlaceholder": "Что должно получиться на выходе?",
+      "startDateLabel": "Дата начала",
+      "endDateLabel": "Дата окончания",
+      "defenseFormatLabel": "Формат защиты",
+      "defenseFormatPlaceholder": "Например: презентация + демонстрация",
+      "stagesLabel": "Этапы проекта",
+      "stageTitlePlaceholder": "Название этапа",
+      "stageAdd": "Добавить этап",
+      "stageRemove": "Удалить этап"
     },
     "createColumn": {
       "title": "Добавить колонку",
@@ -195,14 +224,39 @@
       "inviteSuccess": "Приглашение отправлено",
       "membersCount": "Участники · {count}",
       "you": "(вы)",
-      "roleOwner": "Владелец",
-      "roleMember": "Участник",
+      "roleOwner": "Преподаватель",
+      "roleMember": "Студент",
       "removeMember": "Удалить участника",
       "pendingCount": "Приглашения · {count}",
       "pendingStatus": "Ожидает",
-      "leaveBoard": "Покинуть доску",
-      "confirmLeave": "Вы уверены, что хотите покинуть доску?"
+      "leaveBoard": "Покинуть проект",
+      "confirmLeave": "Вы уверены, что хотите покинуть проект?",
+      "teamRoleNone": "Без роли",
+      "teamRoles": {
+        "project_manager": "Менеджер проекта",
+        "researcher": "Исследователь",
+        "developer": "Разработчик",
+        "analyst": "Аналитик",
+        "presenter": "Докладчик"
+      }
     }
+  },
+  "stages": {
+    "title": "Этапы проекта",
+    "count": "{count, plural, one {# этап} few {# этапа} many {# этапов} other {# этапов}}",
+    "toggleHint": "Нажмите, чтобы изменить статус",
+    "status": {
+      "pending": "Не начат",
+      "in_progress": "В работе",
+      "done": "Завершён"
+    }
+  },
+  "projectOverview": {
+    "title": "О проекте",
+    "goal": "Цель",
+    "expectedResult": "Ожидаемый результат",
+    "dates": "Сроки",
+    "defenseFormat": "Формат защиты"
   },
   "tasks": {
     "title": "Мои задачи",

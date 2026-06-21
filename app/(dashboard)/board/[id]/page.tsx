@@ -6,9 +6,11 @@ import { createClient } from '@/lib/supabase/server'
 import { KanbanBoard } from '@/components/board/KanbanBoard'
 import { MembersButton } from '@/components/board/MembersButton'
 import { ActivityLog } from '@/components/board/ActivityLog'
+import { ProjectStages } from '@/components/board/ProjectStages'
+import { ProjectOverview } from '@/components/board/ProjectOverview'
 import { getBoardInvitations } from '@/actions/invitations'
 import type { Metadata } from 'next'
-import type { MemberWithProfile, BoardInvitation, Card } from '@/lib/types'
+import type { MemberWithProfile, BoardInvitation, Card, ProjectStage } from '@/lib/types'
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params
@@ -30,7 +32,7 @@ export default async function BoardPage({ params }: { params: Promise<{ id: stri
 
   if (!user) redirect('/login')
 
-  const [{ data: board }, { data: columns }, { data: cardsRaw }, { data: membersRaw }] =
+  const [{ data: board }, { data: columns }, { data: cardsRaw }, { data: membersRaw }, { data: stagesRaw }] =
     await Promise.all([
       supabase.from('boards').select('*').eq('id', id).single(),
       supabase
@@ -46,6 +48,11 @@ export default async function BoardPage({ params }: { params: Promise<{ id: stri
         .eq('columns.board_id', id)
         .order('position', { ascending: true }),
       supabase.rpc('get_board_members_with_info', { bid: id }),
+      supabase
+        .from('project_stages')
+        .select('*')
+        .eq('board_id', id)
+        .order('order_index', { ascending: true }),
     ])
 
   if (!board) notFound()
@@ -58,6 +65,7 @@ export default async function BoardPage({ params }: { params: Promise<{ id: stri
   }) as unknown as Card[]
 
   const members = (membersRaw ?? []) as MemberWithProfile[]
+  const stages = (stagesRaw ?? []) as ProjectStage[]
   const isOwner = board.owner_id === user.id
   const t = await getTranslations('board')
 
@@ -105,6 +113,9 @@ export default async function BoardPage({ params }: { params: Promise<{ id: stri
       {/* Board body */}
       <div className="flex-1 bg-gray-50">
         <div className="h-full overflow-x-auto p-4 sm:p-6">
+          {/* Образовательный контекст проекта: описание/цель/сроки + этапы */}
+          <ProjectOverview board={board} />
+          <ProjectStages boardId={id} stages={stages} isOwner={isOwner} />
           <KanbanBoard
             boardId={id}
             userId={user.id}

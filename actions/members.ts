@@ -4,7 +4,8 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { logActivity } from '@/actions/activity'
-import type { MemberWithProfile } from '@/lib/types'
+import type { MemberWithProfile, TeamRole } from '@/lib/types'
+import { TEAM_ROLES } from '@/lib/types'
 
 export async function removeMember(boardId: string, userId: string) {
   const supabase = await createClient()
@@ -58,6 +59,35 @@ export async function leaveBoard(boardId: string) {
   if (error) return { error: error.message }
 
   revalidatePath('/dashboard')
+  return { success: true }
+}
+
+/**
+ * Назначить (или снять) командную роль студенту.
+ * RLS «Owners can manage members» разрешает update строк board_members
+ * только владельцу-преподавателю, поэтому отдельной проверки роли не нужно —
+ * у студента запрос просто не пройдёт политику.
+ */
+export async function setTeamRole(boardId: string, userId: string, teamRole: TeamRole | null) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
+
+  if (teamRole !== null && !TEAM_ROLES.includes(teamRole)) {
+    return { error: 'Недопустимая роль' }
+  }
+
+  // Командную роль назначаем только обычным участникам, не владельцу.
+  const { error } = await supabase
+    .from('board_members')
+    .update({ team_role: teamRole })
+    .eq('board_id', boardId)
+    .eq('user_id', userId)
+    .eq('role', 'member')
+
+  if (error) return { error: error.message }
+
+  revalidatePath(`/board/${boardId}`)
   return { success: true }
 }
 

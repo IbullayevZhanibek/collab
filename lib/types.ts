@@ -1,8 +1,23 @@
+// Глобальная роль пользователя, выбирается при регистрации.
+export type GlobalRole = 'teacher' | 'student'
+
+// Командная роль студента внутри проекта.
+export type TeamRole = 'project_manager' | 'researcher' | 'developer' | 'analyst' | 'presenter'
+
+export const TEAM_ROLES: TeamRole[] = [
+  'project_manager',
+  'researcher',
+  'developer',
+  'analyst',
+  'presenter',
+]
+
 export type Profile = {
   id: string
   user_id: string
   full_name: string | null
   avatar_url: string | null
+  global_role: GlobalRole
   created_at: string
 }
 
@@ -10,6 +25,13 @@ export type Board = {
   id: string
   title: string
   owner_id: string
+  // Учебные поля проекта (добавлены миграцией 011).
+  description: string | null
+  goal: string | null
+  expected_result: string | null
+  start_date: string | null
+  end_date: string | null
+  defense_format: string | null
   created_at: string
 }
 
@@ -18,6 +40,38 @@ export type BoardMember = {
   board_id: string
   user_id: string
   role: 'owner' | 'member'
+  team_role: TeamRole | null
+}
+
+export type ProjectStageStatus = 'pending' | 'in_progress' | 'done'
+
+export type ProjectStage = {
+  id: string
+  board_id: string
+  title: string
+  description: string | null
+  order_index: number
+  due_date: string | null
+  status: ProjectStageStatus
+  created_at: string
+}
+
+// Черновик этапа в форме создания проекта (ещё без id/board_id).
+export type StageDraft = {
+  title: string
+  due_date: string | null
+}
+
+// Данные для создания учебного проекта.
+export type ProjectInput = {
+  title: string
+  description?: string | null
+  goal?: string | null
+  expected_result?: string | null
+  start_date?: string | null
+  end_date?: string | null
+  defense_format?: string | null
+  stages?: StageDraft[]
 }
 
 export type Column = {
@@ -54,6 +108,7 @@ export type BoardWithMembers = Board & { board_members: BoardMember[] }
 export type MemberWithProfile = {
   user_id: string
   role: 'owner' | 'member'
+  team_role: TeamRole | null
   full_name: string | null
   email: string
 }

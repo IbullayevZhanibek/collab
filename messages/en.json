@@ -67,6 +67,9 @@
       "subtitle": "Free forever — no credit card needed",
       "name": "Name",
       "namePlaceholder": "Alex",
+      "roleLabel": "I am",
+      "roleTeacher": "A teacher",
+      "roleStudent": "A student",
       "email": "Email",
       "password": "Password",
       "passwordPlaceholder": "At least 6 characters",
@@ -114,19 +117,31 @@
   },
   "boards": {
     "title": "Boards",
+    "titleTeacher": "My projects (as a teacher)",
+    "titleStudent": "Projects I'm part of",
     "emptyHint": "Your projects will live here",
-    "countHint": "{count, plural, one {# board} other {# boards}} · tap to open",
+    "emptyHintTeacher": "Create a study project for your students",
+    "emptyHintStudent": "Projects you're added to will appear here",
+    "countHint": "{count, plural, one {# project} other {# projects}} · tap to open",
     "newBoard": "New board",
+    "newProject": "New project",
     "emptyTitle": "Where shall we start?",
-    "emptyBody": "Create your first board — for a course project or team work, say. It takes just a couple of seconds.",
-    "createFirst": "Create your first board",
+    "emptyBody": "Create your first study project — set its goal, deadlines and stages. It takes just a couple of minutes.",
+    "emptyTitleStudent": "No projects yet",
+    "emptyBodyStudent": "When a teacher adds you to a project, it'll show up here.",
+    "createFirst": "Create your first project",
     "createdOn": "Created {date}",
     "membersCount": "{count, plural, one {# member} other {# members}}",
     "addBoard": "Add board",
-    "deleteBoard": "Delete board",
-    "leaveBoard": "Leave board",
-    "confirmDelete": "Delete this board? This action can't be undone.",
-    "confirmLeave": "Are you sure you want to leave this board?"
+    "addProject": "Add project",
+    "deleteBoard": "Delete project",
+    "leaveBoard": "Leave project",
+    "confirmDelete": "Delete this project? This action can't be undone.",
+    "confirmLeave": "Are you sure you want to leave this project?"
+  },
+  "roles": {
+    "teacher": "Teacher",
+    "student": "Student"
   },
   "board": {
     "backToBoards": "Boards",
@@ -162,10 +177,24 @@
   },
   "dialogs": {
     "createBoard": {
-      "title": "Create board",
-      "label": "Board name",
-      "placeholder": "e.g. Project 2025",
-      "errorEmpty": "Enter a board name"
+      "title": "Create study project",
+      "label": "Project name",
+      "placeholder": "e.g. Diploma project 2026",
+      "errorEmpty": "Enter a project name",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "What is this project about?",
+      "goalLabel": "Goal",
+      "goalPlaceholder": "What should the project achieve?",
+      "expectedResultLabel": "Expected result",
+      "expectedResultPlaceholder": "What is the deliverable?",
+      "startDateLabel": "Start date",
+      "endDateLabel": "End date",
+      "defenseFormatLabel": "Defense format",
+      "defenseFormatPlaceholder": "e.g. Slides + live demo",
+      "stagesLabel": "Project stages",
+      "stageTitlePlaceholder": "Stage title",
+      "stageAdd": "Add stage",
+      "stageRemove": "Remove stage"
     },
     "createColumn": {
       "title": "Add column",
@@ -195,14 +224,39 @@
       "inviteSuccess": "Invitation sent",
       "membersCount": "Members · {count}",
       "you": "(you)",
-      "roleOwner": "Owner",
-      "roleMember": "Member",
+      "roleOwner": "Teacher",
+      "roleMember": "Student",
       "removeMember": "Remove member",
       "pendingCount": "Invitations · {count}",
       "pendingStatus": "Pending",
-      "leaveBoard": "Leave board",
-      "confirmLeave": "Are you sure you want to leave this board?"
+      "leaveBoard": "Leave project",
+      "confirmLeave": "Are you sure you want to leave this project?",
+      "teamRoleNone": "No role",
+      "teamRoles": {
+        "project_manager": "Project manager",
+        "researcher": "Researcher",
+        "developer": "Developer",
+        "analyst": "Analyst",
+        "presenter": "Presenter"
+      }
     }
+  },
+  "stages": {
+    "title": "Project stages",
+    "count": "{count, plural, one {# stage} other {# stages}}",
+    "toggleHint": "Click to change status",
+    "status": {
+      "pending": "Pending",
+      "in_progress": "In progress",
+      "done": "Done"
+    }
+  },
+  "projectOverview": {
+    "title": "About the project",
+    "goal": "Goal",
+    "expectedResult": "Expected result",
+    "dates": "Timeline",
+    "defenseFormat": "Defense format"
   },
   "tasks": {
     "title": "My tasks",

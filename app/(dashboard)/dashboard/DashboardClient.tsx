@@ -21,10 +21,12 @@ interface Board {
 interface DashboardClientProps {
   boards: Board[]
   currentUserId: string
+  globalRole: 'teacher' | 'student'
 }
 
-export function DashboardClient({ boards: initialBoards, currentUserId }: DashboardClientProps) {
+export function DashboardClient({ boards: initialBoards, currentUserId, globalRole }: DashboardClientProps) {
   const t = useTranslations('boards')
+  const isTeacher = globalRole === 'teacher'
   const locale = useLocale()
   const [showCreate, setShowCreate] = useState(false)
   const [busyId, setBusyId] = useState<string | null>(null)
@@ -82,17 +84,21 @@ export function DashboardClient({ boards: initialBoards, currentUserId }: Dashbo
     <>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{t('title')}</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
+            {isTeacher ? t('titleTeacher') : t('titleStudent')}
+          </h1>
           <p className="text-gray-500 text-sm mt-1">
             {boards.length === 0
-              ? t('emptyHint')
+              ? isTeacher ? t('emptyHintTeacher') : t('emptyHintStudent')
               : t('countHint', { count: boards.length })}
           </p>
         </div>
-        <Button onClick={() => setShowCreate(true)} className="w-full sm:w-auto">
-          <Plus size={16} className="mr-1.5" />
-          {t('newBoard')}
-        </Button>
+        {isTeacher && (
+          <Button onClick={() => setShowCreate(true)} className="w-full sm:w-auto">
+            <Plus size={16} className="mr-1.5" />
+            {t('newProject')}
+          </Button>
+        )}
       </div>
 
       {boards.length === 0 ? (
@@ -100,14 +106,18 @@ export function DashboardClient({ boards: initialBoards, currentUserId }: Dashbo
           <div className="bg-brand-50 rounded-3xl p-6 mb-5">
             <LayoutDashboard className="text-brand-400 mx-auto" size={48} />
           </div>
-          <h2 className="text-lg font-semibold text-gray-900 mb-2">{t('emptyTitle')}</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-2">
+            {isTeacher ? t('emptyTitle') : t('emptyTitleStudent')}
+          </h2>
           <p className="text-gray-500 text-sm mb-6 max-w-xs">
-            {t('emptyBody')}
+            {isTeacher ? t('emptyBody') : t('emptyBodyStudent')}
           </p>
-          <Button onClick={() => setShowCreate(true)}>
-            <Plus size={16} className="mr-1.5" />
-            {t('createFirst')}
-          </Button>
+          {isTeacher && (
+            <Button onClick={() => setShowCreate(true)}>
+              <Plus size={16} className="mr-1.5" />
+              {t('createFirst')}
+            </Button>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -160,17 +170,19 @@ export function DashboardClient({ boards: initialBoards, currentUserId }: Dashbo
             )
           })}
 
-          <button
-            onClick={() => setShowCreate(true)}
-            className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 hover:border-brand-300 hover:bg-brand-50 transition-all p-6 min-h-[160px] text-gray-400 hover:text-brand-600"
-          >
-            <Plus size={24} className="mb-2" />
-            <span className="text-sm font-medium">{t('addBoard')}</span>
-          </button>
+          {isTeacher && (
+            <button
+              onClick={() => setShowCreate(true)}
+              className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 hover:border-brand-300 hover:bg-brand-50 transition-all p-6 min-h-[160px] text-gray-400 hover:text-brand-600"
+            >
+              <Plus size={24} className="mb-2" />
+              <span className="text-sm font-medium">{t('addProject')}</span>
+            </button>
+          )}
         </div>
       )}
 
-      <CreateBoardDialog open={showCreate} onClose={() => setShowCreate(false)} />
+      {isTeacher && <CreateBoardDialog open={showCreate} onClose={() => setShowCreate(false)} />}
     </>
   )
 }

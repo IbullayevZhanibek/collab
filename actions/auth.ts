@@ -36,7 +36,12 @@ export async function login(email: string, password: string) {
   redirect('/dashboard')
 }
 
-export async function register(email: string, password: string, fullName: string) {
+export async function register(
+  email: string,
+  password: string,
+  fullName: string,
+  globalRole: 'teacher' | 'student' = 'student',
+) {
   const supabase = await createClient()
 
   // На прод-домене берём NEXT_PUBLIC_SITE_URL, локально — http://localhost:3000.
@@ -48,7 +53,9 @@ export async function register(email: string, password: string, fullName: string
     email,
     password,
     options: {
-      data: { full_name: fullName },
+      // global_role попадает в raw_user_meta_data и читается триггером
+      // handle_new_user при создании строки profiles.
+      data: { full_name: fullName, global_role: globalRole === 'teacher' ? 'teacher' : 'student' },
       emailRedirectTo: `${siteUrl}/auth/callback`,
     },
   })

@@ -17,9 +17,11 @@ export default async function DashboardPage() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name')
+    .select('full_name, global_role')
     .eq('user_id', user.id)
     .single()
+
+  const globalRole: 'teacher' | 'student' = profile?.global_role === 'teacher' ? 'teacher' : 'student'
 
   const t = await getTranslations('dashboard')
   const firstName = (profile?.full_name || user.email?.split('@')[0] || t('friendFallback')).split(' ')[0]
@@ -52,7 +54,7 @@ export default async function DashboardPage() {
         <Notifications items={notifications} />
 
         {/* Список досок */}
-        <DashboardClient boards={boards ?? []} currentUserId={user.id} />
+        <DashboardClient boards={boards ?? []} currentUserId={user.id} globalRole={globalRole} />
       </div>
     </div>
   )

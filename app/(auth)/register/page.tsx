@@ -3,11 +3,13 @@
 import { useState, useTransition } from 'react'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import { MailCheck } from 'lucide-react'
+import { MailCheck, GraduationCap, BookOpen } from 'lucide-react'
 import { register } from '@/actions/auth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Logo } from '@/components/ui/logo'
+import { cn } from '@/lib/utils'
+import type { GlobalRole } from '@/lib/types'
 
 export default function RegisterPage() {
   const t = useTranslations('auth.register')
@@ -15,6 +17,7 @@ export default function RegisterPage() {
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [role, setRole] = useState<GlobalRole>('student')
   const [error, setError] = useState<string | null>(null)
   const [sentTo, setSentTo] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
@@ -30,7 +33,7 @@ export default function RegisterPage() {
       return
     }
     startTransition(async () => {
-      const result = await register(email, password, fullName)
+      const result = await register(email, password, fullName, role)
       if (result?.error) {
         setError(result.error)
       } else if (result?.needsConfirmation) {
@@ -101,6 +104,43 @@ export default function RegisterPage() {
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
             />
+          </div>
+
+          {/* Выбор глобальной роли: преподаватель / студент */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('roleLabel')}</label>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => setRole('teacher')}
+                className={cn(
+                  'flex items-center gap-2.5 rounded-xl border p-3 text-left transition-colors',
+                  role === 'teacher'
+                    ? 'border-brand-500 bg-brand-50 ring-2 ring-brand-500/20'
+                    : 'border-gray-200 hover:border-gray-300'
+                )}
+              >
+                <GraduationCap size={20} className={role === 'teacher' ? 'text-brand-600' : 'text-gray-400'} />
+                <span className={cn('text-sm font-medium', role === 'teacher' ? 'text-brand-700' : 'text-gray-700')}>
+                  {t('roleTeacher')}
+                </span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setRole('student')}
+                className={cn(
+                  'flex items-center gap-2.5 rounded-xl border p-3 text-left transition-colors',
+                  role === 'student'
+                    ? 'border-brand-500 bg-brand-50 ring-2 ring-brand-500/20'
+                    : 'border-gray-200 hover:border-gray-300'
+                )}
+              >
+                <BookOpen size={20} className={role === 'student' ? 'text-brand-600' : 'text-gray-400'} />
+                <span className={cn('text-sm font-medium', role === 'student' ? 'text-brand-700' : 'text-gray-700')}>
+                  {t('roleStudent')}
+                </span>
+              </button>
+            </div>
           </div>
 
           <div>
