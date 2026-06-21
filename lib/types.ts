@@ -98,7 +98,22 @@ export type Comment = {
   card_id: string
   user_id: string
   body: string
+  is_feedback: boolean
   created_at: string
+}
+
+// Комментарий с данными автора (возвращается get_card_comments).
+export type CommentWithAuthor = {
+  id: string
+  card_id: string
+  user_id: string
+  body: string
+  is_feedback: boolean
+  created_at: string
+  full_name: string | null
+  avatar_url: string | null
+  global_role: 'teacher' | 'student'
+  team_role: string | null
 }
 
 export type ColumnWithCards = Column & { cards: Card[] }

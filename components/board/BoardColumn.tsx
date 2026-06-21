@@ -16,13 +16,27 @@ interface BoardColumnProps {
   cards: Card[]
   boardId: string
   userId: string
+  isTeacher?: boolean
+  commentCounts?: Record<string, number>
   /** Все колонки доски — для меню «Переместить в колонку» на карточках. */
   columns: Column[]
   onMoveCard: (cardId: string, targetColumnId: string) => void
   onUpdateCard: (cardId: string, updates: Partial<Card>) => Promise<{ error?: string } | void>
+  onCommentCountChange?: (cardId: string, count: number) => void
 }
 
-export function BoardColumn({ column, cards, boardId, userId, columns, onMoveCard, onUpdateCard }: BoardColumnProps) {
+export function BoardColumn({
+  column,
+  cards,
+  boardId,
+  userId,
+  isTeacher = false,
+  commentCounts = {},
+  columns,
+  onMoveCard,
+  onUpdateCard,
+  onCommentCountChange,
+}: BoardColumnProps) {
   const t = useTranslations('board')
   const [showCreateCard, setShowCreateCard] = useState(false)
   const [isPending, startTransition] = useTransition()
@@ -88,9 +102,12 @@ export function BoardColumn({ column, cards, boardId, userId, columns, onMoveCar
                 card={card}
                 boardId={boardId}
                 userId={userId}
+                isTeacher={isTeacher}
+                commentsCount={commentCounts[card.id] ?? 0}
                 columns={columns}
                 onMoveCard={onMoveCard}
                 onUpdateCard={onUpdateCard}
+                onCommentCountChange={onCommentCountChange}
               />
             ))}
           </SortableContext>

@@ -11,6 +11,7 @@ import { Select } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { MoveCardMenu } from './MoveCardMenu'
 import { deleteCard } from '@/actions/cards'
+import { CardCommentsSection } from './CardCommentsSection'
 import type { Card, Column } from '@/lib/types'
 
 interface CardDetailDialogProps {
@@ -19,10 +20,13 @@ interface CardDetailDialogProps {
   card: Card
   boardId: string
   columns: Column[]
+  currentUserId: string
+  isTeacher: boolean
   /** Перемещение в другую колонку (оптимистично + Server Action на уровне доски). */
   onMove: (targetColumnId: string) => void
   /** Сохранение изменений: оптимистично обновляет доску и пишет на сервер. */
   onUpdate: (updates: Partial<Card>) => Promise<{ error?: string } | void>
+  onCommentCountChange?: (count: number) => void
 }
 
 type Priority = 'low' | 'medium' | 'high' | 'critical'
@@ -33,8 +37,11 @@ export function CardDetailDialog({
   card,
   boardId,
   columns,
+  currentUserId,
+  isTeacher,
   onMove,
   onUpdate,
+  onCommentCountChange,
 }: CardDetailDialogProps) {
   const t = useTranslations('board')
   const tf = useTranslations('dialogs.createCard')
@@ -198,6 +205,15 @@ export function CardDetailDialog({
           <CalendarDays size={12} />
           {t('createdAt', { date: createdAt })}
         </p>
+
+        {/* Комментарии */}
+        <CardCommentsSection
+          cardId={card.id}
+          boardId={boardId}
+          currentUserId={currentUserId}
+          isTeacher={isTeacher}
+          onCountChange={onCommentCountChange}
+        />
       </div>
 
       {/* Действия */}

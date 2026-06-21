@@ -19,17 +19,19 @@ import { BoardColumn } from './BoardColumn'
 import { BoardCard } from './BoardCard'
 import { CreateColumnDialog } from './CreateColumnDialog'
 import { reorderCards, moveCard, updateCard } from '@/actions/cards'
+import { getBulkCommentsCounts } from '@/actions/comments'
 import { createClient } from '@/lib/supabase/client'
 import type { Column, Card } from '@/lib/types'
 
 interface KanbanBoardProps {
   boardId: string
   userId: string
+  isOwner?: boolean
   initialColumns: Column[]
   initialCards: Card[]
 }
 
-export function KanbanBoard({ boardId, userId, initialColumns, initialCards }: KanbanBoardProps) {
+export function KanbanBoard({ boardId, userId, isOwner = false, initialColumns, initialCards }: KanbanBoardProps) {
   const t = useTranslations('board')
   const [columns, setColumns] = useState<Column[]>(
     [...initialColumns].sort((a, b) => a.position - b.position)
@@ -38,6 +40,7 @@ export function KanbanBoard({ boardId, userId, initialColumns, initialCards }: K
   const [activeCard, setActiveCard] = useState<Card | null>(null)
   const [showCreateColumn, setShowCreateColumn] = useState(false)
   const [, startTransition] = useTransition()
+  const [commentCounts, setCommentCounts] = useState<Record<string, number>>({})
 
   // Синхронизируем серверные props в локальное состояние, когда сервер
   // присылает новые данные (после revalidatePath / навигации). Делаем это
@@ -58,6 +61,15 @@ export function KanbanBoard({ boardId, userId, initialColumns, initialCards }: K
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
   )
+
+  // Загрузка количества комментариев по всем карточкам (одним запросом).
+  useEffect(() => {
+    if (!cards.length) return
+    getBulkCommentsCounts(cards.map((c) => c.id)).then(({ data }) => {
+      if (data) setCommentCounts(data)
+    })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // только при монтировании; далее обновляется через realtime
 
   // Realtime subscription
   useEffect(() => {
@@ -104,11 +116,40 @@ export function KanbanBoard({ boardId, userId, initialColumns, initialCards }: K
       )
       .subscribe()
 
+    // Обновляем счётчики комментариев в реальном времени.
+    const commentsChannel = supabase
+      .channel(`board-${boardId}-comments`)
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'comments' },
+        (payload) => {
+          const cardId = (payload.new as { card_id: string }).card_id
+          setCommentCounts((prev) => ({ ...prev, [cardId]: (prev[cardId] ?? 0) + 1 }))
+        },
+      )
+      .on(
+        'postgres_changes',
+        { event: 'DELETE', schema: 'public', table: 'comments' },
+        (payload) => {
+          const cardId = (payload.old as { card_id: string }).card_id
+          setCommentCounts((prev) => ({
+            ...prev,
+            [cardId]: Math.max(0, (prev[cardId] ?? 0) - 1),
+          }))
+        },
+      )
+      .subscribe()
+
     return () => {
       supabase.removeChannel(cardsChannel)
       supabase.removeChannel(columnsChannel)
+      supabase.removeChannel(commentsChannel)
     }
   }, [boardId])
+
+  function handleCommentCountChange(cardId: string, count: number) {
+    setCommentCounts((prev) => ({ ...prev, [cardId]: count }))
+  }
 
   function getColumnCards(columnId: string) {
     return cards
@@ -235,9 +276,12 @@ export function KanbanBoard({ boardId, userId, initialColumns, initialCards }: K
               cards={getColumnCards(column.id)}
               boardId={boardId}
               userId={userId}
+              isTeacher={isOwner}
+              commentCounts={commentCounts}
               columns={columns}
               onMoveCard={handleMoveCard}
               onUpdateCard={handleUpdateCard}
+              onCommentCountChange={handleCommentCountChange}
             />
           ))}
         </SortableContext>

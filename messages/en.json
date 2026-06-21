@@ -289,6 +289,18 @@
       "presentation": "Presentation and defense"
     }
   },
+  "comments": {
+    "title": "Comments",
+    "add": "Write a comment…",
+    "send": "Send",
+    "feedback": "Feedback",
+    "markAsFeedback": "Mark as feedback",
+    "empty": "No comments yet",
+    "teacher": "Teacher",
+    "delete": "Delete",
+    "confirmDelete": "Delete this comment?",
+    "count": "{count, plural, one {# comment} other {# comments}}"
+  },
   "tasks": {
     "title": "My tasks",
     "subtitleEmpty": "Every task from every board — in one place",

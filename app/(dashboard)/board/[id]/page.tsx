@@ -126,6 +126,7 @@ export default async function BoardPage({ params }: { params: Promise<{ id: stri
           <KanbanBoard
             boardId={id}
             userId={user.id}
+            isOwner={isOwner}
             initialColumns={columns ?? []}
             initialCards={cards}
           />
