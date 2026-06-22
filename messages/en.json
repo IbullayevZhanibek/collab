@@ -10,7 +10,8 @@
     "closeMenu": "Close menu",
     "userFallback": "User",
     "reports": "Reports",
-    "gradebook": "Gradebook"
+    "gradebook": "Gradebook",
+    "teacherSection": "For teachers"
   },
   "common": {
     "cancel": "Cancel",
@@ -451,9 +452,18 @@
       "todoTitle": "To do",
       "inProgressTitle": "In progress",
       "doneTitle": "Done",
-      "todoCards": ["Define goal", "Assign roles"],
-      "inProgressCards": ["Research phase", "Prototype"],
-      "doneCards": ["Literature review", "Presentation"]
+      "todoCards": [
+        "Define goal",
+        "Assign roles"
+      ],
+      "inProgressCards": [
+        "Research phase",
+        "Prototype"
+      ],
+      "doneCards": [
+        "Literature review",
+        "Presentation"
+      ]
     },
     "features": {
       "title": "Tools for the full project lifecycle",
@@ -470,7 +480,11 @@
     "benefits": {
       "title": "Everything for project-based learning — in one place",
       "subtitle": "Tasks, stages, materials, grades, and analytics all together. No scattered chats or spreadsheets. And yes — it's free.",
-      "items": ["Kanban boards, tasks, and deadlines", "Team roles and collaboration", "Grading, reflection, and reports"],
+      "items": [
+        "Kanban boards, tasks, and deadlines",
+        "Team roles and collaboration",
+        "Grading, reflection, and reports"
+      ],
       "cta": "Create a project"
     },
     "footer": "Collab — a platform for managing student project work"

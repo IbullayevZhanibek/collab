@@ -5,7 +5,10 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
-import { LayoutDashboard, ListTodo, Calendar, Mail, Timer, LogOut, Menu, X, FileBarChart2, BookText } from 'lucide-react'
+import {
+  LayoutDashboard, ListTodo, Calendar, Mail, Timer,
+  LogOut, Menu, X, FileBarChart2, BookText,
+} from 'lucide-react'
 import posthog from 'posthog-js'
 import { logout } from '@/actions/auth'
 import { Logo } from '@/components/ui/logo'
@@ -19,13 +22,26 @@ interface SidebarProps {
   globalRole: 'teacher' | 'student'
 }
 
-const NAV = [
+type NavItem = { href: string; key: string; Icon: React.ComponentType<{ size?: number }> }
+
+const STUDENT_NAV: NavItem[] = [
   { href: '/dashboard', key: 'boards', Icon: LayoutDashboard },
-  { href: '/tasks', key: 'tasks', Icon: ListTodo },
-  { href: '/pomodoro', key: 'pomodoro', Icon: Timer },
-  { href: '/calendar', key: 'calendar', Icon: Calendar },
+  { href: '/tasks',     key: 'tasks',  Icon: ListTodo },
+  { href: '/pomodoro',  key: 'pomodoro', Icon: Timer },
+  { href: '/calendar',  key: 'calendar', Icon: Calendar },
   { href: '/invitations', key: 'invitations', Icon: Mail },
-] as const
+]
+
+const TEACHER_MAIN_NAV: NavItem[] = [
+  { href: '/dashboard', key: 'boards',   Icon: LayoutDashboard },
+  { href: '/tasks',     key: 'tasks',    Icon: ListTodo },
+  { href: '/calendar',  key: 'calendar', Icon: Calendar },
+]
+
+const TEACHER_SECTION_NAV: NavItem[] = [
+  { href: '/gradebook', key: 'gradebook', Icon: BookText },
+  { href: '/reports',   key: 'reports',   Icon: FileBarChart2 },
+]
 
 function navClass(active: boolean) {
   return cn(
@@ -56,9 +72,43 @@ export function Sidebar({ displayName, initials, email, invitationCount, globalR
   const isActive = (href: string) =>
     href === '/dashboard' ? pathname === href : pathname.startsWith(href)
 
-  // Бейдж-счётчик pending-приглашений рядом с пунктом «Приглашения».
   const badgeFor = (href: string) =>
     href === '/invitations' && invitationCount > 0 ? invitationCount : null
+
+  const mainNav = globalRole === 'teacher' ? TEACHER_MAIN_NAV : STUDENT_NAV
+
+  function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
+    return (
+      <>
+        {mainNav.map(({ href, key, Icon }) => (
+          <Link key={href} href={href} onClick={onNavigate} className={navClass(isActive(href))}>
+            <Icon size={18} />
+            <span className="flex-1">{t(key as Parameters<typeof t>[0])}</span>
+            {badgeFor(href) !== null && (
+              <span className="inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full bg-brand-600 text-white text-xs font-semibold tabular-nums">
+                {badgeFor(href)}
+              </span>
+            )}
+          </Link>
+        ))}
+
+        {globalRole === 'teacher' && (
+          <>
+            <div className="border-t border-gray-100 my-2" />
+            <p className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+              {t('teacherSection')}
+            </p>
+            {TEACHER_SECTION_NAV.map(({ href, key, Icon }) => (
+              <Link key={href} href={href} onClick={onNavigate} className={navClass(isActive(href))}>
+                <Icon size={18} />
+                <span className="flex-1">{t(key as Parameters<typeof t>[0])}</span>
+              </Link>
+            ))}
+          </>
+        )}
+      </>
+    )
+  }
 
   return (
     <>
@@ -76,7 +126,7 @@ export function Sidebar({ displayName, initials, email, invitationCount, globalR
         </button>
       </header>
 
-      {/* ── Mobile backdrop — only rendered when drawer is open, hidden on md+ ── */}
+      {/* ── Mobile backdrop ── */}
       {open && (
         <div
           className="fixed inset-0 z-30 bg-black/40 backdrop-blur-sm md:hidden"
@@ -105,30 +155,8 @@ export function Sidebar({ displayName, initials, email, invitationCount, globalR
           </button>
         </div>
 
-        <nav className="flex-1 p-4 space-y-1">
-          {NAV.map(({ href, key, Icon }) => (
-            <Link key={href} href={href} onClick={() => setOpen(false)} className={navClass(isActive(href))}>
-              <Icon size={18} />
-              <span className="flex-1">{t(key)}</span>
-              {badgeFor(href) && (
-                <span className="inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full bg-brand-600 text-white text-xs font-semibold tabular-nums">
-                  {badgeFor(href)}
-                </span>
-              )}
-            </Link>
-          ))}
-          {globalRole === 'teacher' && (
-            <>
-              <Link href="/gradebook" onClick={() => setOpen(false)} className={navClass(isActive('/gradebook'))}>
-                <BookText size={18} />
-                <span className="flex-1">{t('gradebook')}</span>
-              </Link>
-              <Link href="/reports" onClick={() => setOpen(false)} className={navClass(isActive('/reports'))}>
-                <FileBarChart2 size={18} />
-                <span className="flex-1">{t('reports')}</span>
-              </Link>
-            </>
-          )}
+        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+          <NavLinks onNavigate={() => setOpen(false)} />
         </nav>
 
         <div className="p-4 border-t border-gray-200">
@@ -160,30 +188,8 @@ export function Sidebar({ displayName, initials, email, invitationCount, globalR
           </Link>
         </div>
 
-        <nav className="flex-1 p-4 space-y-1">
-          {NAV.map(({ href, key, Icon }) => (
-            <Link key={href} href={href} className={navClass(isActive(href))}>
-              <Icon size={18} />
-              <span className="flex-1">{t(key)}</span>
-              {badgeFor(href) && (
-                <span className="inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full bg-brand-600 text-white text-xs font-semibold tabular-nums">
-                  {badgeFor(href)}
-                </span>
-              )}
-            </Link>
-          ))}
-          {globalRole === 'teacher' && (
-            <>
-              <Link href="/gradebook" className={navClass(isActive('/gradebook'))}>
-                <BookText size={18} />
-                <span className="flex-1">{t('gradebook')}</span>
-              </Link>
-              <Link href="/reports" className={navClass(isActive('/reports'))}>
-                <FileBarChart2 size={18} />
-                <span className="flex-1">{t('reports')}</span>
-              </Link>
-            </>
-          )}
+        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+          <NavLinks />
         </nav>
 
         <div className="p-4 border-t border-gray-200">
