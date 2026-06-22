@@ -4,7 +4,7 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { usePostHog } from 'posthog-js/react'
-import { Check, X, Loader2 } from 'lucide-react'
+import { Check, X, Loader2, CheckCircle2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { acceptInvitation, declineInvitation } from '@/actions/invitations'
 import type { MyInvitation } from '@/lib/types'
@@ -14,6 +14,7 @@ export function InvitationCard({ invitation }: { invitation: MyInvitation }) {
   const posthog = usePostHog()
   const t = useTranslations('invitationsPage')
   const [error, setError] = useState<string | null>(null)
+  const [accepted, setAccepted] = useState(false)
   const [action, setAction] = useState<'accept' | 'decline' | null>(null)
   const [isPending, startTransition] = useTransition()
   const [, startRefresh] = useTransition()
@@ -27,15 +28,28 @@ export function InvitationCard({ invitation }: { invitation: MyInvitation }) {
           ? await acceptInvitation(invitation.id)
           : await declineInvitation(invitation.id)
       if (result?.error) {
-        setError(result.error)
+        setError(kind === 'accept' ? t('acceptError') : result.error)
         setAction(null)
       } else {
         if (kind === 'accept') {
           posthog.capture('invitation_accepted', { invitation_id: invitation.id })
+          setAccepted(true)
         }
         startRefresh(() => router.refresh())
       }
     })
+  }
+
+  // Success state: show confirmation until router.refresh() removes the card.
+  if (accepted) {
+    return (
+      <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex items-center gap-3">
+        <CheckCircle2 size={20} className="text-emerald-600 shrink-0" />
+        <p className="text-sm font-medium text-emerald-800">
+          {t('accepted', { board: invitation.board_title })}
+        </p>
+      </div>
+    )
   }
 
   const initial = invitation.board_title.charAt(0).toUpperCase()

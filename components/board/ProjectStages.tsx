@@ -11,7 +11,7 @@ import type { ProjectStage, ProjectStageStatus } from '@/lib/types'
 interface ProjectStagesProps {
   boardId: string
   stages: ProjectStage[]
-  isOwner: boolean
+  canToggle: boolean
 }
 
 const STATUS_ICON: Record<ProjectStageStatus, typeof Circle> = {
@@ -33,7 +33,7 @@ const NEXT: Record<ProjectStageStatus, ProjectStageStatus> = {
   done: 'pending',
 }
 
-export function ProjectStages({ boardId, stages, isOwner }: ProjectStagesProps) {
+export function ProjectStages({ boardId, stages, canToggle }: ProjectStagesProps) {
   const t = useTranslations('stages')
   const locale = useLocale()
   const router = useRouter()
@@ -43,7 +43,7 @@ export function ProjectStages({ boardId, stages, isOwner }: ProjectStagesProps) 
   if (stages.length === 0) return null
 
   function toggle(stage: ProjectStage) {
-    if (!isOwner) return
+    if (!canToggle) return
     setBusyId(stage.id)
     startTransition(async () => {
       await updateStageStatus(stage.id, boardId, NEXT[stage.status], stage.title)
@@ -68,12 +68,12 @@ export function ProjectStages({ boardId, stages, isOwner }: ProjectStagesProps) 
               <button
                 type="button"
                 onClick={() => toggle(stage)}
-                disabled={!isOwner || busyId === stage.id}
-                title={isOwner ? t('toggleHint') : undefined}
+                disabled={!canToggle || busyId === stage.id}
+                title={canToggle ? t('toggleHint') : undefined}
                 className={cn(
                   'flex w-full items-start gap-2.5 rounded-xl border border-gray-100 bg-gray-50/60 px-3 py-2.5 text-left transition-colors',
-                  isOwner && 'hover:border-brand-200 hover:bg-brand-50/40 cursor-pointer',
-                  !isOwner && 'cursor-default',
+                  canToggle && 'hover:border-brand-200 hover:bg-brand-50/40 cursor-pointer',
+                  !canToggle && 'cursor-default',
                   busyId === stage.id && 'opacity-50'
                 )}
               >

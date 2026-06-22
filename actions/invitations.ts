@@ -79,6 +79,7 @@ export async function acceptInvitation(invitationId: string) {
 
   revalidatePath('/invitations')
   revalidatePath('/dashboard')
+  revalidatePath('/boards')
   return { success: true }
 }
 

@@ -344,7 +344,9 @@
     "teacher": "Teacher",
     "delete": "Delete",
     "confirmDelete": "Delete this comment?",
-    "count": "{count, plural, one {# comment} other {# comments}}"
+    "count": "{count, plural, one {# comment} other {# comments}}",
+    "sendHint": "send",
+    "newlineHint": "new line"
   },
   "monitoring": {
     "title": "Monitoring",
@@ -435,7 +437,9 @@
     "emptyBody": "When someone invites you to a board, the invitation will show up here.",
     "from": "Invitation from <b>{name}</b>",
     "accept": "Accept",
-    "decline": "Decline"
+    "decline": "Decline",
+    "accepted": "You joined project «{board}»",
+    "acceptError": "Failed to accept the invitation"
   },
   "landing": {
     "nav": {

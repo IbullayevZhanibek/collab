@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useTransition } from 'react'
+import { useState, useEffect, useRef, useTransition } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import { Trash2, Loader2, Send, MessageSquare } from 'lucide-react'
 import { getComments, addComment, deleteComment } from '@/actions/comments'
@@ -37,6 +37,7 @@ export function CardCommentsSection({
 }: CardCommentsSectionProps) {
   const t = useTranslations('comments')
   const locale = useLocale()
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
   const [comments, setComments] = useState<CommentWithAuthor[]>([])
   const [loading, setLoading] = useState(true)
   const [body, setBody] = useState('')
@@ -44,7 +45,6 @@ export function CardCommentsSection({
   const [isSending, startSend] = useTransition()
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
-  // Загружаем комментарии при монтировании и при смене карточки.
   useEffect(() => {
     let cancelled = false
     setLoading(true)
@@ -60,7 +60,6 @@ export function CardCommentsSection({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cardId])
 
-  // Realtime: пересчитываем список при любом изменении комментариев карточки.
   useEffect(() => {
     const supabase = createClient()
     const channel = supabase
@@ -69,7 +68,6 @@ export function CardCommentsSection({
         'postgres_changes',
         { event: '*', schema: 'public', table: 'comments', filter: `card_id=eq.${cardId}` },
         () => {
-          // Перезапрашиваем полный список чтобы получить данные авторов.
           getComments(cardId).then(({ data }) => {
             const list = data ?? []
             setComments(list)
@@ -86,7 +84,6 @@ export function CardCommentsSection({
     const trimmed = body.trim()
     if (!trimmed || isSending) return
 
-    // Оптимистичное добавление
     const optimistic: CommentWithAuthor = {
       id: `opt-${Date.now()}`,
       card_id: cardId,
@@ -106,12 +103,10 @@ export function CardCommentsSection({
     startSend(async () => {
       const res = await addComment(cardId, boardId, trimmed, isFeedback)
       if (res.error) {
-        // Откат
         setComments((prev) => prev.filter((c) => c.id !== optimistic.id))
         onCountChange?.(comments.length)
         setBody(trimmed)
       }
-      // При успехе realtime-событие заменит оптимистичный элемент настоящим.
     })
   }
 
@@ -126,11 +121,21 @@ export function CardCommentsSection({
     }
   }
 
+  // Enter = send, Shift+Enter = newline.
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
-    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       handleSend()
     }
+  }
+
+  // When the mobile keyboard appears, scroll the input into view so it isn't
+  // obscured. The dialog's visualViewport handler shrinks the panel height;
+  // this scroll ensures the textarea stays visible within that smaller area.
+  function handleFocus() {
+    setTimeout(() => {
+      textareaRef.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+    }, 300)
   }
 
   const isOptimistic = (id: string) => id.startsWith('opt-')
@@ -145,7 +150,6 @@ export function CardCommentsSection({
         )}
       </h3>
 
-      {/* Список комментариев */}
       {loading ? (
         <div className="flex justify-center py-6">
           <Loader2 size={18} className="animate-spin text-gray-300" />
@@ -174,7 +178,6 @@ export function CardCommentsSection({
               )}
 
               <div className="flex items-start gap-2">
-                {/* Аватар */}
                 <div className="shrink-0 w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden text-xs font-semibold text-gray-600">
                   {c.avatar_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -203,7 +206,6 @@ export function CardCommentsSection({
                   </p>
                 </div>
 
-                {/* Удаление — только автор */}
                 {c.user_id === currentUserId && !isOptimistic(c.id) && (
                   <button
                     onClick={() => handleDelete(c.id)}
@@ -224,7 +226,7 @@ export function CardCommentsSection({
         </ul>
       )}
 
-      {/* Форма ввода */}
+      {/* Input form — flex row keeps the send button always visible */}
       <div className="space-y-2">
         {isTeacher && (
           <label className="flex items-center gap-2 cursor-pointer select-none w-fit">
@@ -240,12 +242,14 @@ export function CardCommentsSection({
 
         <div className="flex gap-2 items-end">
           <textarea
+            ref={textareaRef}
             value={body}
             onChange={(e) => setBody(e.target.value)}
             onKeyDown={handleKeyDown}
+            onFocus={handleFocus}
             placeholder={t('add')}
             rows={2}
-            className="flex-1 resize-none rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-100 transition-colors"
+            className="flex-1 min-w-0 resize-none rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-100 transition-colors"
           />
           <button
             onClick={handleSend}
@@ -256,6 +260,7 @@ export function CardCommentsSection({
             {isSending ? <Loader2 size={15} className="animate-spin" /> : <Send size={15} />}
           </button>
         </div>
+        <p className="text-[10px] text-gray-400 text-right select-none">Enter ↵ — {t('sendHint')} · Shift+Enter — {t('newlineHint')}</p>
       </div>
     </div>
   )

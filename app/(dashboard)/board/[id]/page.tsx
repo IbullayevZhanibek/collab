@@ -132,7 +132,7 @@ export default async function BoardPage({ params }: { params: Promise<{ id: stri
         <div className="h-full overflow-x-auto p-4 sm:p-6">
           {/* Образовательный контекст проекта: описание/цель/сроки + этапы */}
           <ProjectOverview board={board} />
-          <ProjectStages boardId={id} stages={stages} isOwner={isOwner} />
+          <ProjectStages boardId={id} stages={stages} canToggle={true} />
           <KanbanBoard
             boardId={id}
             userId={user.id}

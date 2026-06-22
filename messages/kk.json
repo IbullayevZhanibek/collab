@@ -344,7 +344,9 @@
     "teacher": "Оқытушы",
     "delete": "Жою",
     "confirmDelete": "Пікірді жою керек пе?",
-    "count": "{count} пікір"
+    "count": "{count} пікір",
+    "sendHint": "жіберу",
+    "newlineHint": "жаңа жол"
   },
   "monitoring": {
     "title": "Мониторинг",
@@ -435,7 +437,9 @@
     "emptyBody": "Сізді тақтаға шақырғанда, шақыру осында пайда болады.",
     "from": "<b>{name}</b> жіберген шақыру",
     "accept": "Қабылдау",
-    "decline": "Бас тарту"
+    "decline": "Бас тарту",
+    "accepted": "Сіз «{board}» жобасына қосылдыңыз",
+    "acceptError": "Шақыруды қабылдау сәтсіз аяқталды"
   },
   "landing": {
     "nav": {
