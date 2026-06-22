@@ -11,6 +11,7 @@ import { ReflectionButton } from '@/components/board/ReflectionButton'
 import { MonitoringButton } from '@/components/board/MonitoringButton'
 import { ProjectStages } from '@/components/board/ProjectStages'
 import { ProjectOverview } from '@/components/board/ProjectOverview'
+import { CompleteBoardButton } from '@/components/board/CompleteBoardButton'
 import { getBoardInvitations } from '@/actions/invitations'
 import type { Metadata } from 'next'
 import type { MemberWithProfile, BoardInvitation, Card, ProjectStage } from '@/lib/types'
@@ -117,6 +118,13 @@ export default async function BoardPage({ params }: { params: Promise<{ id: stri
             stages={stages}
             members={members}
           />
+          {isOwner && (
+            <CompleteBoardButton
+              boardId={id}
+              boardTitle={board.title}
+              initialStatus={board.status ?? 'active'}
+            />
+          )}
           <MembersButton
             boardId={id}
             currentUserId={user.id}

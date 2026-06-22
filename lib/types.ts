@@ -33,6 +33,9 @@ export type Board = {
   end_date: string | null
   defense_format: string | null
   created_at: string
+  status: 'active' | 'completed'
+  completed_at: string | null
+  completed_by: string | null
 }
 
 export type BoardMember = {
@@ -301,6 +304,8 @@ export type ActivityAction =
   | 'member_joined'
   | 'member_left'
   | 'stage_status_changed'
+  | 'board_completed'
+  | 'board_reopened'
 
 // Сводка по задачам пользователя для блока статистики на /dashboard.
 export type DashboardStats = {
@@ -329,12 +334,14 @@ export type TeacherProjectSummary = {
   studentCount: number
   completionRate: number
   overdueCount: number
+  status: 'active' | 'completed'
+  completed_at: string | null
 }
 
 export type AttentionSignal = {
   boardId: string
   boardTitle: string
-  type: 'overdue' | 'low_activity'
+  type: 'overdue' | 'low_activity' | 'completed_ungraded'
   count: number
 }
 

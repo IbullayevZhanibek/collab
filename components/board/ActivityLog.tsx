@@ -46,6 +46,10 @@ export function ActivityLog({ boardId }: { boardId: string }) {
         return t('actions.memberJoined', { who })
       case 'member_left':
         return t('actions.memberLeft', { who })
+      case 'board_completed':
+        return t('actions.boardCompleted', { who })
+      case 'board_reopened':
+        return t('actions.boardReopened', { who })
       case 'stage_status_changed': {
         const stageTitle = detail(entry, 'stageTitle')
         const status = detail(entry, 'status')

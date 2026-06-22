@@ -1,21 +1,21 @@
-'use server'
+﻿'use server'
 
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import type { DashboardStats, NotificationItem, TeacherDashboardData, AttentionSignal, TeacherProjectSummary } from '@/lib/types'
 
-const DONE_TITLES = ['готово', 'done']
+const DONE_TITLES = ['РіРѕС‚РѕРІРѕ', 'done']
 
 const DONE_KEYWORDS = [
-  'готово', 'done', 'завершено', 'выполнено',
-  'completed', 'finished', 'сделано', 'ready',
+  'РіРѕС‚РѕРІРѕ', 'done', 'Р·Р°РІРµСЂС€РµРЅРѕ', 'РІС‹РїРѕР»РЅРµРЅРѕ',
+  'completed', 'finished', 'СЃРґРµР»Р°РЅРѕ', 'ready',
 ]
 
 function isDoneColumnTitle(title: string): boolean {
   const lower = title.toLowerCase()
   return DONE_KEYWORDS.some((kw) => lower.includes(kw))
 }
-const SOON_DAYS = 3 // окно «ближайшие дни» для уведомлений
+const SOON_DAYS = 3 // РѕРєРЅРѕ В«Р±Р»РёР¶Р°Р№С€РёРµ РґРЅРёВ» РґР»СЏ СѓРІРµРґРѕРјР»РµРЅРёР№
 
 const pad = (n: number) => String(n).padStart(2, '0')
 
@@ -44,8 +44,8 @@ type LoadedCard = {
   done: boolean
 }
 
-// Карточки пользователя, где он назначен ответственным (assignee_id = userId).
-// Один запрос с вложенным join cards → columns → boards.
+// РљР°СЂС‚РѕС‡РєРё РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ, РіРґРµ РѕРЅ РЅР°Р·РЅР°С‡РµРЅ РѕС‚РІРµС‚СЃС‚РІРµРЅРЅС‹Рј (assignee_id = userId).
+// РћРґРёРЅ Р·Р°РїСЂРѕСЃ СЃ РІР»РѕР¶РµРЅРЅС‹Рј join cards в†’ columns в†’ boards.
 async function loadCards(
   supabase: Awaited<ReturnType<typeof createClient>>,
   userId: string,
@@ -57,7 +57,7 @@ async function loadCards(
 
   return (cards ?? [])
     .map((card): LoadedCard | null => {
-      // PostgREST возвращает вложенные связи как объекты (для !inner — не массив).
+      // PostgREST РІРѕР·РІСЂР°С‰Р°РµС‚ РІР»РѕР¶РµРЅРЅС‹Рµ СЃРІСЏР·Рё РєР°Рє РѕР±СЉРµРєС‚С‹ (РґР»СЏ !inner вЂ” РЅРµ РјР°СЃСЃРёРІ).
       const column = card.columns as unknown as { title: string; boards: { id: string; title: string } } | null
       const board = column?.boards
       if (!column || !board) return null
@@ -105,16 +105,16 @@ function computeNotifications(cards: LoadedCard[], today: string): NotificationI
       board_title: c.board_title,
       days_until: daysUntil(c.due_date as string, today),
     }))
-    // Просрочено + дедлайн сегодня + ближайшие SOON_DAYS дней.
+    // РџСЂРѕСЃСЂРѕС‡РµРЅРѕ + РґРµРґР»Р°Р№РЅ СЃРµРіРѕРґРЅСЏ + Р±Р»РёР¶Р°Р№С€РёРµ SOON_DAYS РґРЅРµР№.
     .filter((c) => c.days_until <= SOON_DAYS)
-    // Сначала самые просроченные, затем по близости дедлайна.
+    // РЎРЅР°С‡Р°Р»Р° СЃР°РјС‹Рµ РїСЂРѕСЃСЂРѕС‡РµРЅРЅС‹Рµ, Р·Р°С‚РµРј РїРѕ Р±Р»РёР·РѕСЃС‚Рё РґРµРґР»Р°Р№РЅР°.
     .sort((a, b) => a.days_until - b.days_until)
 }
 
 /**
- * Статистика и важные уведомления за один проход.
- * Раньше getDashboardStats и getImportantNotifications грузили одни и те же
- * карточки по отдельности (6 запросов суммарно) — теперь это один запрос.
+ * РЎС‚Р°С‚РёСЃС‚РёРєР° Рё РІР°Р¶РЅС‹Рµ СѓРІРµРґРѕРјР»РµРЅРёСЏ Р·Р° РѕРґРёРЅ РїСЂРѕС…РѕРґ.
+ * Р Р°РЅСЊС€Рµ getDashboardStats Рё getImportantNotifications РіСЂСѓР·РёР»Рё РѕРґРЅРё Рё С‚Рµ Р¶Рµ
+ * РєР°СЂС‚РѕС‡РєРё РїРѕ РѕС‚РґРµР»СЊРЅРѕСЃС‚Рё (6 Р·Р°РїСЂРѕСЃРѕРІ СЃСѓРјРјР°СЂРЅРѕ) вЂ” С‚РµРїРµСЂСЊ СЌС‚Рѕ РѕРґРёРЅ Р·Р°РїСЂРѕСЃ.
  */
 export async function getDashboardData(): Promise<{
   stats: DashboardStats
@@ -134,8 +134,8 @@ export async function getDashboardData(): Promise<{
 }
 
 /**
- * Агрегированный дашборд преподавателя: метрики по всем его проектам.
- * 3 раунда запросов (boards → columns+members → cards).
+ * РђРіСЂРµРіРёСЂРѕРІР°РЅРЅС‹Р№ РґР°С€Р±РѕСЂРґ РїСЂРµРїРѕРґР°РІР°С‚РµР»СЏ: РјРµС‚СЂРёРєРё РїРѕ РІСЃРµРј РµРіРѕ РїСЂРѕРµРєС‚Р°Рј.
+ * 3 СЂР°СѓРЅРґР° Р·Р°РїСЂРѕСЃРѕРІ (boards в†’ columns+members в†’ cards).
  */
 export async function getTeacherDashboardData(): Promise<TeacherDashboardData> {
   const supabase = await createClient()
@@ -144,10 +144,10 @@ export async function getTeacherDashboardData(): Promise<TeacherDashboardData> {
 
   const today = todayKey()
 
-  // Раунд 1: проекты преподавателя
+  // Р Р°СѓРЅРґ 1: РїСЂРѕРµРєС‚С‹ РїСЂРµРїРѕРґР°РІР°С‚РµР»СЏ
   const { data: boardsRaw } = await supabase
     .from('boards')
-    .select('id, title, created_at')
+    .select('id, title, created_at, status, completed_at')
     .eq('owner_id', user.id)
     .order('created_at', { ascending: false })
 
@@ -161,7 +161,7 @@ export async function getTeacherDashboardData(): Promise<TeacherDashboardData> {
     }
   }
 
-  // Раунд 2: колонки + участники (параллельно)
+  // Р Р°СѓРЅРґ 2: РєРѕР»РѕРЅРєРё + СѓС‡Р°СЃС‚РЅРёРєРё (РїР°СЂР°Р»Р»РµР»СЊРЅРѕ)
   const [{ data: columnsRaw }, { data: membersRaw }] = await Promise.all([
     supabase.from('columns').select('id, board_id, title').in('board_id', boardIds),
     supabase.from('board_members').select('board_id, user_id').in('board_id', boardIds).neq('role', 'owner'),
@@ -171,12 +171,12 @@ export async function getTeacherDashboardData(): Promise<TeacherDashboardData> {
   const members = membersRaw ?? []
   const allColumnIds = columns.map((c) => c.id)
 
-  // Раунд 3: карточки (если есть колонки)
+  // Р Р°СѓРЅРґ 3: РєР°СЂС‚РѕС‡РєРё (РµСЃР»Рё РµСЃС‚СЊ РєРѕР»РѕРЅРєРё)
   const cardsRaw = allColumnIds.length > 0
     ? ((await supabase.from('cards').select('id, column_id, assignee_id, due_date').in('column_id', allColumnIds)).data ?? [])
     : []
 
-  // Индексы для быстрого поиска
+  // РРЅРґРµРєСЃС‹ РґР»СЏ Р±С‹СЃС‚СЂРѕРіРѕ РїРѕРёСЃРєР°
   const colsByBoard = new Map<string, { id: string; isDone: boolean }[]>()
   for (const col of columns) {
     if (!colsByBoard.has(col.board_id)) colsByBoard.set(col.board_id, [])
@@ -226,21 +226,39 @@ export async function getTeacherDashboardData(): Promise<TeacherDashboardData> {
     const completionRate = totalCards > 0 ? Math.round((doneCards / totalCards) * 100) : 0
     totalProgress += completionRate
 
-    // Студенты без единой назначенной задачи — низкая активность
+    // РЎС‚СѓРґРµРЅС‚С‹ Р±РµР· РµРґРёРЅРѕР№ РЅР°Р·РЅР°С‡РµРЅРЅРѕР№ Р·Р°РґР°С‡Рё вЂ” РЅРёР·РєР°СЏ Р°РєС‚РёРІРЅРѕСЃС‚СЊ
     const lowActivityCount = studentIds.filter((id) => !assignedStudents.has(id)).length
 
-    if (overdueCount > 0) {
-      attentionSignals.push({ boardId: board.id, boardTitle: board.title, type: 'overdue', count: overdueCount })
-    }
-    if (lowActivityCount > 0) {
-      attentionSignals.push({ boardId: board.id, boardTitle: board.title, type: 'low_activity', count: lowActivityCount })
+    if (board.status === 'active') {
+      if (overdueCount > 0) {
+        attentionSignals.push({ boardId: board.id, boardTitle: board.title, type: 'overdue', count: overdueCount })
+      }
+      if (lowActivityCount > 0) {
+        attentionSignals.push({ boardId: board.id, boardTitle: board.title, type: 'low_activity', count: lowActivityCount })
+      }
     }
 
-    projects.push({ id: board.id, title: board.title, created_at: board.created_at, studentCount: studentIds.length, completionRate, overdueCount })
+    projects.push({ id: board.id, title: board.title, created_at: board.created_at, studentCount: studentIds.length, completionRate, overdueCount, status: board.status as 'active' | 'completed', completed_at: board.completed_at ?? null })
+  }
+
+  const completedBoardIds = boards.filter((b) => b.status === 'completed').map((b) => b.id)
+  if (completedBoardIds.length > 0) {
+    const { data: gradedBoardsRaw } = await supabase
+      .from('grades')
+      .select('board_id')
+      .in('board_id', completedBoardIds)
+      .not('student_id', 'is', null)
+    const gradedBoardSet = new Set((gradedBoardsRaw ?? []).map((g) => g.board_id))
+    for (const completedBoard of boards.filter((b) => b.status === 'completed')) {
+      const cStudentIds = membersByBoard.get(completedBoard.id) ?? []
+      if (cStudentIds.length > 0 && !gradedBoardSet.has(completedBoard.id)) {
+        attentionSignals.push({ boardId: completedBoard.id, boardTitle: completedBoard.title, type: 'completed_ungraded', count: cStudentIds.length })
+      }
+    }
   }
 
   return {
-    activeProjects: boards.length,
+    activeProjects: boards.filter((b) => b.status === 'active').length,
     totalStudents: uniqueStudentIds.size,
     avgProgress: boards.length > 0 ? Math.round(totalProgress / boards.length) : 0,
     needsAttentionCount: attentionSignals.length,
@@ -248,3 +266,4 @@ export async function getTeacherDashboardData(): Promise<TeacherDashboardData> {
     projects,
   }
 }
+

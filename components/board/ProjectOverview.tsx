@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
-import { ChevronDown, Target, Trophy, CalendarRange, ShieldCheck, Info } from 'lucide-react'
-import { cn, formatDate } from '@/lib/utils'
+import { ChevronDown, Target, Trophy, CalendarRange, ShieldCheck, Info, CheckCircle2 } from 'lucide-react'
+import { cn, formatDate, formatDateShort } from '@/lib/utils'
 import type { Board } from '@/lib/types'
 
 interface ProjectOverviewProps {
@@ -12,8 +12,11 @@ interface ProjectOverviewProps {
 
 export function ProjectOverview({ board }: ProjectOverviewProps) {
   const t = useTranslations('projectOverview')
+  const tb = useTranslations('board')
   const locale = useLocale()
   const [open, setOpen] = useState(false)
+
+  const isCompleted = board.status === 'completed'
 
   const hasMeta =
     board.description ||
@@ -23,7 +26,7 @@ export function ProjectOverview({ board }: ProjectOverviewProps) {
     board.end_date ||
     board.defense_format
 
-  if (!hasMeta) return null
+  if (!hasMeta && !isCompleted) return null
 
   const dateRange =
     board.start_date || board.end_date
@@ -34,37 +37,51 @@ export function ProjectOverview({ board }: ProjectOverviewProps) {
 
   return (
     <div className="mb-6 rounded-2xl border border-gray-200 bg-white p-4 sm:p-5">
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center gap-2 text-left"
-      >
-        <Info size={16} className="text-brand-500 shrink-0" />
-        <h2 className="text-sm font-semibold text-gray-900 flex-1">{t('title')}</h2>
-        <ChevronDown size={18} className={cn('text-gray-400 transition-transform', open && 'rotate-180')} />
-      </button>
-
-      {open && (
-        <div className="mt-4 space-y-4 text-sm">
-          {board.description && (
-            <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">{board.description}</p>
-          )}
-
-          <dl className="grid gap-3 sm:grid-cols-2">
-            {board.goal && (
-              <Field icon={Target} label={t('goal')} value={board.goal} />
-            )}
-            {board.expected_result && (
-              <Field icon={Trophy} label={t('expectedResult')} value={board.expected_result} />
-            )}
-            {dateRange && (
-              <Field icon={CalendarRange} label={t('dates')} value={dateRange} />
-            )}
-            {board.defense_format && (
-              <Field icon={ShieldCheck} label={t('defenseFormat')} value={board.defense_format} />
-            )}
-          </dl>
+      {isCompleted && (
+        <div className="flex items-center gap-2 mb-3 text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2">
+          <CheckCircle2 size={15} className="shrink-0" />
+          <span className="text-xs font-medium">
+            {board.completed_at
+              ? tb('completedAt', { date: formatDateShort(board.completed_at, locale) })
+              : tb('completed')}
+          </span>
         </div>
+      )}
+      {hasMeta && (
+        <>
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            className="flex w-full items-center gap-2 text-left"
+          >
+            <Info size={16} className="text-brand-500 shrink-0" />
+            <h2 className="text-sm font-semibold text-gray-900 flex-1">{t('title')}</h2>
+            <ChevronDown size={18} className={cn('text-gray-400 transition-transform', open && 'rotate-180')} />
+          </button>
+
+          {open && (
+            <div className="mt-4 space-y-4 text-sm">
+              {board.description && (
+                <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">{board.description}</p>
+              )}
+
+              <dl className="grid gap-3 sm:grid-cols-2">
+                {board.goal && (
+                  <Field icon={Target} label={t('goal')} value={board.goal} />
+                )}
+                {board.expected_result && (
+                  <Field icon={Trophy} label={t('expectedResult')} value={board.expected_result} />
+                )}
+                {dateRange && (
+                  <Field icon={CalendarRange} label={t('dates')} value={dateRange} />
+                )}
+                {board.defense_format && (
+                  <Field icon={ShieldCheck} label={t('defenseFormat')} value={board.defense_format} />
+                )}
+              </dl>
+            </div>
+          )}
+        </>
       )}
     </div>
   )

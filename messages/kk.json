@@ -126,7 +126,9 @@
       "dueTomorrow": "📅 «{title}» тапсырмасы — мерзімі ертең",
       "dueInDays": "📅 «{title}» тапсырмасы — мерзімі {count} күннен кейін",
       "more": "+{count} тағы"
-    }
+    },
+    "completedProjects": "Аяқталған жобалар",
+    "signalCompletedUngraded": "{count} студент бағаланбаған — {project}"
   },
   "boards": {
     "title": "Тақталар",
@@ -173,7 +175,13 @@
     "columnLabel": "Баған",
     "createdAt": "Жасалған: {date}",
     "collapseColumn": "Жию",
-    "expandColumn": "Жаю"
+    "expandColumn": "Жаю",
+    "complete": "Жобаны аяқтау",
+    "completed": "Аяқталды",
+    "reopen": "Жұмысқа қайтару",
+    "completeConfirm": "«{title}» жобасын аяқтауды растайсыз ба? Оны кейін жұмысқа қайтаруға болады.",
+    "reopenConfirm": "«{title}» жобасын жұмысқа қайтарасыз ба?",
+    "completedAt": "Аяқталды {date}"
   },
   "activity": {
     "title": "Тарих",
@@ -192,7 +200,9 @@
       "memberLeft": "{who} тақтадан шықты",
       "stageDone": "{who} «{stageTitle}» кезеңін аяқтады",
       "stageStarted": "{who} «{stageTitle}» кезеңін бастады",
-      "stagePending": "{who} «{stageTitle}» кезеңін қайтарды"
+      "stagePending": "{who} «{stageTitle}» кезеңін қайтарды",
+      "boardCompleted": "{who} жобаны аяқтады",
+      "boardReopened": "{who} жобаны жұмысқа қайтарды"
     }
   },
   "dialogs": {

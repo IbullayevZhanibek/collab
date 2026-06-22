@@ -126,7 +126,9 @@
       "dueTomorrow": "📅 Задача «{title}» — срок завтра",
       "dueInDays": "📅 Задача «{title}» — {count, plural, one {срок через # день} few {срок через # дня} many {срок через # дней} other {срок через # дней}}",
       "more": "+{count} ещё"
-    }
+    },
+    "completedProjects": "Завершённые проекты",
+    "signalCompletedUngraded": "{count, plural, one {# студент не оценён} other {# студентов не оценены}} — {project}"
   },
   "boards": {
     "title": "Доски",
@@ -173,7 +175,13 @@
     "columnLabel": "Колонка",
     "createdAt": "Создана {date}",
     "collapseColumn": "Свернуть",
-    "expandColumn": "Развернуть"
+    "expandColumn": "Развернуть",
+    "complete": "Завершить проект",
+    "completed": "Завершён",
+    "reopen": "Вернуть в работу",
+    "completeConfirm": "Завершить проект «{title}»? Его можно будет вернуть в работу.",
+    "reopenConfirm": "Вернуть проект «{title}» в работу?",
+    "completedAt": "Завершён {date}"
   },
   "activity": {
     "title": "История",
@@ -192,7 +200,9 @@
       "memberLeft": "{who} покинул(а) доску",
       "stageDone": "{who} завершил(а) этап «{stageTitle}»",
       "stageStarted": "{who} начал(а) этап «{stageTitle}»",
-      "stagePending": "{who} сбросил(а) этап «{stageTitle}»"
+      "stagePending": "{who} сбросил(а) этап «{stageTitle}»",
+      "boardCompleted": "{who} завершил проект",
+      "boardReopened": "{who} вернул проект в работу"
     }
   },
   "dialogs": {

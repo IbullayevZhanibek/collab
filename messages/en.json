@@ -126,7 +126,9 @@
       "dueTomorrow": "📅 Task «{title}» — due tomorrow",
       "dueInDays": "📅 Task «{title}» — {count, plural, one {due in # day} other {due in # days}}",
       "more": "+{count} more"
-    }
+    },
+    "completedProjects": "Completed projects",
+    "signalCompletedUngraded": "{count, plural, one {# student} other {# students}} not graded — {project}"
   },
   "boards": {
     "title": "Boards",
@@ -173,7 +175,13 @@
     "columnLabel": "Column",
     "createdAt": "Created {date}",
     "collapseColumn": "Collapse",
-    "expandColumn": "Expand"
+    "expandColumn": "Expand",
+    "complete": "Complete project",
+    "completed": "Completed",
+    "reopen": "Reopen",
+    "completeConfirm": "Mark «{title}» as completed? You can reopen it later.",
+    "reopenConfirm": "Reopen project «{title}»?",
+    "completedAt": "Completed {date}"
   },
   "activity": {
     "title": "History",
@@ -192,7 +200,9 @@
       "memberLeft": "{who} left the board",
       "stageDone": "{who} completed stage «{stageTitle}»",
       "stageStarted": "{who} started stage «{stageTitle}»",
-      "stagePending": "{who} reset stage «{stageTitle}»"
+      "stagePending": "{who} reset stage «{stageTitle}»",
+      "boardCompleted": "{who} completed the project",
+      "boardReopened": "{who} reopened the project"
     }
   },
   "dialogs": {

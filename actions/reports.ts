@@ -37,7 +37,7 @@ export async function getTeacherOverviewReport(): Promise<{
 
   const { data: boards } = await supabase
     .from('boards')
-    .select('id, title')
+    .select('id, title, status, completed_at')
     .eq('owner_id', user.id)
     .order('created_at', { ascending: false })
 
@@ -92,9 +92,9 @@ export async function getTeacherOverviewReport(): Promise<{
         ? Math.round((projectGrades.reduce((s, g) => s + Number(g.score), 0) / maxTotal) * 100)
         : null
 
-    const isActive = stageProgress < 100 || boardStages.length === 0
+    const isActive = board.status === 'active'
 
-    return { boardId: board.id, boardTitle: board.title, studentCount, completionRate, stageProgress, avgScore, isActive }
+    return { boardId: board.id, boardTitle: board.title, studentCount, completionRate, stageProgress, avgScore, isActive, status: board.status as 'active' | 'completed' }
   })
 
   return { data: result }

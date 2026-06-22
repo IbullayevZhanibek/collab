@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { logActivity } from '@/actions/activity'
 import type { ProjectInput } from '@/lib/types'
 
 const orNull = (v?: string | null) => {
@@ -95,5 +96,53 @@ export async function updateBoardTitle(boardId: string, title: string) {
 
   revalidatePath(`/board/${boardId}`)
   revalidatePath('/dashboard')
+  return { success: true }
+}
+
+export async function completeBoard(boardId: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
+
+  const { error } = await supabase
+    .from('boards')
+    .update({
+      status: 'completed',
+      completed_at: new Date().toISOString(),
+      completed_by: user.id,
+    })
+    .eq('id', boardId)
+    .eq('owner_id', user.id)
+
+  if (error) return { error: error.message }
+
+  await logActivity(boardId, 'board_completed', {})
+  revalidatePath('/dashboard')
+  revalidatePath('/reports')
+  revalidatePath(`/board/${boardId}`)
+  return { success: true }
+}
+
+export async function reopenBoard(boardId: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
+
+  const { error } = await supabase
+    .from('boards')
+    .update({
+      status: 'active',
+      completed_at: null,
+      completed_by: null,
+    })
+    .eq('id', boardId)
+    .eq('owner_id', user.id)
+
+  if (error) return { error: error.message }
+
+  await logActivity(boardId, 'board_reopened', {})
+  revalidatePath('/dashboard')
+  revalidatePath('/reports')
+  revalidatePath(`/board/${boardId}`)
   return { success: true }
 }

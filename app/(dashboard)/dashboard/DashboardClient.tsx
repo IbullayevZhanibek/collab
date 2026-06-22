@@ -3,7 +3,7 @@
 import { useState, useTransition } from 'react'
 import Link from 'next/link'
 import { useTranslations, useLocale } from 'next-intl'
-import { Plus, Trash2, LogOut, Users, LayoutDashboard } from 'lucide-react'
+import { Plus, Trash2, LogOut, Users, LayoutDashboard, CheckCircle2 } from 'lucide-react'
 import { deleteBoard } from '@/actions/boards'
 import { leaveBoard } from '@/actions/members'
 import { CreateBoardDialog } from '@/components/dashboard/CreateBoardDialog'
@@ -15,6 +15,8 @@ interface Board {
   title: string
   owner_id: string
   created_at: string
+  status?: 'active' | 'completed'
+  completed_at?: string | null
   board_members: { count: number }[]
 }
 
@@ -26,6 +28,7 @@ interface DashboardClientProps {
 
 export function DashboardClient({ boards: initialBoards, currentUserId, globalRole }: DashboardClientProps) {
   const t = useTranslations('boards')
+  const tboard = useTranslations('board')
   const isTeacher = globalRole === 'teacher'
   const locale = useLocale()
   const [showCreate, setShowCreate] = useState(false)
@@ -127,6 +130,12 @@ export function DashboardClient({ boards: initialBoards, currentUserId, globalRo
                   <div className={cn('rounded-xl p-2.5 transition-colors', color.bg, color.hoverBg)}>
                     <LayoutDashboard className={cn('group-hover:text-white transition-colors', color.icon)} size={20} />
                   </div>
+                  {board.status === 'completed' && (
+                    <span className="flex items-center gap-1 text-xs text-emerald-700 font-medium bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full shrink-0">
+                      <CheckCircle2 size={10} />
+                      {tboard('completed')}
+                    </span>
+                  )}
                 </div>
                 <h3 className="font-semibold text-gray-900 text-base mb-1 line-clamp-2 group-hover:text-brand-700 transition-colors">
                   {board.title}
