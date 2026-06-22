@@ -207,6 +207,59 @@ export type MonitoringData = {
   collaboration: TeamCollaborationMetrics
 }
 
+// ── Аналитические отчёты ──────────────────────────────────────────────────
+
+export type StudentReportData = {
+  userId: string
+  fullName: string | null
+  email: string
+  teamRole: string | null
+  assignedCards: number
+  doneCards: number
+  commentsCount: number
+  linksCount: number
+  reflectionsCount: number
+  activityScore: number
+  activityLevel: ActivityLevel
+  gradeScore: number | null
+  gradeMax: number | null
+  gradePercent: number | null
+}
+
+export type StudentReflection = {
+  studentId: string
+  stageTitle: string | null
+  whatDone: string | null
+  difficulties: string | null
+  improvements: string | null
+  contribution: string | null
+  updatedAt: string
+}
+
+export type ProjectReportData = {
+  boardId: string
+  boardTitle: string
+  students: StudentReportData[]
+  project: ProjectMetrics
+  avgScore: number | null
+  avgActivityScore: number
+  reflections: StudentReflection[]
+}
+
+export type TeacherOverviewItem = {
+  boardId: string
+  boardTitle: string
+  studentCount: number
+  completionRate: number
+  stageProgress: number
+  avgScore: number | null
+  isActive: boolean
+}
+
+export type StudentDetailReport = StudentReportData & {
+  reflections: StudentReflection[]
+}
+
 export type BoardWithMembers = Board & { board_members: BoardMember[] }
 
 export type MemberWithProfile = {
@@ -287,6 +340,50 @@ export type ActivityLogEntry = {
   action: ActivityAction
   details: Record<string, unknown> | null
   created_at: string
+}
+
+// ── Журнал оценок (этап 3) ──
+
+export type FinalGrade = {
+  id: string
+  board_id: string
+  student_id: string | null
+  final_score: number
+  max_score: number
+  comment: string | null
+  graded_by: string | null
+  updated_at: string
+}
+
+export type GradebookCriterionScore = {
+  criterionId: string
+  score: number | null
+  comment: string | null
+}
+
+export type GradebookStudentEntry = {
+  studentId: string | null // null = строка «Проект в целом»
+  studentName: string | null
+  studentEmail: string
+  teamRole: string | null
+  criteriaScores: GradebookCriterionScore[]
+  rubricTotal: number
+  rubricMax: number
+  rubricPercent: number
+  finalScore: number | null    // из final_grades; null если не выставлена
+  finalMax: number             // знаменатель итоговой оценки
+  finalComment: string | null
+  hasFinalGrade: boolean
+}
+
+export type ProjectGradebookData = {
+  boardId: string
+  boardTitle: string
+  criteria: RubricCriterion[]
+  entries: GradebookStudentEntry[]   // сначала студенты, последний — проект
+  avgRubricPercent: number | null
+  gradedCount: number
+  totalStudents: number
 }
 
 // ── Оценивание проекта по рубрике (этап 2) ──

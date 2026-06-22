@@ -48,11 +48,12 @@ export default async function TasksPage({
 
   const columnIds = columns?.map((c) => c.id) ?? []
 
-  // Get cards
+  // Только задачи, где текущий пользователь — ответственный.
   let query = supabase
     .from('cards')
     .select('*')
     .in('column_id', columnIds.length > 0 ? columnIds : [''])
+    .eq('assignee_id', user.id)
     .order('created_at', { ascending: false })
 
   if (priority) {

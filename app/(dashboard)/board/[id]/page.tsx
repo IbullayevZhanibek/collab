@@ -139,6 +139,7 @@ export default async function BoardPage({ params }: { params: Promise<{ id: stri
             isOwner={isOwner}
             initialColumns={columns ?? []}
             initialCards={cards}
+            members={members}
           />
         </div>
       </div>

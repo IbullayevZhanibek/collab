@@ -22,7 +22,7 @@ import { reorderCards, moveCard, updateCard } from '@/actions/cards'
 import { getBulkCommentsCounts } from '@/actions/comments'
 import { getBulkLinksCounts } from '@/actions/card_links'
 import { createClient } from '@/lib/supabase/client'
-import type { Column, Card } from '@/lib/types'
+import type { Column, Card, MemberWithProfile } from '@/lib/types'
 
 interface KanbanBoardProps {
   boardId: string
@@ -30,9 +30,10 @@ interface KanbanBoardProps {
   isOwner?: boolean
   initialColumns: Column[]
   initialCards: Card[]
+  members?: MemberWithProfile[]
 }
 
-export function KanbanBoard({ boardId, userId, isOwner = false, initialColumns, initialCards }: KanbanBoardProps) {
+export function KanbanBoard({ boardId, userId, isOwner = false, initialColumns, initialCards, members = [] }: KanbanBoardProps) {
   const t = useTranslations('board')
   const [columns, setColumns] = useState<Column[]>(
     [...initialColumns].sort((a, b) => a.position - b.position)
@@ -311,6 +312,7 @@ export function KanbanBoard({ boardId, userId, isOwner = false, initialColumns, 
               commentCounts={commentCounts}
               linkCounts={linkCounts}
               columns={columns}
+              members={members}
               onMoveCard={handleMoveCard}
               onUpdateCard={handleUpdateCard}
               onCommentCountChange={handleCommentCountChange}

@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
-import { LayoutDashboard, ListTodo, Calendar, Mail, Timer, LogOut, Menu, X } from 'lucide-react'
+import { LayoutDashboard, ListTodo, Calendar, Mail, Timer, LogOut, Menu, X, FileBarChart2, BookText } from 'lucide-react'
 import posthog from 'posthog-js'
 import { logout } from '@/actions/auth'
 import { Logo } from '@/components/ui/logo'
@@ -117,6 +117,18 @@ export function Sidebar({ displayName, initials, email, invitationCount, globalR
               )}
             </Link>
           ))}
+          {globalRole === 'teacher' && (
+            <>
+              <Link href="/gradebook" onClick={() => setOpen(false)} className={navClass(isActive('/gradebook'))}>
+                <BookText size={18} />
+                <span className="flex-1">{t('gradebook')}</span>
+              </Link>
+              <Link href="/reports" onClick={() => setOpen(false)} className={navClass(isActive('/reports'))}>
+                <FileBarChart2 size={18} />
+                <span className="flex-1">{t('reports')}</span>
+              </Link>
+            </>
+          )}
         </nav>
 
         <div className="p-4 border-t border-gray-200">
@@ -160,6 +172,18 @@ export function Sidebar({ displayName, initials, email, invitationCount, globalR
               )}
             </Link>
           ))}
+          {globalRole === 'teacher' && (
+            <>
+              <Link href="/gradebook" className={navClass(isActive('/gradebook'))}>
+                <BookText size={18} />
+                <span className="flex-1">{t('gradebook')}</span>
+              </Link>
+              <Link href="/reports" className={navClass(isActive('/reports'))}>
+                <FileBarChart2 size={18} />
+                <span className="flex-1">{t('reports')}</span>
+              </Link>
+            </>
+          )}
         </nav>
 
         <div className="p-4 border-t border-gray-200">

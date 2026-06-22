@@ -9,7 +9,7 @@ import { BoardCard } from './BoardCard'
 import { CreateCardDialog } from './CreateCardDialog'
 import { deleteColumn } from '@/actions/columns'
 import { useTransition } from 'react'
-import type { Column, Card } from '@/lib/types'
+import type { Column, Card, MemberWithProfile } from '@/lib/types'
 
 interface BoardColumnProps {
   column: Column
@@ -21,6 +21,7 @@ interface BoardColumnProps {
   linkCounts?: Record<string, number>
   /** Все колонки доски — для меню «Переместить в колонку» на карточках. */
   columns: Column[]
+  members?: MemberWithProfile[]
   onMoveCard: (cardId: string, targetColumnId: string) => void
   onUpdateCard: (cardId: string, updates: Partial<Card>) => Promise<{ error?: string } | void>
   onCommentCountChange?: (cardId: string, count: number) => void
@@ -36,6 +37,7 @@ export function BoardColumn({
   commentCounts = {},
   linkCounts = {},
   columns,
+  members = [],
   onMoveCard,
   onUpdateCard,
   onCommentCountChange,
@@ -110,6 +112,7 @@ export function BoardColumn({
                 commentsCount={commentCounts[card.id] ?? 0}
                 linksCount={linkCounts[card.id] ?? 0}
                 columns={columns}
+                members={members}
                 onMoveCard={onMoveCard}
                 onUpdateCard={onUpdateCard}
                 onCommentCountChange={onCommentCountChange}
@@ -134,6 +137,8 @@ export function BoardColumn({
         onClose={() => setShowCreateCard(false)}
         columnId={column.id}
         boardId={boardId}
+        currentUserId={userId}
+        members={members}
       />
     </div>
   )

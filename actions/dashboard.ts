@@ -34,16 +34,16 @@ type LoadedCard = {
   done: boolean
 }
 
-// Все карточки со всех досок пользователя (RLS ограничивает доступ),
-// обогащённые контекстом доски/колонки и флагом «выполнено».
-// Один запрос с вложенным join cards → columns → boards вместо трёх
-// последовательных round-trip'ов.
+// Карточки пользователя, где он назначен ответственным (assignee_id = userId).
+// Один запрос с вложенным join cards → columns → boards.
 async function loadCards(
   supabase: Awaited<ReturnType<typeof createClient>>,
+  userId: string,
 ): Promise<LoadedCard[]> {
   const { data: cards } = await supabase
     .from('cards')
     .select('id, title, due_date, priority, columns!inner(title, boards!inner(id, title))')
+    .eq('assignee_id', userId)
 
   return (cards ?? [])
     .map((card): LoadedCard | null => {
@@ -114,7 +114,7 @@ export async function getDashboardData(): Promise<{
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const cards = await loadCards(supabase)
+  const cards = await loadCards(supabase, user.id)
   const today = todayKey()
 
   return {

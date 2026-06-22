@@ -9,25 +9,38 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Select } from '@/components/ui/select'
+import type { MemberWithProfile } from '@/lib/types'
 
 interface CreateCardDialogProps {
   open: boolean
   onClose: () => void
   columnId: string
   boardId: string
+  currentUserId?: string
+  members?: MemberWithProfile[]
 }
 
-export function CreateCardDialog({ open, onClose, columnId, boardId }: CreateCardDialogProps) {
+export function CreateCardDialog({
+  open,
+  onClose,
+  columnId,
+  boardId,
+  currentUserId,
+  members = [],
+}: CreateCardDialogProps) {
   const posthog = usePostHog()
-  const t = useTranslations('dialogs.createCard')
+  const t  = useTranslations('dialogs.createCard')
   const tc = useTranslations('common')
   const tp = useTranslations('priority')
+  const tb = useTranslations('card')
 
-  const [title, setTitle] = useState('')
+  const [title, setTitle]         = useState('')
   const [description, setDescription] = useState('')
-  const [priority, setPriority] = useState('')
-  const [dueDate, setDueDate] = useState('')
-  const [error, setError] = useState<string | null>(null)
+  const [priority, setPriority]   = useState('')
+  const [dueDate, setDueDate]     = useState('')
+  // По умолчанию назначаем на себя.
+  const [assigneeId, setAssigneeId] = useState(currentUserId ?? '')
+  const [error, setError]         = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
 
   function handleCreate() {
@@ -41,8 +54,9 @@ export function CreateCardDialog({ open, onClose, columnId, boardId }: CreateCar
       const result = await createCard(columnId, boardId, {
         title,
         description: description || undefined,
-        priority: priority || undefined,
-        due_date: dueDate || undefined,
+        priority:    priority    || undefined,
+        due_date:    dueDate     || undefined,
+        assignee_id: assigneeId  || undefined,
       })
 
       if (result?.error) {
@@ -51,8 +65,6 @@ export function CreateCardDialog({ open, onClose, columnId, boardId }: CreateCar
       }
 
       posthog.capture('card_created', { board_id: boardId, column_id: columnId })
-      // Новая карточка появится через realtime-подписку KanbanBoard —
-      // полный router.refresh() страницы доски не нужен.
       resetForm()
       onClose()
     })
@@ -63,6 +75,7 @@ export function CreateCardDialog({ open, onClose, columnId, boardId }: CreateCar
     setDescription('')
     setPriority('')
     setDueDate('')
+    setAssigneeId(currentUserId ?? '')
     setError(null)
   }
 
@@ -102,11 +115,11 @@ export function CreateCardDialog({ open, onClose, columnId, boardId }: CreateCar
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('priorityLabel')}</label>
           <Select value={priority} onChange={(e) => setPriority(e.target.value)}>
-            <option value="" className="text-gray-900">{tp('none')}</option>
-            <option value="low" className="text-gray-900">{tp('low')}</option>
-            <option value="medium" className="text-gray-900">{tp('medium')}</option>
-            <option value="high" className="text-gray-900">{tp('high')}</option>
-            <option value="critical" className="text-gray-900">{tp('critical')}</option>
+            <option value="">{tp('none')}</option>
+            <option value="low">{tp('low')}</option>
+            <option value="medium">{tp('medium')}</option>
+            <option value="high">{tp('high')}</option>
+            <option value="critical">{tp('critical')}</option>
           </Select>
         </div>
 
@@ -118,6 +131,35 @@ export function CreateCardDialog({ open, onClose, columnId, boardId }: CreateCar
             onChange={(e) => setDueDate(e.target.value)}
           />
         </div>
+
+        {members.length > 0 && (
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-sm font-medium text-gray-700">{tb('assignee')}</label>
+              {assigneeId !== currentUserId && currentUserId && (
+                <button
+                  type="button"
+                  onClick={() => setAssigneeId(currentUserId)}
+                  className="text-xs text-brand-600 hover:text-brand-700 font-medium"
+                >
+                  {tb('assignToMe')}
+                </button>
+              )}
+            </div>
+            <Select
+              value={assigneeId}
+              onChange={(e) => setAssigneeId(e.target.value)}
+            >
+              <option value="">{tb('unassigned')}</option>
+              {members.map((m) => (
+                <option key={m.user_id} value={m.user_id}>
+                  {m.full_name || m.email}
+                  {m.user_id === currentUserId ? ` (${tb('me')})` : ''}
+                </option>
+              ))}
+            </Select>
+          </div>
+        )}
       </div>
 
       <div className="flex gap-3 justify-end">

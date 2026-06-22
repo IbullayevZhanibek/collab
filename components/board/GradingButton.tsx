@@ -14,10 +14,11 @@ import {
   applyStandardRubric,
   setGrade,
 } from '@/actions/grading'
+import { getStudentFinalGrade } from '@/actions/gradebook'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
-import type { RubricCriterion, Grade, MemberWithProfile } from '@/lib/types'
+import type { RubricCriterion, Grade, MemberWithProfile, FinalGrade } from '@/lib/types'
 
 interface GradingButtonProps {
   boardId: string
@@ -36,6 +37,7 @@ export function GradingButton({ boardId, currentUserId, isOwner, members }: Grad
   const [loaded, setLoaded] = useState(false)
   const [criteria, setCriteria] = useState<RubricCriterion[]>([])
   const [grades, setGrades] = useState<Grade[]>([])
+  const [finalGrade, setFinalGrade] = useState<FinalGrade | null>(null)
   const [isPending, startTransition] = useTransition()
   const [busy, setBusy] = useState(false)
 
@@ -47,9 +49,15 @@ export function GradingButton({ boardId, currentUserId, isOwner, members }: Grad
 
   function reload() {
     startTransition(async () => {
-      const [r, g] = await Promise.all([getRubric(boardId), getGrades(boardId)])
+      const studentIdForFinal = isOwner ? null : currentUserId
+      const [r, g, fg] = await Promise.all([
+        getRubric(boardId),
+        getGrades(boardId),
+        getStudentFinalGrade(boardId, studentIdForFinal),
+      ])
       setCriteria(r.data ?? [])
       setGrades(g.data ?? [])
+      setFinalGrade(fg.data ?? null)
       setLoaded(true)
     })
   }
@@ -300,7 +308,7 @@ export function GradingButton({ boardId, currentUserId, isOwner, members }: Grad
 
               {/* Итог */}
               {criteria.length > 0 && (
-                <div className="border-t border-gray-200 p-4 sm:p-5 shrink-0 bg-gray-50">
+                <div className="border-t border-gray-200 p-4 sm:p-5 shrink-0 bg-gray-50 space-y-3">
                   {!isOwner && !anyGraded ? (
                     <p className="text-sm text-center text-gray-500">{t('notGradedYet')}</p>
                   ) : (
@@ -323,6 +331,27 @@ export function GradingButton({ boardId, currentUserId, isOwner, members }: Grad
                         />
                       </div>
                     </>
+                  )}
+
+                  {/* Итоговая оценка из журнала */}
+                  {finalGrade && (
+                    <div className={cn(
+                      'rounded-lg px-3 py-2.5 flex items-center justify-between',
+                      (finalGrade.final_score / finalGrade.max_score) >= 0.75
+                        ? 'bg-emerald-50 border border-emerald-200'
+                        : (finalGrade.final_score / finalGrade.max_score) >= 0.5
+                        ? 'bg-amber-50 border border-amber-200'
+                        : 'bg-red-50 border border-red-200',
+                    )}>
+                      <span className="text-xs font-medium text-gray-600">{t('finalGradeLabel')}</span>
+                      <span className="text-sm font-bold text-gray-900 tabular-nums">
+                        {Number(finalGrade.final_score)}/{Number(finalGrade.max_score)}
+                        {' '}
+                        <span className="text-xs font-normal text-gray-500">
+                          ({Math.round((finalGrade.final_score / finalGrade.max_score) * 100)}%)
+                        </span>
+                      </span>
+                    </div>
                   )}
                 </div>
               )}

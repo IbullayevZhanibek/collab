@@ -30,6 +30,10 @@ export async function createCard(
 
   const nextPosition = existing && existing.length > 0 ? existing[0].position + 1 : 0
 
+  // Если assignee_id не передан — назначаем на текущего пользователя.
+  const assigneeId =
+    data.assignee_id !== undefined ? (data.assignee_id || null) : user.id
+
   const { data: card, error } = await supabase
     .from('cards')
     .insert({
@@ -38,7 +42,7 @@ export async function createCard(
       description: data.description || null,
       priority: data.priority || null,
       due_date: data.due_date || null,
-      assignee_id: data.assignee_id || null,
+      assignee_id: assigneeId,
       position: nextPosition,
     })
     .select()

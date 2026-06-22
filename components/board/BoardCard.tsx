@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { MoveCardMenu } from './MoveCardMenu'
 import { CardDetailDialog } from './CardDetailDialog'
 import { deleteCard } from '@/actions/cards'
-import type { Card, Column } from '@/lib/types'
+import type { Card, Column, MemberWithProfile } from '@/lib/types'
 
 interface BoardCardProps {
   card: Card
@@ -20,6 +20,7 @@ interface BoardCardProps {
   linksCount?: number
   /** Все колонки доски — для меню «Переместить в колонку» и диалога деталей. */
   columns?: Column[]
+  members?: MemberWithProfile[]
   /** Перемещение карточки в другую колонку (оптимистично + Server Action). */
   onMoveCard?: (cardId: string, targetColumnId: string) => void
   /** Сохранение правок из диалога деталей (оптимистично + Server Action). */
@@ -36,6 +37,7 @@ export function BoardCard({
   commentsCount = 0,
   linksCount = 0,
   columns,
+  members = [],
   onMoveCard,
   onUpdateCard,
   onCommentCountChange,
@@ -92,6 +94,13 @@ export function BoardCard({
 
   const isOverdue = card.due_date && new Date(card.due_date) < new Date()
 
+  const assignee = card.assignee_id
+    ? members.find((m) => m.user_id === card.assignee_id)
+    : null
+  const assigneeLabel = assignee
+    ? (assignee.full_name || assignee.email).charAt(0).toUpperCase()
+    : null
+
   return (
     <>
     <div
@@ -142,6 +151,15 @@ export function BoardCard({
                 {localCount}
               </span>
             )}
+            {/* Аватар ответственного */}
+            {assigneeLabel && (
+              <span
+                title={assignee?.full_name || assignee?.email}
+                className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-brand-100 text-brand-700 text-[9px] font-bold shrink-0"
+              >
+                {assigneeLabel}
+              </span>
+            )}
           </div>
         </div>
 
@@ -173,6 +191,7 @@ export function BoardCard({
         card={card}
         boardId={boardId}
         columns={columns}
+        members={members}
         currentUserId={userId}
         isTeacher={isTeacher}
         onMove={(targetColumnId) => onMoveCard?.(card.id, targetColumnId)}

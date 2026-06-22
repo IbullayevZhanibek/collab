@@ -13,7 +13,7 @@ import { MoveCardMenu } from './MoveCardMenu'
 import { deleteCard } from '@/actions/cards'
 import { CardCommentsSection } from './CardCommentsSection'
 import { CardLinksSection } from './CardLinksSection'
-import type { Card, Column } from '@/lib/types'
+import type { Card, Column, MemberWithProfile } from '@/lib/types'
 
 interface CardDetailDialogProps {
   open: boolean
@@ -21,6 +21,7 @@ interface CardDetailDialogProps {
   card: Card
   boardId: string
   columns: Column[]
+  members?: MemberWithProfile[]
   currentUserId: string
   isTeacher: boolean
   /** Перемещение в другую колонку (оптимистично + Server Action на уровне доски). */
@@ -39,6 +40,7 @@ export function CardDetailDialog({
   card,
   boardId,
   columns,
+  members = [],
   currentUserId,
   isTeacher,
   onMove,
@@ -46,23 +48,23 @@ export function CardDetailDialog({
   onCommentCountChange,
   onLinkCountChange,
 }: CardDetailDialogProps) {
-  const t = useTranslations('board')
+  const t  = useTranslations('board')
   const tf = useTranslations('dialogs.createCard')
   const tp = useTranslations('priority')
   const tc = useTranslations('common')
+  const tb = useTranslations('card')
   const locale = useLocale()
 
-  const [title, setTitle] = useState(card.title)
+  const [title, setTitle]           = useState(card.title)
   const [description, setDescription] = useState(card.description ?? '')
-  const [priority, setPriority] = useState(card.priority ?? '')
-  const [dueDate, setDueDate] = useState(card.due_date ? card.due_date.slice(0, 10) : '')
-  const [error, setError] = useState<string | null>(null)
-  const [isSaving, startSave] = useTransition()
-  const [isDeleting, startDelete] = useTransition()
+  const [priority, setPriority]     = useState(card.priority ?? '')
+  const [dueDate, setDueDate]       = useState(card.due_date ? card.due_date.slice(0, 10) : '')
+  const [assigneeId, setAssigneeId] = useState(card.assignee_id ?? '')
+  const [error, setError]           = useState<string | null>(null)
+  const [isSaving, startSave]       = useTransition()
+  const [isDeleting, startDelete]   = useTransition()
 
-  // Перечитываем поля из карточки при (повторном) открытии диалога или смене
-  // карточки — синхронизация во время рендера (рекомендованный React паттерн),
-  // чтобы realtime-обновления не затирали правки во время редактирования.
+  // Синхронизация при открытии/смене карточки.
   const [synced, setSynced] = useState<string | null>(null)
   if (open && synced !== card.id) {
     setSynced(card.id)
@@ -70,6 +72,7 @@ export function CardDetailDialog({
     setDescription(card.description ?? '')
     setPriority(card.priority ?? '')
     setDueDate(card.due_date ? card.due_date.slice(0, 10) : '')
+    setAssigneeId(card.assignee_id ?? '')
     setError(null)
   }
   if (!open && synced !== null) setSynced(null)
@@ -80,7 +83,8 @@ export function CardDetailDialog({
     title.trim() !== card.title ||
     (description.trim() || '') !== (card.description ?? '') ||
     (priority || '') !== (card.priority ?? '') ||
-    (dueDate || '') !== (card.due_date ? card.due_date.slice(0, 10) : '')
+    (dueDate || '') !== (card.due_date ? card.due_date.slice(0, 10) : '') ||
+    (assigneeId || null) !== (card.assignee_id ?? null)
 
   function handleSave() {
     const trimmed = title.trim()
@@ -94,6 +98,7 @@ export function CardDetailDialog({
       description: description.trim() || null,
       priority: (priority || null) as Priority | null,
       due_date: dueDate || null,
+      assignee_id: assigneeId || null,
     }
     startSave(async () => {
       const res = await onUpdate(updates)
@@ -185,6 +190,33 @@ export function CardDetailDialog({
           <label className="block text-sm font-medium text-gray-700 mb-1.5">{tf('dueDateLabel')}</label>
           <Input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
         </div>
+
+        {/* Ответственный */}
+        {members.length > 0 && (
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-sm font-medium text-gray-700">{tb('assignee')}</label>
+              {assigneeId !== currentUserId && (
+                <button
+                  type="button"
+                  onClick={() => setAssigneeId(currentUserId)}
+                  className="text-xs text-brand-600 hover:text-brand-700 font-medium"
+                >
+                  {tb('assignToMe')}
+                </button>
+              )}
+            </div>
+            <Select value={assigneeId} onChange={(e) => setAssigneeId(e.target.value)}>
+              <option value="">{tb('unassigned')}</option>
+              {members.map((m) => (
+                <option key={m.user_id} value={m.user_id}>
+                  {m.full_name || m.email}
+                  {m.user_id === currentUserId ? ` (${tb('me')})` : ''}
+                </option>
+              ))}
+            </Select>
+          </div>
+        )}
 
         {/* Колонка + перемещение */}
         <div className="flex items-center justify-between gap-2 rounded-xl bg-gray-50 border border-gray-100 px-3 py-2.5">
