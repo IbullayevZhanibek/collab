@@ -53,7 +53,7 @@ export default async function RootPage() {
             <span>{t('hero.badge')}</span>
           </div>
 
-          <h1 className="relative text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-[1.1] tracking-tight max-w-3xl">
+          <h1 className="relative text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-[1.1] tracking-tight max-w-5xl">
             {t.rich('hero.title', {
               accent: (chunks) => <span className="text-brand-600">{chunks}</span>,
             })}

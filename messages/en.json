@@ -66,7 +66,7 @@
     },
     "register": {
       "title": "Create your account",
-      "subtitle": "Free forever — no credit card needed",
+      "subtitle": "Choose your role — teacher or student",
       "name": "Name",
       "namePlaceholder": "Alex",
       "roleLabel": "I am",
@@ -153,6 +153,8 @@
     "addCard": "Add task",
     "deleteColumn": "Delete column",
     "confirmDeleteColumn": "Delete this column with all its tasks?",
+    "renameColumn": "Rename column",
+    "columnNamePlaceholder": "Column title",
     "deleteCard": "Delete",
     "confirmDeleteCard": "Delete this task?",
     "moveTo": "Move to column",
@@ -433,7 +435,7 @@
       "subtitle": "Collab helps teachers plan, guide, and grade projects while students work through stages, meet deadlines, and track their own progress.",
       "ctaPrimary": "Get started free",
       "ctaSecondary": "I already have an account",
-      "noCard": "Free for teachers and students"
+      "noCard": "Free for everyone"
     },
     "preview": {
       "todoTitle": "To do",

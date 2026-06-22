@@ -19,6 +19,7 @@ import { BoardColumn } from './BoardColumn'
 import { BoardCard } from './BoardCard'
 import { CreateColumnDialog } from './CreateColumnDialog'
 import { reorderCards, moveCard, updateCard } from '@/actions/cards'
+import { updateColumnTitle } from '@/actions/columns'
 import { getBulkCommentsCounts } from '@/actions/comments'
 import { getBulkLinksCounts } from '@/actions/card_links'
 import { createClient } from '@/lib/supabase/client'
@@ -111,6 +112,10 @@ export function KanbanBoard({ boardId, userId, isOwner = false, initialColumns, 
               if (prev.find((c) => c.id === (payload.new as Column).id)) return prev
               return [...prev, payload.new as Column].sort((a, b) => a.position - b.position)
             })
+          } else if (payload.eventType === 'UPDATE') {
+            setColumns((prev) =>
+              prev.map((c) => c.id === (payload.new as Column).id ? { ...c, ...(payload.new as Column) } : c)
+            )
           } else if (payload.eventType === 'DELETE') {
             setColumns((prev) => prev.filter((c) => c.id !== (payload.old as Column).id))
             setCards((prev) => prev.filter((c) => c.column_id !== (payload.old as Column).id))
@@ -219,6 +224,13 @@ export function KanbanBoard({ boardId, userId, isOwner = false, initialColumns, 
     return result
   }
 
+  async function handleRenameColumn(columnId: string, newTitle: string) {
+    const snapshot = columns
+    setColumns((prev) => prev.map((c) => c.id === columnId ? { ...c, title: newTitle } : c))
+    const result = await updateColumnTitle(columnId, newTitle, boardId)
+    if (result?.error) setColumns(snapshot)
+  }
+
   function onDragStart(event: DragStartEvent) {
     const { active } = event
     if (active.data.current?.type === 'card') {
@@ -315,6 +327,7 @@ export function KanbanBoard({ boardId, userId, isOwner = false, initialColumns, 
               members={members}
               onMoveCard={handleMoveCard}
               onUpdateCard={handleUpdateCard}
+              onRenameColumn={handleRenameColumn}
               onCommentCountChange={handleCommentCountChange}
               onLinkCountChange={handleLinkCountChange}
             />
