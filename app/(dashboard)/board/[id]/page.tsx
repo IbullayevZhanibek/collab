@@ -101,7 +101,7 @@ export default async function BoardPage({ params }: { params: Promise<{ id: stri
           <h1 className="font-semibold text-gray-900 text-base sm:text-lg truncate">{board.title}</h1>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
           <ActivityLog boardId={id} />
           {isOwner && <MonitoringButton boardId={id} />}
           <GradingButton
@@ -129,7 +129,7 @@ export default async function BoardPage({ params }: { params: Promise<{ id: stri
 
       {/* Board body */}
       <div className="flex-1 bg-gray-50">
-        <div className="h-full overflow-x-auto p-4 sm:p-6">
+        <div className="p-4 sm:p-6">
           {/* Образовательный контекст проекта: описание/цель/сроки + этапы */}
           <ProjectOverview board={board} />
           <ProjectStages boardId={id} stages={stages} canToggle={true} />

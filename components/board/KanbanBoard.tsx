@@ -308,7 +308,11 @@ export function KanbanBoard({ boardId, userId, isOwner = false, initialColumns, 
       onDragOver={onDragOver}
       onDragEnd={onDragEnd}
     >
-      <div className="flex gap-3 sm:gap-4 items-start overflow-x-auto pb-4 snap-x snap-mandatory scroll-smooth scrollbar-thin">
+      {/*
+        Mobile  (< lg): flex-col — columns stack vertically, full-width, no h-scroll.
+        Desktop (lg+):  flex-row — original horizontal kanban with h-scroll.
+      */}
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:gap-4 lg:overflow-x-auto lg:pb-4 lg:snap-x lg:snap-mandatory lg:scroll-smooth lg:scrollbar-thin">
         <SortableContext
           items={columns.map((c) => c.id)}
           strategy={horizontalListSortingStrategy}
@@ -334,11 +338,11 @@ export function KanbanBoard({ boardId, userId, isOwner = false, initialColumns, 
           ))}
         </SortableContext>
 
-        {/* Add column */}
-        <div className="flex-shrink-0">
+        {/* Add column — full-width on mobile, fixed-width column on desktop */}
+        <div className="lg:shrink-0">
           <button
             onClick={() => setShowCreateColumn(true)}
-            className="flex items-center gap-2 bg-white/70 hover:bg-white border-2 border-dashed border-gray-300 hover:border-brand-400 rounded-2xl px-5 py-3 text-sm font-medium text-gray-500 hover:text-brand-600 transition-all w-[280px] sm:w-72 snap-start shrink-0"
+            className="w-full lg:w-72 flex items-center gap-2 bg-white/70 hover:bg-white border-2 border-dashed border-gray-300 hover:border-brand-400 rounded-2xl px-5 py-3 text-sm font-medium text-gray-500 hover:text-brand-600 transition-all lg:snap-start lg:shrink-0"
           >
             <Plus size={16} />
             {t('addColumn')}

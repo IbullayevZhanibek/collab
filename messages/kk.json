@@ -171,7 +171,9 @@
     "moveTo": "Бағанға жылжыту",
     "cardDetails": "Тапсырма мәліметтері",
     "columnLabel": "Баған",
-    "createdAt": "Жасалған: {date}"
+    "createdAt": "Жасалған: {date}",
+    "collapseColumn": "Жию",
+    "expandColumn": "Жаю"
   },
   "activity": {
     "title": "Тарих",

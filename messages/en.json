@@ -171,7 +171,9 @@
     "moveTo": "Move to column",
     "cardDetails": "Task details",
     "columnLabel": "Column",
-    "createdAt": "Created {date}"
+    "createdAt": "Created {date}",
+    "collapseColumn": "Collapse",
+    "expandColumn": "Expand"
   },
   "activity": {
     "title": "History",

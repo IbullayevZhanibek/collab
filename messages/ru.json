@@ -171,7 +171,9 @@
     "moveTo": "Переместить в колонку",
     "cardDetails": "Детали задачи",
     "columnLabel": "Колонка",
-    "createdAt": "Создана {date}"
+    "createdAt": "Создана {date}",
+    "collapseColumn": "Свернуть",
+    "expandColumn": "Развернуть"
   },
   "activity": {
     "title": "История",
