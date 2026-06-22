@@ -314,7 +314,14 @@
       "teamwork": "Teamwork",
       "documentation": "Documentation",
       "presentation": "Presentation and defense"
-    }
+    },
+    "save": "Save grade",
+    "saving": "Saving...",
+    "saved": "Saved",
+    "unsaved": "Unsaved changes",
+    "discardConfirm": "Unsaved changes will be lost. Close anyway?",
+    "switchConfirm": "Unsaved changes will be lost. Switch student?",
+    "saveError": "Failed to save grade"
   },
   "links": {
     "title": "Materials",

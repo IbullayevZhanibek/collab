@@ -1,9 +1,11 @@
 'use client'
 
-import { useEffect, useMemo, useState, useTransition } from 'react'
+import { useEffect, useMemo, useRef, useState, useTransition } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslations } from 'next-intl'
-import { ClipboardCheck, X, Loader2, Plus, Trash2, Sparkles } from 'lucide-react'
+import {
+  ClipboardCheck, X, Loader2, Plus, Trash2, Sparkles, Check, AlertCircle,
+} from 'lucide-react'
 import { cn } from '@/lib/utils'
 import {
   getRubric,
@@ -27,12 +29,15 @@ interface GradingButtonProps {
   members: MemberWithProfile[]
 }
 
-// Ключ цели оценивания: 'project' = весь проект, иначе user_id студента.
+type GradeDraft = { score: string; comment: string }
+type SaveStatus = 'idle' | 'saving' | 'saved' | 'error'
+
 const PROJECT = 'project'
 
 export function GradingButton({ boardId, currentUserId, isOwner, members }: GradingButtonProps) {
   const t = useTranslations('grading')
   const tc = useTranslations('common')
+
   const [open, setOpen] = useState(false)
   const [loaded, setLoaded] = useState(false)
   const [criteria, setCriteria] = useState<RubricCriterion[]>([])
@@ -41,11 +46,63 @@ export function GradingButton({ boardId, currentUserId, isOwner, members }: Grad
   const [isPending, startTransition] = useTransition()
   const [busy, setBusy] = useState(false)
 
-  // Цель оценивания: для преподавателя выбирается, для студента — он сам.
+  // Which student/project is being graded (teacher selects; student is always self)
   const [target, setTarget] = useState<string>(PROJECT)
   const students = useMemo(() => members.filter((m) => m.role !== 'owner'), [members])
   const effectiveTarget = isOwner ? target : currentUserId
   const targetStudentId = effectiveTarget === PROJECT ? null : effectiveTarget
+  const effectiveTargetRef = useRef(effectiveTarget)
+  effectiveTargetRef.current = effectiveTarget
+
+  // ── Draft state (teacher only) ──
+  // baseline = last-saved values per criterion; drafts = in-progress edits.
+  // Dirty when drafts differ from baseline for any criterion.
+  const [drafts, setDrafts] = useState<Record<string, GradeDraft>>({})
+  const [baseline, setBaseline] = useState<Record<string, GradeDraft>>({})
+
+  // Save lifecycle
+  const [isSaving, setIsSaving] = useState(false)
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle')
+  const [saveError, setSaveError] = useState<string | null>(null)
+
+  const isDirty = useMemo(() => {
+    if (!isOwner || !loaded || criteria.length === 0) return false
+    return criteria.some((c) => {
+      const b = baseline[c.id] ?? { score: '', comment: '' }
+      const d = drafts[c.id] ?? b
+      return d.score !== b.score || d.comment !== b.comment
+    })
+  }, [criteria, baseline, drafts, isOwner, loaded])
+
+  // Ref so event handlers (keyboard, backdrop) always see the current isDirty
+  const isDirtyRef = useRef(isDirty)
+  isDirtyRef.current = isDirty
+
+  // ── Helpers ──
+
+  function computeBaseline(
+    gradesData: Grade[],
+    criteriaData: RubricCriterion[],
+    targetId: string,
+  ): Record<string, GradeDraft> {
+    const result: Record<string, GradeDraft> = {}
+    criteriaData.forEach((c) => {
+      let grade: Grade | undefined
+      if (isOwner) {
+        grade = gradesData.find(
+          (g) => g.criterion_id === c.id && (g.student_id ?? PROJECT) === targetId,
+        )
+      } else {
+        grade = gradesData.find((g) => g.criterion_id === c.id && g.student_id === currentUserId)
+          ?? gradesData.find((g) => g.criterion_id === c.id && g.student_id === null)
+      }
+      result[c.id] = {
+        score: grade?.score != null ? String(grade.score) : '',
+        comment: grade?.comment ?? '',
+      }
+    })
+    return result
+  }
 
   function reload() {
     startTransition(async () => {
@@ -55,9 +112,17 @@ export function GradingButton({ boardId, currentUserId, isOwner, members }: Grad
         getGrades(boardId),
         getStudentFinalGrade(boardId, studentIdForFinal),
       ])
-      setCriteria(r.data ?? [])
-      setGrades(g.data ?? [])
+      const crit = r.data ?? []
+      const gr = g.data ?? []
+      setCriteria(crit)
+      setGrades(gr)
       setFinalGrade(fg.data ?? null)
+      // Init drafts from freshly loaded server data
+      const bl = computeBaseline(gr, crit, effectiveTargetRef.current)
+      setBaseline(bl)
+      setDrafts(bl)
+      setSaveStatus('idle')
+      setSaveError(null)
       setLoaded(true)
     })
   }
@@ -69,37 +134,136 @@ export function GradingButton({ boardId, currentUserId, isOwner, members }: Grad
 
   useEffect(() => {
     if (!open) return
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false)
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return
+      if (isDirtyRef.current && !confirm(t('discardConfirm'))) return
+      setOpen(false)
+    }
     document.addEventListener('keydown', onKey)
     document.body.style.overflow = 'hidden'
     return () => {
       document.removeEventListener('keydown', onKey)
       document.body.style.overflow = ''
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open])
 
-  // Для студента оценку резолвим: личная, иначе общая по проекту.
+  // Grade lookup for student view (uses server grades, not drafts)
   function gradeFor(criterionId: string): Grade | undefined {
     if (isOwner) {
       return grades.find(
         (g) => g.criterion_id === criterionId && (g.student_id ?? PROJECT) === effectiveTarget,
       )
     }
-    const personal = grades.find((g) => g.criterion_id === criterionId && g.student_id === currentUserId)
+    const personal = grades.find(
+      (g) => g.criterion_id === criterionId && g.student_id === currentUserId,
+    )
     if (personal) return personal
     return grades.find((g) => g.criterion_id === criterionId && g.student_id === null)
   }
 
   const maxTotal = useMemo(() => criteria.reduce((s, c) => s + c.max_score, 0), [criteria])
-  const earned = useMemo(
-    () => criteria.reduce((s, c) => s + Number(gradeFor(c.id)?.score ?? 0), 0),
+
+  // Teacher: live total from draft values (recalculates as user types)
+  // Student: total from server grades
+  const earned = useMemo(() => {
+    if (isOwner) {
+      return criteria.reduce((sum, c) => {
+        const d = drafts[c.id] ?? baseline[c.id]
+        const raw = d ? (d.score === '' ? 0 : Number(d.score)) : 0
+        return sum + Math.min(Math.max(0, raw), c.max_score)
+      }, 0)
+    }
+    return criteria.reduce((s, c) => s + Number(gradeFor(c.id)?.score ?? 0), 0)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [criteria, grades, effectiveTarget],
-  )
+  }, [criteria, grades, drafts, baseline, effectiveTarget, isOwner])
+
   const percent = maxTotal > 0 ? Math.round((earned / maxTotal) * 100) : 0
   const anyGraded = criteria.some((c) => gradeFor(c.id) !== undefined)
 
-  // ── Действия преподавателя ──
+  const targetLabel =
+    effectiveTarget === PROJECT
+      ? t('wholeProject')
+      : students.find((s) => s.user_id === effectiveTarget)?.full_name ||
+        students.find((s) => s.user_id === effectiveTarget)?.email ||
+        ''
+
+  // ── Close with dirty guard ──
+  function handleClose() {
+    if (isDirtyRef.current && !confirm(t('discardConfirm'))) return
+    setOpen(false)
+  }
+
+  // ── Target switch with dirty guard ──
+  function handleTargetChange(newTarget: string) {
+    if (isDirty && !confirm(t('switchConfirm'))) return
+    setSaveStatus('idle')
+    setSaveError(null)
+    setTarget(newTarget)
+    // Re-init drafts from current in-memory grades for the new target
+    const bl = computeBaseline(grades, criteria, newTarget)
+    setBaseline(bl)
+    setDrafts(bl)
+  }
+
+  // ── Draft update ──
+  function handleDraftChange(criterionId: string, field: 'score' | 'comment', value: string) {
+    setDrafts((prev) => ({
+      ...prev,
+      [criterionId]: {
+        ...(prev[criterionId] ?? baseline[criterionId] ?? { score: '', comment: '' }),
+        [field]: value,
+      },
+    }))
+    // Reset stale save feedback when user starts editing again
+    if (saveStatus === 'saved' || saveStatus === 'error') {
+      setSaveStatus('idle')
+      setSaveError(null)
+    }
+  }
+
+  // ── Explicit save ──
+  async function handleSaveGrades() {
+    setIsSaving(true)
+    setSaveStatus('saving')
+    setSaveError(null)
+
+    try {
+      const results = await Promise.all(
+        criteria.map((c) => {
+          const d = drafts[c.id] ?? baseline[c.id] ?? { score: '', comment: '' }
+          const score = d.score === '' ? 0 : Math.min(Math.max(0, Number(d.score)), c.max_score)
+          return setGrade(boardId, c.id, targetStudentId, score, d.comment)
+        }),
+      )
+
+      const firstError = results.find((r) => r && 'error' in r && r.error)
+      if (firstError && 'error' in firstError) {
+        setSaveError(firstError.error ?? t('saveError'))
+        setSaveStatus('error')
+        setIsSaving(false)
+        return
+      }
+    } catch {
+      setSaveError(t('saveError'))
+      setSaveStatus('error')
+      setIsSaving(false)
+      return
+    }
+
+    // Success: baseline now matches what we just wrote
+    setBaseline({ ...drafts })
+    setSaveStatus('saved')
+    setIsSaving(false)
+    setTimeout(() => setSaveStatus((s) => (s === 'saved' ? 'idle' : s)), 2000)
+
+    // Refresh only final grade (avoid re-initing drafts via full reload)
+    const fg = await getStudentFinalGrade(boardId, isOwner ? null : currentUserId)
+    setFinalGrade(fg.data ?? null)
+  }
+
+  // ── Rubric management (unchanged logic) ──
+
   function handleApplyStandard() {
     setBusy(true)
     startTransition(async () => {
@@ -114,62 +278,30 @@ export function GradingButton({ boardId, currentUserId, isOwner, members }: Grad
     startTransition(async () => {
       const res = await addCriterion(boardId, t('newCriterionTitle'), 10)
       setBusy(false)
-      if (res.data) setCriteria((prev) => [...prev, res.data as RubricCriterion])
+      if (res.data) {
+        const c = res.data as RubricCriterion
+        setCriteria((prev) => [...prev, c])
+        const empty = { score: '', comment: '' }
+        setDrafts((prev) => ({ ...prev, [c.id]: empty }))
+        setBaseline((prev) => ({ ...prev, [c.id]: empty }))
+      }
     })
   }
 
   function handleUpdateCriterion(id: string, patch: { title?: string; max_score?: number }) {
-    // Оптимистично правим локально, затем сохраняем.
     setCriteria((prev) => prev.map((c) => (c.id === id ? { ...c, ...patch } : c)))
-    startTransition(() => {
-      void updateCriterion(boardId, id, patch)
-    })
+    startTransition(() => { void updateCriterion(boardId, id, patch) })
   }
 
   function handleDeleteCriterion(id: string) {
     setCriteria((prev) => prev.filter((c) => c.id !== id))
     setGrades((prev) => prev.filter((g) => g.criterion_id !== id))
-    startTransition(() => {
-      void deleteCriterion(boardId, id)
-    })
+    setDrafts((prev) => { const n = { ...prev }; delete n[id]; return n })
+    setBaseline((prev) => { const n = { ...prev }; delete n[id]; return n })
+    startTransition(() => { void deleteCriterion(boardId, id) })
   }
 
-  // Сохранение оценки с оптимистичным обновлением локального списка.
-  function persistGrade(criterion: RubricCriterion, score: number, comment: string) {
-    const clamped = Math.min(Math.max(0, score), criterion.max_score)
-    setGrades((prev) => {
-      const idx = prev.findIndex(
-        (g) => g.criterion_id === criterion.id && (g.student_id ?? PROJECT) === effectiveTarget,
-      )
-      const base: Grade = {
-        id: idx >= 0 ? prev[idx].id : `tmp-${criterion.id}-${effectiveTarget}`,
-        board_id: boardId,
-        criterion_id: criterion.id,
-        student_id: targetStudentId,
-        score: clamped,
-        comment: comment.trim() || null,
-        graded_by: currentUserId,
-        created_at: idx >= 0 ? prev[idx].created_at : new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      }
-      if (idx >= 0) {
-        const next = [...prev]
-        next[idx] = base
-        return next
-      }
-      return [...prev, base]
-    })
-    startTransition(() => {
-      void setGrade(boardId, criterion.id, targetStudentId, clamped, comment)
-    })
-  }
-
-  const targetLabel =
-    effectiveTarget === PROJECT
-      ? t('wholeProject')
-      : students.find((s) => s.user_id === effectiveTarget)?.full_name ||
-        students.find((s) => s.user_id === effectiveTarget)?.email ||
-        ''
+  // ── Render ──
 
   return (
     <>
@@ -187,18 +319,18 @@ export function GradingButton({ boardId, currentUserId, isOwner, members }: Grad
           <div className="fixed inset-0 z-50">
             <div
               className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm animate-overlay-in"
-              onClick={() => setOpen(false)}
+              onClick={handleClose}
             />
 
             <aside className="absolute inset-y-0 right-0 w-full sm:w-[560px] bg-white shadow-pop flex flex-col animate-drawer-in">
-              {/* Header */}
+              {/* ── Header ── */}
               <div className="flex items-center justify-between px-5 h-16 border-b border-gray-200 shrink-0">
                 <div className="flex items-center gap-2">
                   <ClipboardCheck size={18} className="text-brand-600" />
                   <h2 className="text-base sm:text-lg font-semibold text-gray-900">{t('title')}</h2>
                 </div>
                 <button
-                  onClick={() => setOpen(false)}
+                  onClick={handleClose}
                   aria-label={tc('close')}
                   className="rounded-lg p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
                 >
@@ -206,6 +338,7 @@ export function GradingButton({ boardId, currentUserId, isOwner, members }: Grad
                 </button>
               </div>
 
+              {/* ── Scrollable body ── */}
               <div className="flex-1 overflow-y-auto p-4 sm:p-5 scrollbar-thin">
                 {isPending && !loaded ? (
                   <div className="flex items-center justify-center py-20 text-gray-400">
@@ -213,11 +346,13 @@ export function GradingButton({ boardId, currentUserId, isOwner, members }: Grad
                   </div>
                 ) : (
                   <>
-                    {/* Выбор кого оцениваем — только преподаватель */}
+                    {/* Student selector (teacher only, when rubric exists) */}
                     {isOwner && criteria.length > 0 && (
                       <div className="mb-4">
-                        <label className="block text-xs font-medium text-gray-500 mb-1.5">{t('gradingTarget')}</label>
-                        <Select value={target} onChange={(e) => setTarget(e.target.value)}>
+                        <label className="block text-xs font-medium text-gray-500 mb-1.5">
+                          {t('gradingTarget')}
+                        </label>
+                        <Select value={target} onChange={(e) => handleTargetChange(e.target.value)}>
                           <option value={PROJECT}>{t('wholeProject')}</option>
                           {students.map((s) => (
                             <option key={s.user_id} value={s.user_id}>
@@ -228,7 +363,7 @@ export function GradingButton({ boardId, currentUserId, isOwner, members }: Grad
                       </div>
                     )}
 
-                    {/* Пустая рубрика */}
+                    {/* Empty state */}
                     {criteria.length === 0 ? (
                       <div className="flex flex-col items-center justify-center py-16 text-center">
                         <div className="bg-brand-50 rounded-2xl p-5 mb-4">
@@ -253,24 +388,25 @@ export function GradingButton({ boardId, currentUserId, isOwner, members }: Grad
                       </div>
                     ) : (
                       <>
-                        {/* Студенту — заголовок «оцениваетесь вы» */}
                         {!isOwner && (
                           <p className="text-xs text-gray-500 mb-3">{t('studentHint')}</p>
                         )}
 
                         <ul className="space-y-2.5">
                           {criteria.map((c) => {
-                            const grade = gradeFor(c.id)
+                            const draft = drafts[c.id] ?? baseline[c.id] ?? { score: '', comment: '' }
                             return (
                               <li key={c.id} className="rounded-xl border border-gray-200 p-3">
                                 {isOwner ? (
                                   <TeacherCriterionRow
                                     criterion={c}
-                                    grade={grade}
+                                    score={draft.score}
+                                    comment={draft.comment}
+                                    onScoreChange={(v) => handleDraftChange(c.id, 'score', v)}
+                                    onCommentChange={(v) => handleDraftChange(c.id, 'comment', v)}
                                     onTitle={(title) => handleUpdateCriterion(c.id, { title })}
                                     onMax={(max_score) => handleUpdateCriterion(c.id, { max_score })}
                                     onDelete={() => handleDeleteCriterion(c.id)}
-                                    onGrade={(score, comment) => persistGrade(c, score, comment)}
                                     scoreLabel={t('score')}
                                     maxLabel={t('maxScore')}
                                     commentPlaceholder={t('commentPlaceholder')}
@@ -279,7 +415,7 @@ export function GradingButton({ boardId, currentUserId, isOwner, members }: Grad
                                 ) : (
                                   <StudentCriterionRow
                                     criterion={c}
-                                    grade={grade}
+                                    grade={gradeFor(c.id)}
                                     notGradedLabel={t('notGraded')}
                                     ofLabel={t('outOf', { max: c.max_score })}
                                   />
@@ -289,12 +425,11 @@ export function GradingButton({ boardId, currentUserId, isOwner, members }: Grad
                           })}
                         </ul>
 
-                        {/* Добавить критерий — преподаватель */}
                         {isOwner && (
                           <button
                             onClick={handleAddCriterion}
                             disabled={busy}
-                            className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-brand-600 hover:text-brand-700"
+                            className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-brand-600 hover:text-brand-700 disabled:opacity-40"
                           >
                             <Plus size={15} />
                             {t('addCriterion')}
@@ -306,26 +441,33 @@ export function GradingButton({ boardId, currentUserId, isOwner, members }: Grad
                 )}
               </div>
 
-              {/* Итог */}
+              {/* ── Footer: total + save (teacher) / total (student) ── */}
               {criteria.length > 0 && (
                 <div className="border-t border-gray-200 p-4 sm:p-5 shrink-0 bg-gray-50 space-y-3">
+                  {/* Total score bar */}
                   {!isOwner && !anyGraded ? (
                     <p className="text-sm text-center text-gray-500">{t('notGradedYet')}</p>
                   ) : (
                     <>
-                      <div className="flex items-baseline justify-between mb-2">
+                      <div className="flex items-baseline justify-between">
                         <span className="text-sm font-medium text-gray-700">
-                          {isOwner && targetLabel ? `${t('totalScore')} · ${targetLabel}` : t('totalScore')}
+                          {isOwner && targetLabel
+                            ? `${t('totalScore')} · ${targetLabel}`
+                            : t('totalScore')}
                         </span>
-                        <span className="text-sm font-semibold text-gray-900">
+                        <span className="text-sm font-semibold text-gray-900 tabular-nums">
                           {t('scoreOfMax', { score: earned, max: maxTotal })} · {percent}%
                         </span>
                       </div>
                       <div className="h-2.5 rounded-full bg-gray-200 overflow-hidden">
                         <div
                           className={cn(
-                            'h-full rounded-full transition-all',
-                            percent >= 75 ? 'bg-emerald-500' : percent >= 50 ? 'bg-amber-500' : 'bg-brand-500',
+                            'h-full rounded-full transition-all duration-300',
+                            percent >= 75
+                              ? 'bg-emerald-500'
+                              : percent >= 50
+                              ? 'bg-amber-500'
+                              : 'bg-brand-500',
                           )}
                           style={{ width: `${Math.min(percent, 100)}%` }}
                         />
@@ -333,20 +475,64 @@ export function GradingButton({ boardId, currentUserId, isOwner, members }: Grad
                     </>
                   )}
 
-                  {/* Итоговая оценка из журнала */}
+                  {/* ── Save button (teacher only) ── */}
+                  {isOwner && (
+                    <div className="space-y-1.5 pt-0.5">
+                      {/* Unsaved indicator */}
+                      {isDirty && saveStatus !== 'saving' && (
+                        <div className="flex items-center gap-1.5 text-xs text-amber-600">
+                          <AlertCircle size={12} />
+                          {t('unsaved')}
+                        </div>
+                      )}
+                      {/* Error message */}
+                      {saveStatus === 'error' && saveError && (
+                        <p className="text-xs text-red-600">{saveError}</p>
+                      )}
+                      <button
+                        onClick={handleSaveGrades}
+                        disabled={isSaving || (!isDirty && saveStatus !== 'error')}
+                        className={cn(
+                          'w-full flex items-center justify-center gap-2 h-11 rounded-xl font-semibold text-sm transition-all duration-150',
+                          saveStatus === 'saved'
+                            ? 'bg-emerald-50 border border-emerald-200 text-emerald-700'
+                            : isDirty || saveStatus === 'error'
+                            ? 'bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white shadow-sm'
+                            : 'bg-gray-100 text-gray-400 cursor-not-allowed',
+                        )}
+                      >
+                        {isSaving ? (
+                          <>
+                            <Loader2 size={16} className="animate-spin" />
+                            {t('saving')}
+                          </>
+                        ) : saveStatus === 'saved' ? (
+                          <>
+                            <Check size={16} />
+                            {t('saved')}
+                          </>
+                        ) : (
+                          t('save')
+                        )}
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Final grade from gradebook */}
                   {finalGrade && (
-                    <div className={cn(
-                      'rounded-lg px-3 py-2.5 flex items-center justify-between',
-                      (finalGrade.final_score / finalGrade.max_score) >= 0.75
-                        ? 'bg-emerald-50 border border-emerald-200'
-                        : (finalGrade.final_score / finalGrade.max_score) >= 0.5
-                        ? 'bg-amber-50 border border-amber-200'
-                        : 'bg-red-50 border border-red-200',
-                    )}>
+                    <div
+                      className={cn(
+                        'rounded-lg px-3 py-2.5 flex items-center justify-between',
+                        finalGrade.final_score / finalGrade.max_score >= 0.75
+                          ? 'bg-emerald-50 border border-emerald-200'
+                          : finalGrade.final_score / finalGrade.max_score >= 0.5
+                          ? 'bg-amber-50 border border-amber-200'
+                          : 'bg-red-50 border border-red-200',
+                      )}
+                    >
                       <span className="text-xs font-medium text-gray-600">{t('finalGradeLabel')}</span>
                       <span className="text-sm font-bold text-gray-900 tabular-nums">
-                        {Number(finalGrade.final_score)}/{Number(finalGrade.max_score)}
-                        {' '}
+                        {Number(finalGrade.final_score)}/{Number(finalGrade.max_score)}{' '}
                         <span className="text-xs font-normal text-gray-500">
                           ({Math.round((finalGrade.final_score / finalGrade.max_score) * 100)}%)
                         </span>
@@ -363,47 +549,37 @@ export function GradingButton({ boardId, currentUserId, isOwner, members }: Grad
   )
 }
 
-// ── Строка критерия для преподавателя: правка рубрики + ввод балла ──
+// ── Controlled criterion row for teacher: no auto-save on blur ──
 function TeacherCriterionRow({
   criterion,
-  grade,
+  score,
+  comment,
+  onScoreChange,
+  onCommentChange,
   onTitle,
   onMax,
   onDelete,
-  onGrade,
   scoreLabel,
   maxLabel,
   commentPlaceholder,
   deleteLabel,
 }: {
   criterion: RubricCriterion
-  grade?: Grade
+  score: string
+  comment: string
+  onScoreChange: (v: string) => void
+  onCommentChange: (v: string) => void
   onTitle: (title: string) => void
   onMax: (max: number) => void
   onDelete: () => void
-  onGrade: (score: number, comment: string) => void
   scoreLabel: string
   maxLabel: string
   commentPlaceholder: string
   deleteLabel: string
 }) {
-  const [score, setScore] = useState(grade?.score != null ? String(grade.score) : '')
-  const [comment, setComment] = useState(grade?.comment ?? '')
-
-  // Синхронизация при смене цели/перезагрузке.
-  const [prevGradeId, setPrevGradeId] = useState(grade?.id)
-  if (grade?.id !== prevGradeId) {
-    setPrevGradeId(grade?.id)
-    setScore(grade?.score != null ? String(grade.score) : '')
-    setComment(grade?.comment ?? '')
-  }
-
-  function save() {
-    onGrade(score === '' ? 0 : Number(score), comment)
-  }
-
   return (
     <div className="space-y-2">
+      {/* Title row */}
       <div className="flex items-center gap-2">
         <Input
           value={criterion.title}
@@ -419,6 +595,7 @@ function TeacherCriterionRow({
         </button>
       </div>
 
+      {/* Score + max */}
       <div className="flex items-end gap-2">
         <label className="flex-1">
           <span className="block text-[11px] font-medium text-gray-400 mb-1">{scoreLabel}</span>
@@ -428,8 +605,7 @@ function TeacherCriterionRow({
             min={0}
             max={criterion.max_score}
             value={score}
-            onChange={(e) => setScore(e.target.value)}
-            onBlur={save}
+            onChange={(e) => onScoreChange(e.target.value)}
             className="h-9"
           />
         </label>
@@ -445,10 +621,10 @@ function TeacherCriterionRow({
         </label>
       </div>
 
+      {/* Comment */}
       <Input
         value={comment}
-        onChange={(e) => setComment(e.target.value)}
-        onBlur={save}
+        onChange={(e) => onCommentChange(e.target.value)}
         placeholder={commentPlaceholder}
         className="h-9 text-sm"
       />
@@ -456,7 +632,7 @@ function TeacherCriterionRow({
   )
 }
 
-// ── Строка критерия для студента: только просмотр ──
+// ── Read-only criterion row for student ──
 function StudentCriterionRow({
   criterion,
   grade,
@@ -474,7 +650,8 @@ function StudentCriterionRow({
         <span className="text-sm font-medium text-gray-900">{criterion.title}</span>
         {grade ? (
           <span className="text-sm font-semibold text-gray-900 shrink-0">
-            {Number(grade.score)} <span className="text-gray-400 font-normal">/ {criterion.max_score}</span>
+            {Number(grade.score)}{' '}
+            <span className="text-gray-400 font-normal">/ {criterion.max_score}</span>
           </span>
         ) : (
           <span className="text-xs text-gray-400 shrink-0">{notGradedLabel}</span>
