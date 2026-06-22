@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
-import { Kanban, CheckSquare, Smartphone, ArrowRight } from 'lucide-react'
+import { Layers, Eye, ClipboardCheck, BarChart2, ArrowRight } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { Logo } from '@/components/ui/logo'
@@ -123,25 +123,31 @@ export default async function RootPage() {
               {t('features.subtitle')}
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
               {[
                 {
-                  Icon: Kanban,
-                  title: t('features.kanbanTitle'),
-                  desc: t('features.kanbanDesc'),
+                  Icon: Layers,
+                  title: t('features.stagesTitle'),
+                  desc: t('features.stagesDesc'),
                   accent: 'bg-brand-50 text-brand-600',
                 },
                 {
-                  Icon: CheckSquare,
-                  title: t('features.tasksTitle'),
-                  desc: t('features.tasksDesc'),
+                  Icon: Eye,
+                  title: t('features.controlTitle'),
+                  desc: t('features.controlDesc'),
                   accent: 'bg-violet-50 text-violet-600',
                 },
                 {
-                  Icon: Smartphone,
-                  title: t('features.devicesTitle'),
-                  desc: t('features.devicesDesc'),
-                  accent: 'bg-blue-50 text-blue-600',
+                  Icon: ClipboardCheck,
+                  title: t('features.gradingTitle'),
+                  desc: t('features.gradingDesc'),
+                  accent: 'bg-emerald-50 text-emerald-600',
+                },
+                {
+                  Icon: BarChart2,
+                  title: t('features.analyticsTitle'),
+                  desc: t('features.analyticsDesc'),
+                  accent: 'bg-amber-50 text-amber-600',
                 },
               ].map(({ Icon, title, desc, accent }) => (
                 <div
