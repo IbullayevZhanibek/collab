@@ -101,7 +101,17 @@
   "dashboard": {
     "greeting": "Сәлем, {name}!",
     "subtitle": "Тапсырмаларыңыз бойынша не болып жатқанын көріңіз",
+    "teacherSubtitle": "Жобалар мен студенттер бойынша жалпы шолу",
     "friendFallback": "досым",
+    "activeProjects": "Белсенді жобалар",
+    "totalStudents": "Барлық студенттер",
+    "avgProgress": "Орта прогресс",
+    "needsAttentionLabel": "Назар қажет",
+    "needsAttention": "Назар қажет",
+    "allGood": "Бәрі жақсы — мәселе жоқ",
+    "signalOverdue": "Мерзімі өткен тапсырмалар: {count} — {project}",
+    "signalLowActivity": "Тапсырмасыз студенттер: {count} — {project}",
+    "overdueShort": "Мерзімі өткен",
     "stats": {
       "today": "Бүгінгі тапсырмалар",
       "overdue": "Мерзімі өткен",
@@ -119,7 +129,7 @@
   },
   "boards": {
     "title": "Тақталар",
-    "titleTeacher": "Менің жобаларым (оқытушы ретінде)",
+    "titleTeacher": "Жобалар",
     "titleStudent": "Мен қатысатын жобалар",
     "emptyHint": "Жобаларыңыз осында сақталады",
     "emptyHintTeacher": "Студенттеріңізге арналған оқу жобасын жасаңыз",

@@ -98,28 +98,38 @@
       "generic": "Something went wrong. Please try again in a minute."
     }
   },
-  "dashboard": {
-    "greeting": "Hi, {name}!",
-    "subtitle": "Here's what's happening with your tasks",
-    "friendFallback": "there",
-    "stats": {
-      "today": "Due today",
-      "overdue": "Overdue",
-      "done": "Completed",
-      "active": "Active total"
+  “dashboard”: {
+    “greeting”: “Hi, {name}!”,
+    “subtitle”: “Here's what's happening with your tasks”,
+    “teacherSubtitle”: “Overview of your projects and students”,
+    “friendFallback”: “there”,
+    “activeProjects”: “Active projects”,
+    “totalStudents”: “Total students”,
+    “avgProgress”: “Avg progress”,
+    “needsAttentionLabel”: “Needs attention”,
+    “needsAttention”: “Needs attention”,
+    “allGood”: “All clear — no issues to flag”,
+    “signalOverdue”: “{count, plural, one {# overdue task} other {# overdue tasks}} — {project}”,
+    “signalLowActivity”: “{count, plural, one {# student with no tasks} other {# students with no tasks}} — {project}”,
+    “overdueShort”: “Overdue”,
+    “stats”: {
+      “today”: “Due today”,
+      “overdue”: “Overdue”,
+      “done”: “Completed”,
+      “active”: “Active total”
     },
-    "notifications": {
-      "allClear": "No urgent tasks — great work!",
-      "overdue": "⚠️ Task “{title}” is overdue (was due {date})",
-      "dueToday": "🔴 Task “{title}” — due today",
-      "dueTomorrow": "📅 Task “{title}” — due tomorrow",
-      "dueInDays": "📅 Task “{title}” — {count, plural, one {due in # day} other {due in # days}}",
-      "more": "+{count} more"
+    “notifications”: {
+      “allClear”: “No urgent tasks — great work!”,
+      “overdue”: “⚠️ Task “{title}” is overdue (was due {date})”,
+      “dueToday”: “🔴 Task “{title}” — due today”,
+      “dueTomorrow”: “📅 Task “{title}” — due tomorrow”,
+      “dueInDays”: “📅 Task “{title}” — {count, plural, one {due in # day} other {due in # days}}”,
+      “more”: “+{count} more”
     }
   },
   "boards": {
     "title": "Boards",
-    "titleTeacher": "My projects (as a teacher)",
+    "titleTeacher": "Projects",
     "titleStudent": "Projects I'm part of",
     "emptyHint": "Your projects will live here",
     "emptyHintTeacher": "Create a study project for your students",

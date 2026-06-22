@@ -101,7 +101,17 @@
   "dashboard": {
     "greeting": "Привет, {name}!",
     "subtitle": "Вот что происходит по вашим задачам",
+    "teacherSubtitle": "Обзор ваших проектов и студентов",
     "friendFallback": "друг",
+    "activeProjects": "Активных проектов",
+    "totalStudents": "Всего студентов",
+    "avgProgress": "Средний прогресс",
+    "needsAttentionLabel": "Требуют внимания",
+    "needsAttention": "Требуют внимания",
+    "allGood": "Всё под контролем — нет проблемных зон",
+    "signalOverdue": "{count, plural, one {# задача просрочена} few {# задачи просрочены} many {# задач просрочено} other {# задач просрочено}} — {project}",
+    "signalLowActivity": "{count, plural, one {# студент без задач} few {# студента без задач} many {# студентов без задач} other {# студентов без задач}} — {project}",
+    "overdueShort": "Просрочено",
     "stats": {
       "today": "Задач на сегодня",
       "overdue": "Просрочено",
@@ -119,7 +129,7 @@
   },
   "boards": {
     "title": "Доски",
-    "titleTeacher": "Мои проекты (как преподаватель)",
+    "titleTeacher": "Проекты",
     "titleStudent": "Проекты, где я участвую",
     "emptyHint": "Здесь будут жить ваши проекты",
     "emptyHintTeacher": "Создайте учебный проект для своих студентов",

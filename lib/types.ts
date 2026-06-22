@@ -320,6 +320,32 @@ export type NotificationItem = {
   days_until: number // <0 просрочено, 0 сегодня, >0 осталось дней
 }
 
+// Агрегированные данные учительского дашборда.
+export type TeacherProjectSummary = {
+  id: string
+  title: string
+  created_at: string
+  studentCount: number
+  completionRate: number
+  overdueCount: number
+}
+
+export type AttentionSignal = {
+  boardId: string
+  boardTitle: string
+  type: 'overdue' | 'low_activity'
+  count: number
+}
+
+export type TeacherDashboardData = {
+  activeProjects: number
+  totalStudents: number
+  avgProgress: number
+  needsAttentionCount: number
+  attentionSignals: AttentionSignal[]
+  projects: TeacherProjectSummary[]
+}
+
 // Задача для календарного вида: карточка с дедлайном + контекст доски/колонки.
 export type CalendarTask = {
   id: string
