@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { logActivity } from '@/actions/activity'
 import type { ProjectStage, ProjectStageStatus } from '@/lib/types'
 
 // Этапы проекта по порядку. RLS «Members can view stages» открывает их
@@ -30,6 +31,7 @@ export async function updateStageStatus(
   stageId: string,
   boardId: string,
   status: ProjectStageStatus,
+  stageTitle: string,
 ) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -41,6 +43,8 @@ export async function updateStageStatus(
     .eq('id', stageId)
 
   if (error) return { error: error.message }
+
+  await logActivity(boardId, 'stage_status_changed', { stageTitle, status })
 
   revalidatePath(`/board/${boardId}`)
   return { success: true }

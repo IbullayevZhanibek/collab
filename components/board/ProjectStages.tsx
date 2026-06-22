@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useTranslations, useLocale } from 'next-intl'
 import { CheckCircle2, Circle, CircleDot, Flag } from 'lucide-react'
 import { updateStageStatus } from '@/actions/stages'
-import { cn } from '@/lib/utils'
+import { cn, formatDateShort } from '@/lib/utils'
 import type { ProjectStage, ProjectStageStatus } from '@/lib/types'
 
 interface ProjectStagesProps {
@@ -42,14 +42,11 @@ export function ProjectStages({ boardId, stages, isOwner }: ProjectStagesProps) 
 
   if (stages.length === 0) return null
 
-  const formatDate = (d: string) =>
-    new Date(d).toLocaleDateString(locale, { day: 'numeric', month: 'short' })
-
   function toggle(stage: ProjectStage) {
     if (!isOwner) return
     setBusyId(stage.id)
     startTransition(async () => {
-      await updateStageStatus(stage.id, boardId, NEXT[stage.status])
+      await updateStageStatus(stage.id, boardId, NEXT[stage.status], stage.title)
       setBusyId(null)
       router.refresh()
     })
@@ -89,7 +86,7 @@ export function ProjectStages({ boardId, stages, isOwner }: ProjectStagesProps) 
                   <span className="mt-0.5 flex items-center gap-2 text-xs">
                     <span className={STATUS_COLOR[stage.status]}>{t(`status.${stage.status}`)}</span>
                     {stage.due_date && (
-                      <span className="text-gray-400">· {formatDate(stage.due_date)}</span>
+                      <span className="text-gray-400">· {formatDateShort(stage.due_date, locale)}</span>
                     )}
                   </span>
                 </span>

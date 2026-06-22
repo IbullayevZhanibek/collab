@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { getLocale, getTranslations } from 'next-intl/server'
-import { cn } from '@/lib/utils'
+import { cn, formatDateShort } from '@/lib/utils'
 import type { NotificationItem } from '@/lib/types'
 
 const MAX_VISIBLE = 6
@@ -17,11 +17,7 @@ export async function Notifications({ items }: { items: NotificationItem[] }) {
   const t = await getTranslations('dashboard.notifications')
   const locale = await getLocale()
 
-  const formatDueDate = (dueKey: string): string =>
-    new Date(dueKey + 'T00:00:00').toLocaleDateString(locale, {
-      day: 'numeric',
-      month: 'long',
-    })
+  const formatDueDate = (dueKey: string): string => formatDateShort(dueKey, locale)
 
   function describe(item: NotificationItem): { text: string; tone: Tone } {
     if (item.days_until < 0) {

@@ -187,7 +187,10 @@
       "columnCreated": "{who} created column “{columnTitle}”",
       "columnDeleted": "{who} deleted column “{columnTitle}”",
       "memberJoined": "{who} joined the board",
-      "memberLeft": "{who} left the board"
+      "memberLeft": "{who} left the board",
+      "stageDone": "{who} completed stage «{stageTitle}»",
+      "stageStarted": "{who} started stage «{stageTitle}»",
+      "stagePending": "{who} reset stage «{stageTitle}»"
     }
   },
   "dialogs": {

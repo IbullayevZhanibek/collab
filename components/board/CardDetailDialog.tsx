@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import { Trash2, Loader2, CalendarDays } from 'lucide-react'
+import { formatDate } from '@/lib/utils'
 import { Dialog } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -131,11 +132,7 @@ export function CardDetailDialog({
     onClose()
   }
 
-  const createdAt = new Date(card.created_at).toLocaleDateString(locale, {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  })
+  const createdAt = formatDate(card.created_at, locale)
 
   const busy = isSaving || isDeleting
 

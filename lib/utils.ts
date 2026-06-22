@@ -32,6 +32,46 @@ export function getBoardColor(seed: string): BoardColor {
   return BOARD_COLORS[hash % BOARD_COLORS.length]
 }
 
+// Казахские названия месяцев (номинатив). Intl.DateTimeFormat('kk') выдаёт
+// артефакт "M06" для числового и краткого формата — поэтому подставляем вручную.
+const KK_MONTHS_LONG = [
+  'қаңтар', 'ақпан', 'наурыз', 'сәуір', 'мамыр', 'маусым',
+  'шілде', 'тамыз', 'қыркүйек', 'қазан', 'қараша', 'желтоқсан',
+]
+const KK_MONTHS_SHORT = [
+  'қаң', 'ақп', 'нау', 'сәу', 'мам', 'мау',
+  'шіл', 'там', 'қыр', 'қаз', 'қар', 'жел',
+]
+
+function toDate(dateStr: string): Date {
+  return new Date(dateStr.includes('T') ? dateStr : dateStr + 'T00:00:00')
+}
+
+/** Полный формат с годом: "22 маусым 2026 ж." / "22 июня 2026 г." / "Jun 22, 2026" */
+export function formatDate(dateStr: string, locale: string): string {
+  const d = toDate(dateStr)
+  if (locale === 'kk') {
+    return `${d.getDate()} ${KK_MONTHS_LONG[d.getMonth()]} ${d.getFullYear()} ж.`
+  }
+  return d.toLocaleDateString(locale === 'ru' ? 'ru-RU' : 'en-US', {
+    day: 'numeric',
+    month: locale === 'ru' ? 'long' : 'short',
+    year: 'numeric',
+  })
+}
+
+/** Короткий формат без года: "22 мау" / "22 июня" / "Jun 22" */
+export function formatDateShort(dateStr: string, locale: string): string {
+  const d = toDate(dateStr)
+  if (locale === 'kk') {
+    return `${d.getDate()} ${KK_MONTHS_SHORT[d.getMonth()]}`
+  }
+  return d.toLocaleDateString(locale === 'ru' ? 'ru-RU' : 'en-US', {
+    day: 'numeric',
+    month: locale === 'ru' ? 'long' : 'short',
+  })
+}
+
 /**
  * Относительное время на выбранном языке: «только что», «5 минут назад» и т.п.
  * `justNow` передаётся из переводов, остальное форматирует Intl по локали.

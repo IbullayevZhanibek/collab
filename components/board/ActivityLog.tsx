@@ -46,6 +46,13 @@ export function ActivityLog({ boardId }: { boardId: string }) {
         return t('actions.memberJoined', { who })
       case 'member_left':
         return t('actions.memberLeft', { who })
+      case 'stage_status_changed': {
+        const stageTitle = detail(entry, 'stageTitle')
+        const status = detail(entry, 'status')
+        if (status === 'done') return t('actions.stageDone', { who, stageTitle })
+        if (status === 'in_progress') return t('actions.stageStarted', { who, stageTitle })
+        return t('actions.stagePending', { who, stageTitle })
+      }
       default:
         return who
     }

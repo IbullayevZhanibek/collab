@@ -187,7 +187,10 @@
       "columnCreated": "{who} создал(а) колонку «{columnTitle}»",
       "columnDeleted": "{who} удалил(а) колонку «{columnTitle}»",
       "memberJoined": "{who} присоединился(ась) к доске",
-      "memberLeft": "{who} покинул(а) доску"
+      "memberLeft": "{who} покинул(а) доску",
+      "stageDone": "{who} завершил(а) этап «{stageTitle}»",
+      "stageStarted": "{who} начал(а) этап «{stageTitle}»",
+      "stagePending": "{who} сбросил(а) этап «{stageTitle}»"
     }
   },
   "dialogs": {

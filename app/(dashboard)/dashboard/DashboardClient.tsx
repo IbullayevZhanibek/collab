@@ -8,7 +8,7 @@ import { deleteBoard } from '@/actions/boards'
 import { leaveBoard } from '@/actions/members'
 import { CreateBoardDialog } from '@/components/dashboard/CreateBoardDialog'
 import { Button } from '@/components/ui/button'
-import { cn, getBoardColor } from '@/lib/utils'
+import { cn, getBoardColor, formatDate } from '@/lib/utils'
 
 interface Board {
   id: string
@@ -72,13 +72,6 @@ export function DashboardClient({ boards: initialBoards, currentUserId, globalRo
     return board.board_members[0].count
   }
 
-  const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString(locale, {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    })
-  }
 
   return (
     <>
@@ -138,7 +131,7 @@ export function DashboardClient({ boards: initialBoards, currentUserId, globalRo
                 <h3 className="font-semibold text-gray-900 text-base mb-1 line-clamp-2 group-hover:text-brand-700 transition-colors">
                   {board.title}
                 </h3>
-                <p className="text-xs text-gray-400 mb-4">{t('createdOn', { date: formatDate(board.created_at) })}</p>
+                <p className="text-xs text-gray-400 mb-4">{t('createdOn', { date: formatDate(board.created_at, locale) })}</p>
                 <div className="flex items-center gap-1.5 text-xs text-gray-500">
                   <Users size={13} />
                   <span>

@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { MoveCardMenu } from './MoveCardMenu'
 import { CardDetailDialog } from './CardDetailDialog'
 import { deleteCard } from '@/actions/cards'
+import { formatDateShort } from '@/lib/utils'
 import type { Card, Column, MemberWithProfile } from '@/lib/types'
 
 interface BoardCardProps {
@@ -89,8 +90,6 @@ export function BoardCard({
     })
   }
 
-  const formatDate = (dateStr: string) =>
-    new Date(dateStr).toLocaleDateString(locale, { day: 'numeric', month: 'short' })
 
   const isOverdue = card.due_date && new Date(card.due_date) < new Date()
 
@@ -136,7 +135,7 @@ export function BoardCard({
                 }`}
               >
                 <CalendarDays size={11} />
-                {formatDate(card.due_date)}
+                {formatDateShort(card.due_date, locale)}
               </span>
             )}
             {localLinksCount > 0 && (

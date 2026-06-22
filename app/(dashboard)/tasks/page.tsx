@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { TaskFilters } from '@/components/tasks/TaskFilters'
 import { TaskViewToggle } from '@/components/tasks/TaskViewToggle'
 import { Suspense } from 'react'
+import { formatDateShort } from '@/lib/utils'
 import type { Card, Board } from '@/lib/types'
 
 export const metadata: Metadata = { title: 'Мои задачи' }
@@ -75,12 +76,6 @@ export default async function TasksPage({
     })
     .filter((c): c is EnrichedCard => c !== null)
 
-  const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString(locale, {
-      day: 'numeric',
-      month: 'short',
-    })
-  }
 
   const isOverdue = (dateStr: string | null) =>
     dateStr && new Date(dateStr) < new Date()
@@ -167,7 +162,7 @@ export default async function TasksPage({
                               }`}
                             >
                               <CalendarDays size={11} />
-                              {formatDate(card.due_date)}
+                              {formatDateShort(card.due_date, locale)}
                             </span>
                           )}
                         </div>
@@ -215,7 +210,7 @@ export default async function TasksPage({
                       }`}
                     >
                       <CalendarDays size={12} />
-                      {formatDate(card.due_date)}
+                      {formatDateShort(card.due_date, locale)}
                     </span>
                   )}
 

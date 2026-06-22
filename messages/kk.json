@@ -187,7 +187,10 @@
       "columnCreated": "{who} «{columnTitle}» бағанын құрды",
       "columnDeleted": "{who} «{columnTitle}» бағанын жойды",
       "memberJoined": "{who} тақтаға қосылды",
-      "memberLeft": "{who} тақтадан шықты"
+      "memberLeft": "{who} тақтадан шықты",
+      "stageDone": "{who} «{stageTitle}» кезеңін аяқтады",
+      "stageStarted": "{who} «{stageTitle}» кезеңін бастады",
+      "stagePending": "{who} «{stageTitle}» кезеңін қайтарды"
     }
   },
   "dialogs": {

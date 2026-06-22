@@ -300,6 +300,7 @@ export type ActivityAction =
   | 'column_deleted'
   | 'member_joined'
   | 'member_left'
+  | 'stage_status_changed'
 
 // Сводка по задачам пользователя для блока статистики на /dashboard.
 export type DashboardStats = {

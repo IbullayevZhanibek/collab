@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import { ChevronDown, Target, Trophy, CalendarRange, ShieldCheck, Info } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn, formatDate } from '@/lib/utils'
 import type { Board } from '@/lib/types'
 
 interface ProjectOverviewProps {
@@ -25,12 +25,9 @@ export function ProjectOverview({ board }: ProjectOverviewProps) {
 
   if (!hasMeta) return null
 
-  const formatDate = (d: string) =>
-    new Date(d).toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })
-
   const dateRange =
     board.start_date || board.end_date
-      ? [board.start_date && formatDate(board.start_date), board.end_date && formatDate(board.end_date)]
+      ? [board.start_date && formatDate(board.start_date, locale), board.end_date && formatDate(board.end_date, locale)]
           .filter(Boolean)
           .join(' — ')
       : null

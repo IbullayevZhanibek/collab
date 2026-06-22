@@ -10,7 +10,7 @@ import {
 import { deleteBoard } from '@/actions/boards'
 import { CreateBoardDialog } from '@/components/dashboard/CreateBoardDialog'
 import { Button } from '@/components/ui/button'
-import { cn, getBoardColor } from '@/lib/utils'
+import { cn, getBoardColor, formatDate } from '@/lib/utils'
 import type { TeacherDashboardData } from '@/lib/types'
 
 interface Props {
@@ -49,8 +49,6 @@ export function TeacherDashboardClient({ data: initial, currentUserId: _currentU
     })
   }
 
-  const formatDate = (dateStr: string) =>
-    new Date(dateStr).toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })
 
   const stats = [
     {
@@ -189,7 +187,7 @@ export function TeacherDashboardClient({ data: initial, currentUserId: _currentU
                     <h3 className="font-semibold text-gray-900 text-base mb-1 line-clamp-2 group-hover:text-brand-700 transition-colors">
                       {project.title}
                     </h3>
-                    <p className="text-xs text-gray-400 mb-4">{tb('createdOn', { date: formatDate(project.created_at) })}</p>
+                    <p className="text-xs text-gray-400 mb-4">{tb('createdOn', { date: formatDate(project.created_at, locale) })}</p>
 
                     {/* Мини-метрики: студенты + прогресс */}
                     <div className="flex items-center gap-3">
