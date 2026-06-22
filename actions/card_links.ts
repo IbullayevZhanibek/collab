@@ -1,4 +1,4 @@
-'use server'
+﻿'use server'
 
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
@@ -30,15 +30,15 @@ function detectLinkType(url: string): LinkType {
 
 function validateUrl(url: string): string | null {
   const trimmed = url.trim()
-  if (!trimmed) return 'Введите ссылку'
+  if (!trimmed) return 'Р’РІРµРґРёС‚Рµ СЃСЃС‹Р»РєСѓ'
   try {
     const parsed = new URL(trimmed)
     if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
-      return 'Ссылка должна начинаться с http:// или https://'
+      return 'РЎСЃС‹Р»РєР° РґРѕР»Р¶РЅР° РЅР°С‡РёРЅР°С‚СЊСЃСЏ СЃ http:// РёР»Рё https://'
     }
     return null
   } catch {
-    return 'Некорректная ссылка'
+    return 'РќРµРєРѕСЂСЂРµРєС‚РЅР°СЏ СЃСЃС‹Р»РєР°'
   }
 }
 
@@ -85,7 +85,6 @@ export async function addCardLink(
     .single()
 
   if (error) return { error: error.message }
-  revalidatePath(`/board/${boardId}`)
   return {
     data: {
       id: (data as { id: string }).id,
@@ -109,15 +108,14 @@ export async function deleteCardLink(
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  // RLS «Authors can delete own card links» гарантирует удаление только своей ссылки.
+  // RLS В«Authors can delete own card linksВ» РіР°СЂР°РЅС‚РёСЂСѓРµС‚ СѓРґР°Р»РµРЅРёРµ С‚РѕР»СЊРєРѕ СЃРІРѕРµР№ СЃСЃС‹Р»РєРё.
   const { error } = await supabase.from('card_links').delete().eq('id', linkId)
   if (error) return { error: error.message }
 
-  revalidatePath(`/board/${boardId}`)
   return {}
 }
 
-// Счётчик для бейджа на одной карточке.
+// РЎС‡С‘С‚С‡РёРє РґР»СЏ Р±РµР№РґР¶Р° РЅР° РѕРґРЅРѕР№ РєР°СЂС‚РѕС‡РєРµ.
 export async function getLinksCount(
   cardId: string,
 ): Promise<{ count?: number; error?: string }> {
@@ -134,7 +132,7 @@ export async function getLinksCount(
   return { count: count ?? 0 }
 }
 
-// Один запрос для всех карточек доски.
+// РћРґРёРЅ Р·Р°РїСЂРѕСЃ РґР»СЏ РІСЃРµС… РєР°СЂС‚РѕС‡РµРє РґРѕСЃРєРё.
 export async function getBulkLinksCounts(
   cardIds: string[],
 ): Promise<{ data?: Record<string, number>; error?: string }> {

@@ -6,14 +6,16 @@ import { createColumn } from '@/actions/columns'
 import { Dialog } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import type { Column } from '@/lib/types'
 
 interface CreateColumnDialogProps {
   open: boolean
   onClose: () => void
   boardId: string
+  onCreated?: (column: Column) => void
 }
 
-export function CreateColumnDialog({ open, onClose, boardId }: CreateColumnDialogProps) {
+export function CreateColumnDialog({ open, onClose, boardId, onCreated }: CreateColumnDialogProps) {
   const t = useTranslations('dialogs.createColumn')
   const tc = useTranslations('common')
   const [title, setTitle] = useState('')
@@ -31,7 +33,7 @@ export function CreateColumnDialog({ open, onClose, boardId }: CreateColumnDialo
       if (result?.error) {
         setError(result.error)
       } else {
-        // Новая колонка прилетит через realtime-подписку KanbanBoard.
+        if (result.data) onCreated?.(result.data as Column)
         setTitle('')
         onClose()
       }

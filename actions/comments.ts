@@ -1,4 +1,4 @@
-'use server'
+﻿'use server'
 
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
@@ -28,9 +28,9 @@ export async function addComment(
   if (!user) redirect('/login')
 
   const trimmed = body.trim()
-  if (!trimmed) return { error: 'Введите текст комментария' }
+  if (!trimmed) return { error: 'Р’РІРµРґРёС‚Рµ С‚РµРєСЃС‚ РєРѕРјРјРµРЅС‚Р°СЂРёСЏ' }
 
-  // is_feedback может ставить только владелец доски (преподаватель).
+  // is_feedback РјРѕР¶РµС‚ СЃС‚Р°РІРёС‚СЊ С‚РѕР»СЊРєРѕ РІР»Р°РґРµР»РµС† РґРѕСЃРєРё (РїСЂРµРїРѕРґР°РІР°С‚РµР»СЊ).
   let feedbackFlag = false
   if (isFeedback) {
     const { data: board } = await supabase
@@ -48,7 +48,6 @@ export async function addComment(
     .single()
 
   if (error) return { error: error.message }
-  revalidatePath(`/board/${boardId}`)
   return { data: data as { id: string } }
 }
 
@@ -60,11 +59,10 @@ export async function deleteComment(
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  // RLS «Authors can delete own comments» гарантирует что удалит только автор.
+  // RLS В«Authors can delete own commentsВ» РіР°СЂР°РЅС‚РёСЂСѓРµС‚ С‡С‚Рѕ СѓРґР°Р»РёС‚ С‚РѕР»СЊРєРѕ Р°РІС‚РѕСЂ.
   const { error } = await supabase.from('comments').delete().eq('id', commentId)
   if (error) return { error: error.message }
 
-  revalidatePath(`/board/${boardId}`)
   return {}
 }
 
@@ -84,7 +82,7 @@ export async function getCommentsCount(
   return { count: count ?? 0 }
 }
 
-// Один запрос для всех карточек доски — используется в KanbanBoard.
+// РћРґРёРЅ Р·Р°РїСЂРѕСЃ РґР»СЏ РІСЃРµС… РєР°СЂС‚РѕС‡РµРє РґРѕСЃРєРё вЂ” РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РІ KanbanBoard.
 export async function getBulkCommentsCounts(
   cardIds: string[],
 ): Promise<{ data?: Record<string, number>; error?: string }> {

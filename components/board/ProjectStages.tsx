@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useTransition } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import { CheckCircle2, Circle, CircleDot, Flag } from 'lucide-react'
 import { updateStageStatus } from '@/actions/stages'
+import { createClient } from '@/lib/supabase/client'
 import { cn, formatDateShort } from '@/lib/utils'
 import type { ProjectStage, ProjectStageStatus } from '@/lib/types'
 
@@ -26,30 +26,81 @@ const STATUS_COLOR: Record<ProjectStageStatus, string> = {
   done: 'text-emerald-500',
 }
 
-// Циклическое переключение статуса по клику: pending → in_progress → done → pending.
 const NEXT: Record<ProjectStageStatus, ProjectStageStatus> = {
   pending: 'in_progress',
   in_progress: 'done',
   done: 'pending',
 }
 
-export function ProjectStages({ boardId, stages, canToggle }: ProjectStagesProps) {
+export function ProjectStages({ boardId, stages: initialStages, canToggle }: ProjectStagesProps) {
   const t = useTranslations('stages')
   const locale = useLocale()
-  const router = useRouter()
+
+  const [stages, setStages] = useState(initialStages)
   const [busyId, setBusyId] = useState<string | null>(null)
-  const [, startTransition] = useTransition()
+
+  // Sync prop changes (e.g. after navigation).
+  const [prevInitial, setPrevInitial] = useState(initialStages)
+  if (initialStages !== prevInitial) {
+    setPrevInitial(initialStages)
+    setStages(initialStages)
+  }
+
+  // Realtime subscription for project_stages.
+  useEffect(() => {
+    const supabase = createClient()
+    const channel = supabase
+      .channel(`stages-${boardId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'project_stages',
+          filter: `board_id=eq.${boardId}`,
+        },
+        (payload) => {
+          if (payload.eventType === 'UPDATE') {
+            const updated = payload.new as ProjectStage
+            setStages((prev) =>
+              prev.map((s) => (s.id === updated.id ? { ...s, ...updated } : s))
+            )
+          }
+          if (payload.eventType === 'INSERT') {
+            const inserted = payload.new as ProjectStage
+            setStages((prev) => {
+              if (prev.find((s) => s.id === inserted.id)) return prev
+              return [...prev, inserted].sort((a, b) => a.order_index - b.order_index)
+            })
+          }
+          if (payload.eventType === 'DELETE') {
+            setStages((prev) => prev.filter((s) => s.id !== (payload.old as ProjectStage).id))
+          }
+        }
+      )
+      .subscribe()
+
+    return () => { supabase.removeChannel(channel) }
+  }, [boardId])
 
   if (stages.length === 0) return null
 
-  function toggle(stage: ProjectStage) {
-    if (!canToggle) return
+  async function toggle(stage: ProjectStage) {
+    if (!canToggle || busyId) return
+    const nextStatus = NEXT[stage.status]
+    const snapshot = stages
+
     setBusyId(stage.id)
-    startTransition(async () => {
-      await updateStageStatus(stage.id, boardId, NEXT[stage.status], stage.title)
-      setBusyId(null)
-      router.refresh()
-    })
+    // Optimistic update
+    setStages((prev) =>
+      prev.map((s) => (s.id === stage.id ? { ...s, status: nextStatus } : s))
+    )
+
+    const result = await updateStageStatus(stage.id, boardId, nextStatus, stage.title)
+    if (result?.error) {
+      setStages(snapshot) // rollback
+    }
+    setBusyId(null)
   }
 
   return (

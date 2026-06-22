@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Select } from '@/components/ui/select'
-import type { MemberWithProfile } from '@/lib/types'
+import type { Card, MemberWithProfile } from '@/lib/types'
 
 interface CreateCardDialogProps {
   open: boolean
@@ -18,6 +18,7 @@ interface CreateCardDialogProps {
   boardId: string
   currentUserId?: string
   members?: MemberWithProfile[]
+  onCreated?: (card: Card) => void
 }
 
 export function CreateCardDialog({
@@ -27,6 +28,7 @@ export function CreateCardDialog({
   boardId,
   currentUserId,
   members = [],
+  onCreated,
 }: CreateCardDialogProps) {
   const posthog = usePostHog()
   const t  = useTranslations('dialogs.createCard')
@@ -65,6 +67,7 @@ export function CreateCardDialog({
       }
 
       posthog.capture('card_created', { board_id: boardId, column_id: columnId })
+      if (result.data) onCreated?.(result.data as import('@/lib/types').Card)
       resetForm()
       onClose()
     })

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -8,7 +8,6 @@ import { CalendarDays, MessageSquare, Paperclip, Trash2 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { MoveCardMenu } from './MoveCardMenu'
 import { CardDetailDialog } from './CardDetailDialog'
-import { deleteCard } from '@/actions/cards'
 import { formatDateShort } from '@/lib/utils'
 import type { Card, Column, MemberWithProfile } from '@/lib/types'
 
@@ -26,6 +25,8 @@ interface BoardCardProps {
   onMoveCard?: (cardId: string, targetColumnId: string) => void
   /** Сохранение правок из диалога деталей (оптимистично + Server Action). */
   onUpdateCard?: (cardId: string, updates: Partial<Card>) => Promise<{ error?: string } | void>
+  /** Удаление карточки — оптимистичное, обрабатывается в KanbanBoard. */
+  onDeleteCard?: (cardId: string) => void
   onCommentCountChange?: (cardId: string, count: number) => void
   onLinkCountChange?: (cardId: string, count: number) => void
 }
@@ -41,13 +42,13 @@ export function BoardCard({
   members = [],
   onMoveCard,
   onUpdateCard,
+  onDeleteCard,
   onCommentCountChange,
   onLinkCountChange,
 }: BoardCardProps) {
   const t = useTranslations('board')
   const tp = useTranslations('priority')
   const locale = useLocale()
-  const [isPending, startTransition] = useTransition()
   const [showDetail, setShowDetail] = useState(false)
   const [localCount, setLocalCount] = useState(commentsCount)
   const [localLinksCount, setLocalLinksCount] = useState(linksCount)
@@ -85,9 +86,7 @@ export function BoardCard({
   function handleDelete(e: React.MouseEvent) {
     e.stopPropagation()
     if (!confirm(t('confirmDeleteCard'))) return
-    startTransition(async () => {
-      await deleteCard(card.id, boardId)
-    })
+    onDeleteCard?.(card.id)
   }
 
 
@@ -173,7 +172,6 @@ export function BoardCard({
           <button
             onClick={handleDelete}
             onPointerDown={(e) => e.stopPropagation()}
-            disabled={isPending}
             className="action-btn p-1 rounded text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all"
             title={t('deleteCard')}
           >

@@ -1,4 +1,4 @@
-'use server'
+﻿'use server'
 
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
@@ -30,14 +30,13 @@ export async function createColumn(boardId: string, title: string) {
 
   await logActivity(boardId, 'column_created', { columnTitle: data.title })
 
-  revalidatePath(`/board/${boardId}`)
   return { data }
 }
 
 export async function deleteColumn(columnId: string, boardId: string) {
   const supabase = await createClient()
 
-  // Название читаем до удаления — для записи в лог.
+  // РќР°Р·РІР°РЅРёРµ С‡РёС‚Р°РµРј РґРѕ СѓРґР°Р»РµРЅРёСЏ вЂ” РґР»СЏ Р·Р°РїРёСЃРё РІ Р»РѕРі.
   const { data: column } = await supabase
     .from('columns')
     .select('title')
@@ -53,7 +52,6 @@ export async function deleteColumn(columnId: string, boardId: string) {
 
   await logActivity(boardId, 'column_deleted', { columnTitle: column?.title ?? '' })
 
-  revalidatePath(`/board/${boardId}`)
   return { success: true }
 }
 
@@ -67,7 +65,6 @@ export async function updateColumnTitle(columnId: string, title: string, boardId
 
   if (error) return { error: error.message }
 
-  revalidatePath(`/board/${boardId}`)
   return { success: true }
 }
 
@@ -79,6 +76,5 @@ export async function reorderColumns(boardId: string, columns: { id: string; pos
   )
 
   await Promise.all(updates)
-  revalidatePath(`/board/${boardId}`)
   return { success: true }
 }

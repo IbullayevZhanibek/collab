@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { useDroppable } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
@@ -8,7 +8,6 @@ import { Plus, Trash2, Pencil, ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { BoardCard } from './BoardCard'
 import { CreateCardDialog } from './CreateCardDialog'
-import { deleteColumn } from '@/actions/columns'
 import type { Column, Card, MemberWithProfile } from '@/lib/types'
 
 interface BoardColumnProps {
@@ -23,7 +22,10 @@ interface BoardColumnProps {
   members?: MemberWithProfile[]
   onMoveCard: (cardId: string, targetColumnId: string) => void
   onUpdateCard: (cardId: string, updates: Partial<Card>) => Promise<{ error?: string } | void>
-  onRenameColumn?: (columnId: string, newTitle: string) => Promise<void>
+  onRenameColumn?: (columnId: string, newTitle: string) => void
+  onDeleteColumn?: (columnId: string) => void
+  onCardCreated: (card: Card) => void
+  onDeleteCard: (cardId: string) => void
   onCommentCountChange?: (cardId: string, count: number) => void
   onLinkCountChange?: (cardId: string, count: number) => void
 }
@@ -41,12 +43,14 @@ export function BoardColumn({
   onMoveCard,
   onUpdateCard,
   onRenameColumn,
+  onDeleteColumn,
+  onCardCreated,
+  onDeleteCard,
   onCommentCountChange,
   onLinkCountChange,
 }: BoardColumnProps) {
   const t = useTranslations('board')
   const [showCreateCard, setShowCreateCard] = useState(false)
-  const [isPending, startTransition] = useTransition()
 
   // Inline rename
   const [editing, setEditing] = useState(false)
@@ -69,9 +73,7 @@ export function BoardColumn({
 
   function handleDeleteColumn() {
     if (!confirm(t('confirmDeleteColumn'))) return
-    startTransition(async () => {
-      await deleteColumn(column.id, boardId)
-    })
+    onDeleteColumn?.(column.id)
   }
 
   function startEditing() {
@@ -177,15 +179,16 @@ export function BoardColumn({
                 <Plus size={17} className="lg:hidden" />
                 <Plus size={15} className="hidden lg:block" />
               </button>
-              <button
-                onClick={handleDeleteColumn}
-                disabled={isPending}
-                className="p-2 lg:p-1 rounded-lg text-gray-400 hover:text-red-500 hover:bg-white transition-colors"
-                title={t('deleteColumn')}
-              >
-                <Trash2 size={16} className="lg:hidden" />
-                <Trash2 size={14} className="hidden lg:block" />
-              </button>
+              {onDeleteColumn && (
+                <button
+                  onClick={handleDeleteColumn}
+                  className="p-2 lg:p-1 rounded-lg text-gray-400 hover:text-red-500 hover:bg-white transition-colors"
+                  title={t('deleteColumn')}
+                >
+                  <Trash2 size={16} className="lg:hidden" />
+                  <Trash2 size={14} className="hidden lg:block" />
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -221,6 +224,7 @@ export function BoardColumn({
                   members={members}
                   onMoveCard={onMoveCard}
                   onUpdateCard={onUpdateCard}
+                  onDeleteCard={onDeleteCard}
                   onCommentCountChange={onCommentCountChange}
                   onLinkCountChange={onLinkCountChange}
                 />
@@ -246,6 +250,7 @@ export function BoardColumn({
         boardId={boardId}
         currentUserId={userId}
         members={members}
+        onCreated={onCardCreated}
       />
     </div>
   )

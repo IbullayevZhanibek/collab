@@ -1,4 +1,4 @@
-'use server'
+﻿'use server'
 
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
@@ -6,8 +6,8 @@ import { createClient } from '@/lib/supabase/server'
 import { logActivity } from '@/actions/activity'
 import type { ProjectStage, ProjectStageStatus } from '@/lib/types'
 
-// Этапы проекта по порядку. RLS «Members can view stages» открывает их
-// всем участникам проекта (и студентам, и преподавателю).
+// Р­С‚Р°РїС‹ РїСЂРѕРµРєС‚Р° РїРѕ РїРѕСЂСЏРґРєСѓ. RLS В«Members can view stagesВ» РѕС‚РєСЂС‹РІР°РµС‚ РёС…
+// РІСЃРµРј СѓС‡Р°СЃС‚РЅРёРєР°Рј РїСЂРѕРµРєС‚Р° (Рё СЃС‚СѓРґРµРЅС‚Р°Рј, Рё РїСЂРµРїРѕРґР°РІР°С‚РµР»СЋ).
 export async function getStages(
   boardId: string,
 ): Promise<{ data?: ProjectStage[]; error?: string }> {
@@ -25,8 +25,8 @@ export async function getStages(
   return { data: (data ?? []) as ProjectStage[] }
 }
 
-// Смену статуса этапа RLS разрешает только владельцу-преподавателю
-// (политика «Owners can manage stages»).
+// РЎРјРµРЅСѓ СЃС‚Р°С‚СѓСЃР° СЌС‚Р°РїР° RLS СЂР°Р·СЂРµС€Р°РµС‚ С‚РѕР»СЊРєРѕ РІР»Р°РґРµР»СЊС†Сѓ-РїСЂРµРїРѕРґР°РІР°С‚РµР»СЋ
+// (РїРѕР»РёС‚РёРєР° В«Owners can manage stagesВ»).
 export async function updateStageStatus(
   stageId: string,
   boardId: string,
@@ -46,6 +46,5 @@ export async function updateStageStatus(
 
   await logActivity(boardId, 'stage_status_changed', { stageTitle, status })
 
-  revalidatePath(`/board/${boardId}`)
   return { success: true }
 }

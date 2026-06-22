@@ -1,4 +1,4 @@
-'use server'
+﻿'use server'
 
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
@@ -30,7 +30,7 @@ export async function createCard(
 
   const nextPosition = existing && existing.length > 0 ? existing[0].position + 1 : 0
 
-  // Если assignee_id не передан — назначаем на текущего пользователя.
+  // Р•СЃР»Рё assignee_id РЅРµ РїРµСЂРµРґР°РЅ вЂ” РЅР°Р·РЅР°С‡Р°РµРј РЅР° С‚РµРєСѓС‰РµРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.
   const assigneeId =
     data.assignee_id !== undefined ? (data.assignee_id || null) : user.id
 
@@ -61,7 +61,6 @@ export async function createCard(
     columnTitle: column?.title ?? '',
   })
 
-  revalidatePath(`/board/${boardId}`)
   revalidatePath('/tasks')
   return { data: card }
 }
@@ -90,8 +89,8 @@ export async function updateCard(
 
   if (error) return { error: error.message }
 
-  // Логируем только содержательное редактирование (название/описание/приоритет/
-  // дедлайн), а не служебные обновления позиции/колонки — для тех есть card_moved.
+  // Р›РѕРіРёСЂСѓРµРј С‚РѕР»СЊРєРѕ СЃРѕРґРµСЂР¶Р°С‚РµР»СЊРЅРѕРµ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ (РЅР°Р·РІР°РЅРёРµ/РѕРїРёСЃР°РЅРёРµ/РїСЂРёРѕСЂРёС‚РµС‚/
+  // РґРµРґР»Р°Р№РЅ), Р° РЅРµ СЃР»СѓР¶РµР±РЅС‹Рµ РѕР±РЅРѕРІР»РµРЅРёСЏ РїРѕР·РёС†РёРё/РєРѕР»РѕРЅРєРё вЂ” РґР»СЏ С‚РµС… РµСЃС‚СЊ card_moved.
   const isContentEdit =
     'title' in updates ||
     'description' in updates ||
@@ -101,7 +100,6 @@ export async function updateCard(
     await logActivity(boardId, 'card_updated', { cardTitle: updated?.title ?? '' })
   }
 
-  revalidatePath(`/board/${boardId}`)
   revalidatePath('/tasks')
   return { success: true }
 }
@@ -109,7 +107,7 @@ export async function updateCard(
 export async function deleteCard(cardId: string, boardId: string) {
   const supabase = await createClient()
 
-  // Название нужно прочитать до удаления, чтобы записать в лог.
+  // РќР°Р·РІР°РЅРёРµ РЅСѓР¶РЅРѕ РїСЂРѕС‡РёС‚Р°С‚СЊ РґРѕ СѓРґР°Р»РµРЅРёСЏ, С‡С‚РѕР±С‹ Р·Р°РїРёСЃР°С‚СЊ РІ Р»РѕРі.
   const { data: card } = await supabase
     .from('cards')
     .select('title')
@@ -125,7 +123,6 @@ export async function deleteCard(cardId: string, boardId: string) {
 
   await logActivity(boardId, 'card_deleted', { cardTitle: card?.title ?? '' })
 
-  revalidatePath(`/board/${boardId}`)
   revalidatePath('/tasks')
   return { success: true }
 }
@@ -138,7 +135,7 @@ export async function moveCard(
 ) {
   const supabase = await createClient()
 
-  // Снимок «до», чтобы понять, сменилась ли колонка.
+  // РЎРЅРёРјРѕРє В«РґРѕВ», С‡С‚РѕР±С‹ РїРѕРЅСЏС‚СЊ, СЃРјРµРЅРёР»Р°СЃСЊ Р»Рё РєРѕР»РѕРЅРєР°.
   const { data: before } = await supabase
     .from('cards')
     .select('title, column_id')
@@ -161,7 +158,6 @@ export async function moveCard(
     })
   }
 
-  revalidatePath(`/board/${boardId}`)
   revalidatePath('/tasks')
   return { success: true }
 }
@@ -172,7 +168,7 @@ export async function reorderCards(
 ) {
   const supabase = await createClient()
 
-  // Снимок состояния «до» — чтобы поймать карточки, сменившие колонку.
+  // РЎРЅРёРјРѕРє СЃРѕСЃС‚РѕСЏРЅРёСЏ В«РґРѕВ» вЂ” С‡С‚РѕР±С‹ РїРѕР№РјР°С‚СЊ РєР°СЂС‚РѕС‡РєРё, СЃРјРµРЅРёРІС€РёРµ РєРѕР»РѕРЅРєСѓ.
   const ids = cards.map((c) => c.id)
   const { data: before } = await supabase
     .from('cards')
@@ -187,7 +183,7 @@ export async function reorderCards(
 
   await Promise.all(updates)
 
-  // Логируем только реальные переходы между колонками (не переупорядочивание).
+  // Р›РѕРіРёСЂСѓРµРј С‚РѕР»СЊРєРѕ СЂРµР°Р»СЊРЅС‹Рµ РїРµСЂРµС…РѕРґС‹ РјРµР¶РґСѓ РєРѕР»РѕРЅРєР°РјРё (РЅРµ РїРµСЂРµСѓРїРѕСЂСЏРґРѕС‡РёРІР°РЅРёРµ).
   const moved = cards.filter((c) => {
     const prev = beforeMap.get(c.id)
     return prev && prev.column_id !== c.column_id
@@ -205,11 +201,10 @@ export async function reorderCards(
     }
   }
 
-  revalidatePath(`/board/${boardId}`)
   return { success: true }
 }
 
-// Карта id колонки → название, для человекочитаемых записей лога.
+// РљР°СЂС‚Р° id РєРѕР»РѕРЅРєРё в†’ РЅР°Р·РІР°РЅРёРµ, РґР»СЏ С‡РµР»РѕРІРµРєРѕС‡РёС‚Р°РµРјС‹С… Р·Р°РїРёСЃРµР№ Р»РѕРіР°.
 async function columnTitles(
   supabase: Awaited<ReturnType<typeof createClient>>,
   boardId: string,
