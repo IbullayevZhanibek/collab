@@ -11,7 +11,38 @@
     "userFallback": "Пользователь",
     "reports": "Отчёты",
     "gradebook": "Журнал",
-    "teacherSection": "Преподавателю"
+    "teacherSection": "Преподавателю",
+    "diary": "Дневник",
+    "myGrades": "Мои оценки",
+    "moreActions": "Ещё действия",
+    "history": "История",
+    "monitoring": "Мониторинг",
+    "grading": "Оценивание"
+  },
+  "diaryPage": {
+    "title": "Дневник",
+    "subtitle": "Рефлексии по всем вашим проектам",
+    "selectProject": "Выберите проект",
+    "noBoards": "Нет проектов",
+    "noBoardsBody": "Войдите в проект, чтобы вести дневник рефлексии.",
+    "teacherSubtitle": "Просмотр рефлексий студентов по всем проектам",
+    "loading": "Загрузка…"
+  },
+  "myGradesPage": {
+    "title": "Мои оценки",
+    "subtitle": "Ваши баллы по всем проектам",
+    "noProjects": "Нет проектов",
+    "noProjectsBody": "Проекты, в которых вы участвуете, появятся здесь.",
+    "noGrades": "Оценок пока нет",
+    "noGradesBody": "Преподаватель ещё не выставил оценки для этого проекта.",
+    "rubricScore": "Баллы по рубрике",
+    "finalGrade": "Итоговая оценка",
+    "outOf": "{score} из {max}",
+    "percent": "{pct}%",
+    "notGraded": "Не оценено",
+    "noRubric": "Рубрика не настроена",
+    "comment": "Комментарий преподавателя",
+    "totalPoints": "Итог"
   },
   "common": {
     "cancel": "Отмена",

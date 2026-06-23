@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useTransition } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useState, useTransition } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslations, useLocale } from 'next-intl'
 import { History, X, Loader2 } from 'lucide-react'
@@ -13,11 +13,15 @@ function detail(entry: ActivityLogEntry, key: string): string {
   return typeof value === 'string' ? value : ''
 }
 
-export function ActivityLog({ boardId }: { boardId: string }) {
+export interface ActivityLogHandle { open: () => void }
+
+export const ActivityLog = forwardRef<ActivityLogHandle, { boardId: string; headless?: boolean }>(function ActivityLog({ boardId, headless }, ref) {
   const t = useTranslations('activity')
   const tc = useTranslations('common')
   const locale = useLocale()
   const [open, setOpen] = useState(false)
+
+  useImperativeHandle(ref, () => ({ open: () => setOpen(true) }), [])
   const [entries, setEntries] = useState<ActivityLogEntry[]>([])
   const [loaded, setLoaded] = useState(false)
   const [isPending, startTransition] = useTransition()
@@ -86,13 +90,15 @@ export function ActivityLog({ boardId }: { boardId: string }) {
 
   return (
     <>
-      <button
-        onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-2 h-9 px-2 sm:px-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 transition-colors text-sm text-gray-600 shrink-0"
-      >
-        <History size={16} className="shrink-0" />
-        <span className="hidden sm:inline">{t('title')}</span>
-      </button>
+      {!headless && (
+        <button
+          onClick={() => setOpen(true)}
+          className="inline-flex items-center gap-2 h-9 px-2 sm:px-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 transition-colors text-sm text-gray-600 shrink-0"
+        >
+          <History size={16} className="shrink-0" />
+          <span className="hidden sm:inline">{t('title')}</span>
+        </button>
+      )}
 
       {open &&
         typeof document !== 'undefined' &&
@@ -166,4 +172,4 @@ export function ActivityLog({ boardId }: { boardId: string }) {
         )}
     </>
   )
-}
+})

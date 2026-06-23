@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState, useTransition } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState, useTransition } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslations } from 'next-intl'
 import {
@@ -34,11 +34,15 @@ type SaveStatus = 'idle' | 'saving' | 'saved' | 'error'
 
 const PROJECT = 'project'
 
-export function GradingButton({ boardId, currentUserId, isOwner, members }: GradingButtonProps) {
+export interface GradingButtonHandle { open: () => void }
+
+export const GradingButton = forwardRef<GradingButtonHandle, GradingButtonProps>(function GradingButton({ boardId, currentUserId, isOwner, members }, ref) {
   const t = useTranslations('grading')
   const tc = useTranslations('common')
 
   const [open, setOpen] = useState(false)
+
+  useImperativeHandle(ref, () => ({ open: () => setOpen(true) }), [])
   const [loaded, setLoaded] = useState(false)
   const [criteria, setCriteria] = useState<RubricCriterion[]>([])
   const [grades, setGrades] = useState<Grade[]>([])
@@ -547,7 +551,7 @@ export function GradingButton({ boardId, currentUserId, isOwner, members }: Grad
         )}
     </>
   )
-}
+})
 
 // ── Controlled criterion row for teacher: no auto-save on blur ──
 function TeacherCriterionRow({

@@ -4,14 +4,9 @@ import { getTranslations } from 'next-intl/server'
 import { ArrowLeft } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { KanbanBoard } from '@/components/board/KanbanBoard'
-import { MembersButton } from '@/components/board/MembersButton'
-import { ActivityLog } from '@/components/board/ActivityLog'
-import { GradingButton } from '@/components/board/GradingButton'
-import { ReflectionButton } from '@/components/board/ReflectionButton'
-import { MonitoringButton } from '@/components/board/MonitoringButton'
+import { BoardActions } from '@/components/board/BoardActions'
 import { ProjectStages } from '@/components/board/ProjectStages'
 import { ProjectOverview } from '@/components/board/ProjectOverview'
-import { CompleteBoardButton } from '@/components/board/CompleteBoardButton'
 import { getBoardInvitations } from '@/actions/invitations'
 import type { Metadata } from 'next'
 import type { MemberWithProfile, BoardInvitation, Card, ProjectStage } from '@/lib/types'
@@ -102,37 +97,15 @@ export default async function BoardPage({ params }: { params: Promise<{ id: stri
           <h1 className="font-semibold text-gray-900 text-base sm:text-lg truncate">{board.title}</h1>
         </div>
 
-        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-          <ActivityLog boardId={id} />
-          {isOwner && <MonitoringButton boardId={id} />}
-          <GradingButton
-            boardId={id}
-            currentUserId={user.id}
-            isOwner={isOwner}
-            members={members}
-          />
-          <ReflectionButton
-            boardId={id}
-            currentUserId={user.id}
-            isOwner={isOwner}
-            stages={stages}
-            members={members}
-          />
-          {isOwner && (
-            <CompleteBoardButton
-              boardId={id}
-              boardTitle={board.title}
-              initialStatus={board.status ?? 'active'}
-            />
-          )}
-          <MembersButton
-            boardId={id}
-            currentUserId={user.id}
-            isOwner={isOwner}
-            members={members}
-            invitations={invitations}
-          />
-        </div>
+        <BoardActions
+          boardId={id}
+          isOwner={isOwner}
+          currentUserId={user.id}
+          members={members}
+          invitations={invitations}
+          boardTitle={board.title}
+          initialStatus={board.status ?? 'active'}
+        />
       </div>
 
       {/* Board body */}

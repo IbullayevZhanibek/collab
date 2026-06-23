@@ -7,7 +7,7 @@ import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 import {
   LayoutDashboard, ListTodo, Calendar, Mail, Timer,
-  LogOut, Menu, X, FileBarChart2, BookText,
+  LogOut, Menu, X, FileBarChart2, BookText, Star, NotebookPen,
 } from 'lucide-react'
 import posthog from 'posthog-js'
 import { logout } from '@/actions/auth'
@@ -25,11 +25,13 @@ interface SidebarProps {
 type NavItem = { href: string; key: string; Icon: React.ComponentType<{ size?: number }> }
 
 const STUDENT_NAV: NavItem[] = [
-  { href: '/dashboard', key: 'boards', Icon: LayoutDashboard },
-  { href: '/tasks',     key: 'tasks',  Icon: ListTodo },
-  { href: '/pomodoro',  key: 'pomodoro', Icon: Timer },
-  { href: '/calendar',  key: 'calendar', Icon: Calendar },
+  { href: '/dashboard',   key: 'boards',      Icon: LayoutDashboard },
+  { href: '/tasks',       key: 'tasks',       Icon: ListTodo },
+  { href: '/pomodoro',    key: 'pomodoro',    Icon: Timer },
+  { href: '/calendar',    key: 'calendar',    Icon: Calendar },
   { href: '/invitations', key: 'invitations', Icon: Mail },
+  { href: '/my-grades',   key: 'myGrades',    Icon: Star },
+  { href: '/reflections', key: 'diary',       Icon: NotebookPen },
 ]
 
 const TEACHER_MAIN_NAV: NavItem[] = [
@@ -39,8 +41,9 @@ const TEACHER_MAIN_NAV: NavItem[] = [
 ]
 
 const TEACHER_SECTION_NAV: NavItem[] = [
-  { href: '/gradebook', key: 'gradebook', Icon: BookText },
-  { href: '/reports',   key: 'reports',   Icon: FileBarChart2 },
+  { href: '/gradebook',   key: 'gradebook', Icon: BookText },
+  { href: '/reports',     key: 'reports',   Icon: FileBarChart2 },
+  { href: '/reflections', key: 'diary',     Icon: NotebookPen },
 ]
 
 function navClass(active: boolean) {

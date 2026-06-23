@@ -219,6 +219,101 @@ export async function setGrade(
   return { success: true }
 }
 
+// ── Мои оценки (для студента) ──
+
+export type MyGradeEntry = {
+  boardId: string
+  boardTitle: string
+  criteria: Array<{
+    id: string
+    title: string
+    maxScore: number
+    score: number | null
+    comment: string | null
+  }>
+  rubricTotal: number
+  rubricMax: number
+  finalScore: number | null
+  finalMax: number
+  finalComment: string | null
+  hasFinalGrade: boolean
+  hasAnyGrade: boolean
+}
+
+export async function getMyGrades(): Promise<{ data?: MyGradeEntry[]; error?: string }> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
+
+  // Boards where the student is a non-owner member
+  const { data: memberships, error: mErr } = await supabase
+    .from('board_members')
+    .select('board_id')
+    .eq('user_id', user.id)
+    .eq('role', 'member')
+
+  if (mErr) return { error: mErr.message }
+  const boardIds = (memberships ?? []).map((m) => m.board_id)
+  if (boardIds.length === 0) return { data: [] }
+
+  const [
+    { data: boardsRaw, error: bErr },
+    { data: criteriaRaw, error: cErr },
+    { data: gradesRaw, error: gErr },
+    { data: finalGradesRaw, error: fErr },
+  ] = await Promise.all([
+    supabase.from('boards').select('id, title').in('id', boardIds).order('created_at', { ascending: false }),
+    supabase.from('rubric_criteria').select('*').in('board_id', boardIds).order('order_index'),
+    supabase.from('grades').select('*').in('board_id', boardIds).eq('student_id', user.id),
+    supabase.from('final_grades').select('*').in('board_id', boardIds).eq('student_id', user.id),
+  ])
+
+  if (bErr) return { error: bErr.message }
+  if (cErr) return { error: cErr.message }
+  if (gErr) return { error: gErr.message }
+  if (fErr) return { error: fErr.message }
+
+  const boards = boardsRaw ?? []
+  const criteria = (criteriaRaw ?? []) as RubricCriterion[]
+  const grades = gradesRaw ?? []
+  const finalGrades = finalGradesRaw ?? []
+
+  const entries: MyGradeEntry[] = boards.map((board) => {
+    const boardCriteria = criteria.filter((c) => c.board_id === board.id)
+    const boardGrades = grades.filter((g) => g.board_id === board.id)
+    const fg = finalGrades.find((f) => f.board_id === board.id) ?? null
+
+    const criteriaWithScores = boardCriteria.map((c) => {
+      const g = boardGrades.find((gr) => gr.criterion_id === c.id)
+      return {
+        id: c.id,
+        title: c.title,
+        maxScore: c.max_score,
+        score: g != null ? Number(g.score) : null,
+        comment: g?.comment ?? null,
+      }
+    })
+
+    const rubricTotal = criteriaWithScores.reduce((s, c) => s + (c.score ?? 0), 0)
+    const rubricMax = boardCriteria.reduce((s, c) => s + c.max_score, 0)
+
+    return {
+      boardId: board.id,
+      boardTitle: board.title,
+      criteria: criteriaWithScores,
+      rubricTotal,
+      rubricMax,
+      finalScore: fg ? Number(fg.final_score) : null,
+      finalMax: fg ? Number(fg.max_score) : 100,
+      finalComment: fg?.comment ?? null,
+      hasFinalGrade: !!fg,
+      hasAnyGrade: criteriaWithScores.some((c) => c.score !== null) || !!fg,
+    }
+  })
+
+  return { data: entries }
+}
+
 // Итоговый балл: сумма выставленных оценок и максимум по всем критериям.
 export async function getProjectScore(
   boardId: string,

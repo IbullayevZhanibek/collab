@@ -11,7 +11,38 @@
     "userFallback": "User",
     "reports": "Reports",
     "gradebook": "Gradebook",
-    "teacherSection": "For teachers"
+    "teacherSection": "For teachers",
+    "diary": "Diary",
+    "myGrades": "My grades",
+    "moreActions": "More actions",
+    "history": "History",
+    "monitoring": "Monitoring",
+    "grading": "Grading"
+  },
+  "diaryPage": {
+    "title": "Diary",
+    "subtitle": "Your reflections across all projects",
+    "selectProject": "Select a project",
+    "noBoards": "No projects",
+    "noBoardsBody": "Join a project to start keeping a reflection diary.",
+    "teacherSubtitle": "View student reflections across all projects",
+    "loading": "Loading…"
+  },
+  "myGradesPage": {
+    "title": "My grades",
+    "subtitle": "Your scores across all projects",
+    "noProjects": "No projects",
+    "noProjectsBody": "Projects you participate in will appear here.",
+    "noGrades": "No grades yet",
+    "noGradesBody": "Your teacher hasn't graded this project yet.",
+    "rubricScore": "Rubric score",
+    "finalGrade": "Final grade",
+    "outOf": "{score} of {max}",
+    "percent": "{pct}%",
+    "notGraded": "Not graded",
+    "noRubric": "Rubric not set up",
+    "comment": "Teacher comment",
+    "totalPoints": "Total"
   },
   "common": {
     "cancel": "Cancel",

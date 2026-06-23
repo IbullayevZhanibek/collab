@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useTransition } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useState, useTransition } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslations } from 'next-intl'
 import {
@@ -38,7 +38,9 @@ const LEVEL_STYLE: Record<ActivityLevel, { dot: string; text: string; badge: str
   inactive: { dot: 'bg-gray-300',    text: 'text-gray-500',    badge: 'bg-gray-100 text-gray-500' },
 }
 
-export function MonitoringButton({ boardId }: MonitoringButtonProps) {
+export interface MonitoringButtonHandle { open: () => void }
+
+export const MonitoringButton = forwardRef<MonitoringButtonHandle, MonitoringButtonProps>(function MonitoringButton({ boardId }, ref) {
   const t  = useTranslations('monitoring')
   const tc = useTranslations('common')
 
@@ -47,6 +49,8 @@ export function MonitoringButton({ boardId }: MonitoringButtonProps) {
   const [data, setData]     = useState<MonitoringData | null>(null)
   const [err, setErr]       = useState<string | null>(null)
   const [isPending, startLoad] = useTransition()
+
+  useImperativeHandle(ref, () => ({ open: () => setOpen(true) }), [])
 
   function reload() {
     setErr(null)
@@ -141,7 +145,7 @@ export function MonitoringButton({ boardId }: MonitoringButtonProps) {
         )}
     </>
   )
-}
+})
 
 // ── Основной контент ────────────────────────────────────────────────────────
 function MonitoringContent({ data }: { data: MonitoringData }) {

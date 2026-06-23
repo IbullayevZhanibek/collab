@@ -11,7 +11,38 @@
     "userFallback": "Пайдаланушы",
     "reports": "Есептер",
     "gradebook": "Журнал",
-    "teacherSection": "Оқытушыға"
+    "teacherSection": "Оқытушыға",
+    "diary": "Күнделік",
+    "myGrades": "Менің бағаларым",
+    "moreActions": "Қосымша",
+    "history": "Тарих",
+    "monitoring": "Бақылау",
+    "grading": "Бағалау"
+  },
+  "diaryPage": {
+    "title": "Күнделік",
+    "subtitle": "Барлық жобалар бойынша рефлексияларыңыз",
+    "selectProject": "Жобаны таңдаңыз",
+    "noBoards": "Жоба жоқ",
+    "noBoardsBody": "Рефлексия күнделігін жүргізу үшін жобаға кіріңіз.",
+    "teacherSubtitle": "Барлық жобалар бойынша студенттердің рефлексияларын қарау",
+    "loading": "Жүктелуде…"
+  },
+  "myGradesPage": {
+    "title": "Менің бағаларым",
+    "subtitle": "Барлық жобалар бойынша ұпайларыңыз",
+    "noProjects": "Жоба жоқ",
+    "noProjectsBody": "Қатысатын жобаларыңыз осында пайда болады.",
+    "noGrades": "Бағалар әлі жоқ",
+    "noGradesBody": "Оқытушы бұл жобаны әлі бағаламады.",
+    "rubricScore": "Рубрика бойынша ұпайлар",
+    "finalGrade": "Қорытынды баға",
+    "outOf": "{max} ішінен {score}",
+    "percent": "{pct}%",
+    "notGraded": "Бағаланбаған",
+    "noRubric": "Рубрика орнатылмаған",
+    "comment": "Оқытушы пікірі",
+    "totalPoints": "Жиыны"
   },
   "common": {
     "cancel": "Болдырмау",
