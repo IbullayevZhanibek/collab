@@ -9,10 +9,11 @@
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
     "userFallback": "User",
-    "reports": "Reports",
+    "reports": "Analytics",
     "gradebook": "Gradebook",
     "teacherSection": "For teachers",
-    "diary": "Diary",
+    "myReport": "My report",
+    "studentReports": "Student reports",
     "myGrades": "My grades",
     "moreActions": "More actions",
     "history": "History",
@@ -20,12 +21,13 @@
     "grading": "Grading"
   },
   "diaryPage": {
-    "title": "Diary",
-    "subtitle": "Your reflections across all projects",
+    "title": "Work report",
+    "teacherTitle": "Student reports",
+    "subtitle": "Your work reports across all projects",
     "selectProject": "Select a project",
     "noBoards": "No projects",
-    "noBoardsBody": "Join a project to start keeping a reflection diary.",
-    "teacherSubtitle": "View student reflections across all projects",
+    "noBoardsBody": "Join a project to start submitting work reports.",
+    "teacherSubtitle": "View student reports across all projects",
     "loading": "Loading…"
   },
   "myGradesPage": {
@@ -114,7 +116,9 @@
       "checkEmailTitle": "Check your email",
       "checkEmailBody": "We sent a confirmation link to <b>{email}</b>. Follow it to finish signing up.",
       "checkSpam": "Don't see the email? Check your spam folder — it sometimes hides there.",
-      "confirmedAlready": "Already confirmed?"
+      "confirmedAlready": "Already confirmed?",
+      "emailExists": "This email is already registered.",
+      "emailExistsHint": "Sign in to your account instead."
     },
     "validation": {
       "fillAll": "Please fill in all fields",

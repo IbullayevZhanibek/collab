@@ -3,7 +3,7 @@
 import { useState, useTransition } from 'react'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import { MailCheck, GraduationCap, BookOpen } from 'lucide-react'
+import { MailCheck, GraduationCap, BookOpen, LogIn } from 'lucide-react'
 import { register } from '@/actions/auth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -20,10 +20,12 @@ export default function RegisterPage() {
   const [role, setRole] = useState<GlobalRole>('student')
   const [error, setError] = useState<string | null>(null)
   const [sentTo, setSentTo] = useState<string | null>(null)
+  const [emailExists, setEmailExists] = useState(false)
   const [isPending, startTransition] = useTransition()
 
   function handleRegister() {
     setError(null)
+    setEmailExists(false)
     if (!fullName || !email || !password) {
       setError(tv('fillAll'))
       return
@@ -34,7 +36,9 @@ export default function RegisterPage() {
     }
     startTransition(async () => {
       const result = await register(email, password, fullName, role)
-      if (result?.error) {
+      if (result?.emailExists) {
+        setEmailExists(true)
+      } else if (result?.error) {
         setError(result.error)
       } else if (result?.needsConfirmation) {
         setSentTo(email)
@@ -88,6 +92,20 @@ export default function RegisterPage() {
         <p className="text-center text-gray-500 text-sm mb-8">
           {t('subtitle')}
         </p>
+
+        {emailExists && (
+          <div className="mb-4 rounded-xl bg-amber-50 border border-amber-200 p-4">
+            <p className="text-sm font-semibold text-amber-900">{t('emailExists')}</p>
+            <p className="text-sm text-amber-700 mt-0.5">{t('emailExistsHint')}</p>
+            <Link
+              href={`/login?email=${encodeURIComponent(email)}`}
+              className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-brand-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-brand-700 transition-colors"
+            >
+              <LogIn size={14} />
+              {t('login')}
+            </Link>
+          </div>
+        )}
 
         {error && (
           <div className="mb-4 rounded-xl bg-red-50 border border-red-200 p-3 text-sm text-red-700">

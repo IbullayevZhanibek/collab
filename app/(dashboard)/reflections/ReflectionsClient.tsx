@@ -180,7 +180,9 @@ export function ReflectionsClient({ boards, currentUserId, isTeacher }: Reflecti
       <div className="mb-6">
         <div className="flex items-center gap-2.5 mb-1">
           <BookOpen size={22} className="text-brand-600 shrink-0" />
-          <h1 className="text-2xl font-bold text-gray-900">{td('title')}</h1>
+          <h1 className="text-2xl font-bold text-gray-900">
+            {isTeacher ? td('teacherTitle') : td('title')}
+          </h1>
         </div>
         <p className="text-gray-500 text-sm">
           {isTeacher ? td('teacherSubtitle') : td('subtitle')}

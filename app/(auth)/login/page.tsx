@@ -1,17 +1,19 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { Suspense, useState, useTransition } from 'react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { login } from '@/actions/auth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Logo } from '@/components/ui/logo'
 
-export default function LoginPage() {
+function LoginForm() {
   const t = useTranslations('auth.login')
   const tv = useTranslations('auth.validation')
-  const [email, setEmail] = useState('')
+  const searchParams = useSearchParams()
+  const [email, setEmail] = useState(searchParams.get('email') ?? '')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
@@ -85,6 +87,33 @@ export default function LoginPage() {
             {t('createFree')}
           </Link>
         </p>
+      </div>
+    </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<LoginFormSkeleton />}>
+      <LoginForm />
+    </Suspense>
+  )
+}
+
+function LoginFormSkeleton() {
+  return (
+    <div className="w-full">
+      <div className="bg-white rounded-3xl shadow-pop border border-gray-100 p-8 animate-pulse">
+        <div className="flex justify-center mb-6">
+          <div className="h-10 w-32 bg-gray-100 rounded-lg" />
+        </div>
+        <div className="h-7 bg-gray-100 rounded-lg mb-3 mx-auto w-48" />
+        <div className="h-4 bg-gray-100 rounded-lg mb-8 mx-auto w-64" />
+        <div className="space-y-4">
+          <div className="h-10 bg-gray-100 rounded-xl" />
+          <div className="h-10 bg-gray-100 rounded-xl" />
+          <div className="h-12 bg-gray-100 rounded-xl" />
+        </div>
       </div>
     </div>
   )

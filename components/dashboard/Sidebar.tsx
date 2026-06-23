@@ -7,7 +7,7 @@ import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 import {
   LayoutDashboard, ListTodo, Calendar, Mail, Timer,
-  LogOut, Menu, X, FileBarChart2, BookText, Star, NotebookPen,
+  LogOut, Menu, X, FileBarChart2, BookText, Star, ClipboardList,
 } from 'lucide-react'
 import posthog from 'posthog-js'
 import { logout } from '@/actions/auth'
@@ -31,7 +31,7 @@ const STUDENT_NAV: NavItem[] = [
   { href: '/calendar',    key: 'calendar',    Icon: Calendar },
   { href: '/invitations', key: 'invitations', Icon: Mail },
   { href: '/my-grades',   key: 'myGrades',    Icon: Star },
-  { href: '/reflections', key: 'diary',       Icon: NotebookPen },
+  { href: '/reflections', key: 'myReport',    Icon: ClipboardList },
 ]
 
 const TEACHER_MAIN_NAV: NavItem[] = [
@@ -41,9 +41,9 @@ const TEACHER_MAIN_NAV: NavItem[] = [
 ]
 
 const TEACHER_SECTION_NAV: NavItem[] = [
-  { href: '/gradebook',   key: 'gradebook', Icon: BookText },
-  { href: '/reports',     key: 'reports',   Icon: FileBarChart2 },
-  { href: '/reflections', key: 'diary',     Icon: NotebookPen },
+  { href: '/gradebook',   key: 'gradebook',       Icon: BookText },
+  { href: '/reports',     key: 'reports',         Icon: FileBarChart2 },
+  { href: '/reflections', key: 'studentReports',  Icon: ClipboardList },
 ]
 
 function navClass(active: boolean) {

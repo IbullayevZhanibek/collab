@@ -60,8 +60,23 @@ export async function register(
     },
   })
 
+  // Явная ошибка от Supabase (на некоторых конфигурациях).
   if (error) {
+    const m = error.message.toLowerCase()
+    if (
+      m.includes('user already registered') ||
+      m.includes('already been registered') ||
+      (error as unknown as { code?: string }).code === 'user_already_exists'
+    ) {
+      return { emailExists: true }
+    }
     return { error: await humanizeAuthError(error.message) }
+  }
+
+  // Защита от enumeration-атак: Supabase не возвращает ошибку для уже
+  // существующего email, но возвращает data.user с пустым массивом identities.
+  if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+    return { emailExists: true }
   }
 
   // При включённом подтверждении email сессии ещё нет — нельзя редиректить на
