@@ -27,8 +27,8 @@ export function MembersButton({ boardId, currentUserId, isOwner, members, invita
         onClick={() => setOpen(true)}
         className="inline-flex items-center gap-2 h-9 px-2 sm:px-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 transition-colors text-sm text-gray-600 shrink-0"
       >
-        {/* Stacked avatars */}
-        <div className="flex -space-x-1.5">
+        {/* Stacked avatars — hidden on mobile to keep the header compact */}
+        <div className="hidden sm:flex -space-x-1.5">
           {visibleAvatars.map((m) => {
             const name = m.full_name || m.email
             return (

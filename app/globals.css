@@ -35,9 +35,12 @@
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
   }
 
   body {
+    overflow-x: hidden;
     background-color: #ffffff;
     color: #0f172a;
     font-family: var(--font-sans);

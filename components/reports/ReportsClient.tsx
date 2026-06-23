@@ -334,7 +334,7 @@ export function ReportsClient({ overview }: { overview: TeacherOverviewItem[] })
               <p className="text-sm text-gray-400 px-5 py-10 text-center">{t('noProjects')}</p>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+                <table className="w-full text-sm min-w-[560px]">
                   <thead>
                     <tr className="text-left text-xs text-gray-500 border-b border-gray-100">
                       <th className="px-5 py-3 font-medium">{t('colProject')}</th>
@@ -420,7 +420,7 @@ export function ReportsClient({ overview }: { overview: TeacherOverviewItem[] })
                 <p className="text-sm text-gray-400 px-5 py-10 text-center">{t('noStudents')}</p>
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
+                  <table className="w-full text-sm min-w-[720px]">
                     <thead>
                       <tr className="text-left text-xs text-gray-500 border-b border-gray-100">
                         <th className="px-5 py-3 font-medium">{t('colStudent')}</th>

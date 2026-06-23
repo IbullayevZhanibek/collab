@@ -93,7 +93,7 @@ export function MonitoringButton({ boardId }: MonitoringButtonProps) {
               onClick={() => setOpen(false)}
             />
 
-            <aside className="absolute inset-y-0 right-0 w-full sm:w-[700px] bg-white shadow-pop flex flex-col animate-drawer-in">
+            <aside className="absolute inset-y-0 right-0 w-full sm:w-[700px] sm:max-w-[90vw] bg-white shadow-pop flex flex-col animate-drawer-in">
               {/* ── Header ── */}
               <div className="flex items-center justify-between px-5 h-16 border-b border-gray-200 shrink-0">
                 <div className="flex items-center gap-2">
@@ -421,7 +421,7 @@ function CollaborationSection({ collab }: { collab: TeamCollaborationMetrics }) 
   return (
     <section>
       <SectionTitle>{t('collaboration')}</SectionTitle>
-      <div className="grid grid-cols-3 gap-3 mb-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-3">
         <CollabTile
           icon={<MessageSquare size={16} className="text-brand-500" />}
           value={collab.totalComments}
